@@ -1,0 +1,24 @@
+Package: sml
+Title: Call Methods from the uk.gov.ons Package
+Version: 1.0
+Authors@R:
+    person("Nathan", "Eastwood", email = "nathan.eastwood@icloud.com", 
+           role = c("aut", "cre"))
+Description: This package is used for calling Scala methods from the uk.gov.ons
+    package.
+Depends:
+    R (>= 3.4.1),
+    sparklyr (>= 0.7.0)
+Imports:
+    dplyr
+License: file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+Suggests:
+    knitr,
+    lintr,
+    rmarkdown,
+    testthat,
+    rprojroot
+VignetteBuilder: knitr
