@@ -1,3 +1,11 @@
+#!groovy
+@Library('jenkins-pipeline-shared@develop') _
+
+def projectName = 'sbr-ci-poc'
+def distDir = 'build/dist/'
+def server = Artifactory.server 'art-p-01'
+def buildInfo = Artifactory.newBuildInfo()
+
 pipeline {
     agent any
     stages {
