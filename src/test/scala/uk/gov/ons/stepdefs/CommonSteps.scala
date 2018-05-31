@@ -1,25 +1,17 @@
 package uk.gov.ons.stepdefs
 
-import cucumber.api.DataTable
 import cucumber.api.scala.{EN, ScalaDsl}
+import cucumber.api.DataTable
 import org.apache.spark.sql.DataFrame
-import scala.collection.JavaConverters._
+
+object ContextCommon {
+  var input_data: DataFrame = _
+  var expected_data: DataFrame = _
+  var param_list: Seq[String] = _
+  var output_data: DataFrame = _
+}
 
 class CommonSteps extends ScalaDsl with EN {
-
-  Given("""^the user provides the parameters:$""") { (arg0: DataTable) =>
-    // Receives Cucumber DataTable and converts to List[Map[String, String]]
-    ContextCommon.params = arg0.asMaps(classOf[String], classOf[String])
-    println("Given the user provides the parameters: " + ContextCommon.params)
-
-  }
-
-  Given("""^there are datasets at the locations:$""") { (arg0: DataTable) =>
-    // Receives Cucumber DataTable and converts to List[Map[String, String]]
-    ContextCommon.paths = arg0.asMaps(classOf[String], classOf[String])
-    println("Given there are datasets at the locations: " + ContextCommon.paths)
-  }
-
   Given("""the user provides the file paths:$""") { (x: DataTable) =>
     val pathList = x.asLists(classOf[String])
     val inputPath: String = pathList.get(1).get(0)
@@ -45,14 +37,4 @@ class CommonSteps extends ScalaDsl with EN {
       throw new Exception("File input must be in JSON or csv format.")
     }
   }
-}
-
-// Object stores variables for later Scala/Java steps
-object ContextCommon {
-  var params: java.util.List[java.util.Map[String, String]] = _
-  var paths: java.util.List[java.util.Map[String, String]] = _
-  var input_data: DataFrame = _
-  var expected_data: DataFrame = _
-  var param_list: Seq[String] = _
-  var output_data: DataFrame = _
 }

@@ -2,7 +2,7 @@ spark_dependencies <- function(spark_version, scala_version, ...) {
   sparklyr::spark_dependency(
     jars = c(
       system.file(
-        "../../target/sml-1.0-SNAPSHOT-jar-with-dependencies.jar",
+        "java/sml-1.0-SNAPSHOT-jar-with-dependencies.jar",
         package = "sml"
       )
     ),

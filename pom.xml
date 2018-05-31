@@ -1,253 +1,141 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2015, Cloudera, Inc. All Rights Reserved.
+
+  Cloudera, Inc. licenses this file to you under the Apache License,
+  Version 2.0 (the "License"). You may not use this file except in
+  compliance with the License. You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  This software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for
+  the specific language governing permissions and limitations under the
+  License.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+    <parent>
+        <groupId>uk.gov.ons</groupId>
+        <artifactId>sml-parent-pom</artifactId>
+        <version>4.0.0</version>
+    </parent>
+
+
     <groupId>uk.gov.ons</groupId>
-    <artifactId>registers-sml</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>sml</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Registers Statistical Method Library</name>
-    <description>Library of statistics methods fror Registers</description>
-    <url>https://github.com/ONSdigital/registers-sml</url>
-    
+    <name>A SML Example App</name>
+    <description>An example of a distributed Polyglot method for Spark Work</description>
+
+    <url>Url to GitHub/GitLab</url>
+
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <!-- Add your development team here, Contact those below for more information on a SML project -->
+        <developer>
+            <name>Richard Ingram</name>
+            <email>richard.ingram@ons.gov.uk</email>
+        </developer>
+        <developer>
+            <name>James Smith</name>
+            <email>james.a.smith@ext.ons.gov.uk</email>
+        </developer>
+        <developer>
+            <name>Steve Ball</name>
+            <email>steve.ball@ons.gov.uk</email>
+        </developer>
+    </developers>
+
+    <prerequisites>
+        <maven>3.1.1</maven>
+    </prerequisites>
+
+    <scm>
+        <!-- Replace with your repo -->
+        <connection>scm:git:http://np2rvlapxx507/DAP-S/SML-Archetye.git</connection>
+        <url>scm:git:http://np2rvlapxx507/DAP-S/SML-Archetye.git</url>
+        <developerConnection>scm:git:http://np2rvlapxx507/DAP-S/SML-Archetye.git</developerConnection>
+        <tag>development</tag>
+    </scm>
+
     <properties>
-        <breeze.version>0.12</breeze.version>
         <cucumber.version>2.0.1</cucumber.version>
-        <java.version>1.8</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <scala.complete.version>2.11.8</scala.complete.version>
-        <scala.minor.version>2.11</scala.minor.version>
-        <scala.modules.version>1.0.5</scala.modules.version>
-        <spark.version>2.2.0</spark.version>
     </properties>
-    
+
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>ONS Artifactory-releases</name>
+            <url>http://daps_serviceuser:AP72rHKfeAb8TqUs18LA78mBh7FFE8B47sWZPt@art-p-01/artifactory/DAP-MVN-Snapshot</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>ONS Artifactory-snapshots</name>
+            <url>http://daps_serviceuser:AP72rHKfeAb8TqUs18LA78mBh7FFE8B47sWZPt@art-p-01/artifactory/DAP-MVN-Snapshot</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <!--<distributionManagement>-->
+        <!--<snapshotRepository>-->
+            <!--<id>snapshots</id>-->
+            <!--<url>http://daps_serviceuser:AP72rHKfeAb8TqUs18LA78mBh7FFE8B47sWZPt@art-p-01/artifactory/DAP-MVN-Snapshot/</url>-->
+        <!--</snapshotRepository>-->
+        <!--<repository>-->
+            <!--<id>central</id>-->
+            <!--<url>http://daps_serviceuser:AP72rHKfeAb8TqUs18LA78mBh7FFE8B47sWZPt@art-p-01/artifactory/DAP-MVN-Release/</url>-->
+        <!--</repository>-->
+    <!--</distributionManagement>-->
+
+    <!-- This should be removed when Jenkins is configured properly -->
+    <repositories>
+        <repository>
+            <id>artifactory.snapshots</id>
+            <name>SNAPSHOTS</name>
+            <url>http://daps_serviceuser:AP72rHKfeAb8TqUs18LA78mBh7FFE8B47sWZPt@art-p-01/artifactory/list/VR_DAP-S/</url>
+        </repository>
+    </repositories>
+
+    <!--<reporting>-->
+        <!--<plugins>-->
+            <!--<plugin>-->
+                <!--<groupId>org.codehaus.mojo</groupId>-->
+                <!--<artifactId>versions-maven-plugin</artifactId>-->
+                <!--<version>2.5</version>-->
+                <!--<reportSets>-->
+                    <!--<reportSet>-->
+                        <!--<reports>-->
+                            <!--<report>dependency-updates-report</report>-->
+                            <!--<report>plugin-updates-report</report>-->
+                            <!--<report>property-updates-report</report>-->
+                        <!--</reports>-->
+                    <!--</reportSet>-->
+                <!--</reportSets>-->
+            <!--</plugin>-->
+        <!--</plugins>-->
+    <!--</reporting>-->
+
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <serverId>ossrh</serverId>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>3.3.1</version>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>scala-compile-first</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>scala-test-compile-first</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <javacArgs>
-                        <javacArg>-source</javacArg>
-                        <javacArg>${java.version}</javacArg>
-                        <javacArg>-target</javacArg>
-                        <javacArg>${java.version}</javacArg>
-                    </javacArgs>
-                    <scalaCompatVersion>${scala.minor.version}</scalaCompatVersion>
-                    <scalaVersion>${scala.complete.version}</scalaVersion>
-                </configuration>
-            </plugin>
-            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
-                <executions>
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <compilerArgs>
-                        <arg>-Xlint:all,-serial</arg>
-                    </compilerArgs>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                </configuration>
-            </plugin>
-            
-            <!--enable surefire-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.20.1</version>
-                <configuration>
-                    <testSourceDirectory>/src/test/java/</testSourceDirectory>
-                </configuration>
-            </plugin>
-            
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <skipIfEmpty>true</skipIfEmpty>
-                </configuration>
-            </plugin>
-            
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>add-java-sources</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/main/java</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>add-java-test-sources</id>
-                        <phase>generate-test-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/test/java</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>add-scala-sources</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/main/scala</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>add-scala-test-sources</id>
-                        <phase>generate-test-sources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/test/scala</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M1</version>
-                <executions>
-                    <execution>
-                        <id>enforce-maven</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>3.0.5</version>
-                                </requireMavenVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.4</version>
-                <inherited>false</inherited>
-                <dependencies>
-                    <dependency>
-                        <groupId>lt.velykis.maven.skins</groupId>
-                        <artifactId>reflow-velocity-tools</artifactId>
-                        <version>1.1.1</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.maven.doxia</groupId>
-                        <artifactId>doxia-module-markdown</artifactId>
-                        <version>1.6</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.scm</groupId>
-                        <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>1.9.5</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <mavenExecutorId>forked-path</mavenExecutorId>
-                    <tagNameFormat>sparkts-@{project.version}</tagNameFormat>
-                    <goals>deploy</goals>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <javadocVersion>${java.version}</javadocVersion>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-scm-plugin</artifactId>
-                <version>1.9.4</version>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.sonatype.plugins</groupId>-->
+                <!--<artifactId>nexus-staging-maven-plugin</artifactId>-->
+                <!--<version>1.6.7</version>-->
+                <!--<extensions>true</extensions>-->
+                <!--<configuration>-->
+                    <!--<serverId>ossrh</serverId>-->
+                    <!--<nexusUrl>https://oss.sonatype.org/</nexusUrl>-->
+                    <!--<autoReleaseAfterClose>true</autoReleaseAfterClose>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -293,15 +181,8 @@
             </plugin>
         </plugins>
     </build>
-    
+
     <dependencies>
-        <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-            <version>1.4.2</version>
-            <scope>system</scope>
-            <systemPath>${java.home}/../lib/tools.jar</systemPath>
-        </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-yarn-client</artifactId>
@@ -349,7 +230,7 @@
             <version>${spark.version}</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -367,14 +248,14 @@
             <artifactId>cucumber-core</artifactId>
             <version>${cucumber.version}</version>
         </dependency>
-        
+
         <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-java -->
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
             <version>${cucumber.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-scala_${scala.minor.version}</artifactId>
@@ -382,4 +263,3 @@
         </dependency>
     </dependencies>
 </project>
-

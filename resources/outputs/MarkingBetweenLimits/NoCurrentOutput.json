@@ -1,0 +1,9 @@
+{"id":1, "date":201501, "value":3000, "marker":0},
+{"id":1, "date":201502, "marker":0},
+{"id":2, "date":201501, "value":3000, "marker":0},
+{"id":2, "date":201502, "value":2000, "marker":0},
+{"id":2, "date":201503, "value":3000, "marker":0},
+{"id":2, "date":201504, "marker":0},
+{"id":3, "date":201501,"value":100, "marker":0},
+{"id":3, "date":201502, "marker":0},
+{"id":3, "date":201503,"value":200, "marker":0}
