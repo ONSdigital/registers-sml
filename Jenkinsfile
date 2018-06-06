@@ -118,11 +118,11 @@ pipeline {
         }
         unstable {
             colourText("warn", "Something went wrong, build finished with result ${currentResult}. This may be caused by failed tests, code violation or in some cases unexpected interrupt.")
-            // sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST", "${STAGE_NAME}"
+            sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST", "${STAGE_NAME}"
         }
         failure {
             colourText("warn","Process failed at: ${STAGE_NAME}")
-            // sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST", "${STAGE_NAME}"
+            sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST", "${STAGE_NAME}"
         }
     }
 }
