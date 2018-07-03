@@ -1,5 +1,6 @@
 # Makefile for Sphinx documentation
 #
+PACKAGE_NAME = registers-sml
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
@@ -14,10 +15,17 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) sou
 # the i18n builder cannot share the environment and doctrees with the others
 I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
 
-.PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest gettext
+WORKON_HOME ?= $(PWD)/.virtualenvs
+VIRTUAL_ENV ?= $(WORKON_HOME)/$(PACKAGE_NAME)
+GLOBAL_DEPS ?= $(PWD)/.local
+PATH := $(VIRTUAL_ENV)/bin:$(PATH)
+PYTHON_EXEC ?= /usr/bin/python2.7
+
+.PHONY: help clean install activate html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest gettext
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "  install    to install the package in a virtual environment"
 	@echo "  html       to make standalone HTML files"
 	@echo "  dirhtml    to make HTML files named index.html in directories"
 	@echo "  singlehtml to make a single large HTML file"
@@ -40,6 +48,19 @@ help:
 
 clean:
 	-rm -rf $(BUILDDIR)/*
+
+install:
+	@test -x "$(HOME)/.pydistutils.cfg" || echo "[install]\nprefix=" > $(HOME)/.pydistutils.cfg
+	@test -d "$(GLOBAL_DEPS)" || mkdir -p "$(GLOBAL_DEPS)"
+	@test -x "$(GLOBAL_DEPS)/virtualenv.py" || pip install virtualenv -t "$(GLOBAL_DEPS)"
+	@test -d "$(VIRTUAL_ENV)" || mkdir -p "$(VIRTUAL_ENV)"
+	@test -x "$(VIRTUAL_ENV)/bin/python" || python "$(GLOBAL_DEPS)/virtualenv.py" -p $(PYTHON_EXEC) --quiet $(VIRTUAL_ENV)
+
+activate:
+    ( \
+       source $(VIRTUAL_ENV)/bin/activate; \
+       pip install -r requirements.txt; \
+    )
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
