@@ -59,9 +59,9 @@
 
     <scm>
         <!-- Replace with your repo -->
-        <connection>scm:git:http://np2rvlapxx507/DAP-S/SML-Archetye.git</connection>
-        <url>scm:git:http://np2rvlapxx507/DAP-S/SML-Archetye.git</url>
-        <developerConnection>scm:git:http://np2rvlapxx507/DAP-S/SML-Archetye.git</developerConnection>
+        <connection>scm:githttp://np2rvlapxx507/DAP-S/Statistical_Methods_Library.git</connection>
+        <url>scm:git:http://np2rvlapxx507/DAP-S/Statistical_Methods_Library.git</url>
+        <developerConnection>scm:git:http://np2rvlapxx507/DAP-S/Statistical_Methods_Library.git</developerConnection>
         <tag>development</tag>
     </scm>
 
@@ -69,71 +69,8 @@
         <cucumber.version>2.0.1</cucumber.version>
     </properties>
 
-    <distributionManagement>
-        <repository>
-            <id>central</id>
-            <name>ONS Artifactory-releases</name>
-            <url>http://daps_serviceuser:AP72rHKfeAb8TqUs18LA78mBh7FFE8B47sWZPt@art-p-01/artifactory/DAP-MVN-Snapshot</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>ONS Artifactory-snapshots</name>
-            <url>http://daps_serviceuser:AP72rHKfeAb8TqUs18LA78mBh7FFE8B47sWZPt@art-p-01/artifactory/DAP-MVN-Snapshot</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <!--<distributionManagement>-->
-        <!--<snapshotRepository>-->
-            <!--<id>snapshots</id>-->
-            <!--<url>http://daps_serviceuser:AP72rHKfeAb8TqUs18LA78mBh7FFE8B47sWZPt@art-p-01/artifactory/DAP-MVN-Snapshot/</url>-->
-        <!--</snapshotRepository>-->
-        <!--<repository>-->
-            <!--<id>central</id>-->
-            <!--<url>http://daps_serviceuser:AP72rHKfeAb8TqUs18LA78mBh7FFE8B47sWZPt@art-p-01/artifactory/DAP-MVN-Release/</url>-->
-        <!--</repository>-->
-    <!--</distributionManagement>-->
-
-    <!-- This should be removed when Jenkins is configured properly -->
-    <repositories>
-        <repository>
-            <id>artifactory.snapshots</id>
-            <name>SNAPSHOTS</name>
-            <url>http://daps_serviceuser:AP72rHKfeAb8TqUs18LA78mBh7FFE8B47sWZPt@art-p-01/artifactory/list/VR_DAP-S/</url>
-        </repository>
-    </repositories>
-
-    <!--<reporting>-->
-        <!--<plugins>-->
-            <!--<plugin>-->
-                <!--<groupId>org.codehaus.mojo</groupId>-->
-                <!--<artifactId>versions-maven-plugin</artifactId>-->
-                <!--<version>2.5</version>-->
-                <!--<reportSets>-->
-                    <!--<reportSet>-->
-                        <!--<reports>-->
-                            <!--<report>dependency-updates-report</report>-->
-                            <!--<report>plugin-updates-report</report>-->
-                            <!--<report>property-updates-report</report>-->
-                        <!--</reports>-->
-                    <!--</reportSet>-->
-                <!--</reportSets>-->
-            <!--</plugin>-->
-        <!--</plugins>-->
-    <!--</reporting>-->
-
     <build>
         <plugins>
-            <!--<plugin>-->
-                <!--<groupId>org.sonatype.plugins</groupId>-->
-                <!--<artifactId>nexus-staging-maven-plugin</artifactId>-->
-                <!--<version>1.6.7</version>-->
-                <!--<extensions>true</extensions>-->
-                <!--<configuration>-->
-                    <!--<serverId>ossrh</serverId>-->
-                    <!--<nexusUrl>https://oss.sonatype.org/</nexusUrl>-->
-                    <!--<autoReleaseAfterClose>true</autoReleaseAfterClose>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
