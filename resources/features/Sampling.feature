@@ -10,13 +10,13 @@ Feature: Making a Sample
             | data_input_path   | strat_properties        | expected_output   |
             | <input_path>      | <strat_properties_path> | <output_path>     |
         When the <language> sampling method is ran on the pre-filtered input
-        Then a DtaFrame of given sample size is returned
+#        Then a DataFrame of given sample size is returned
 
         @JVM
         Examples:
-        | language | input_path                                 | strat_properties_path                        | output_path                                  |
-        | Scala    | ./resources/inputs/sampling/frame_data.csv | ./resources/outputs/sampling/strat_props.csv | ./resources/outputs/sampling/sample_data.csv |
-        | Java     | ./resources/inputs/sampling/frame_data.csv | ./resources/outputs/sampling/strat_props.csv | ./resources/outputs/sampling/sample_data.csv |
+        | language | input_path                                 | strat_properties_path                             | output_path                                  |
+        | Scala    | ./resources/inputs/sampling/frame_data.csv | ./resources/inputs/sampling/strat_properties.csv  | ./resources/outputs/sampling/sample_data     |
+#        | Java     | ./resources/inputs/sampling/frame_data.csv | ./resources/inputs/sampling/strat_properties.csv  | ./resources/outputs/sampling/sample_data.csv |
 
 
 #    Scenario Outline: Sample size parameter is out of bounds of the sorted records

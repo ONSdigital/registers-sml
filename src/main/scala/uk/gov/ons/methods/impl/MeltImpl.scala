@@ -14,7 +14,7 @@ object MeltImpl {
       *
       *                                {{{ array<struct<variable : str, value: ... >> }}}
       *
-      * This array is then added to the datframe under the column name '''_vars_and_vals'''
+      * This array is then added to the dataframe under the column name '''_vars_and_vals'''
       *
       * A list of columns is then created, which holds only the '''id_vars''', the '''var_name''' and the
       * '''value_name'''
@@ -39,7 +39,7 @@ object MeltImpl {
       * @return DataFrame
       */
     def melt1(id_vars: Seq[String], value_vars: Seq[String], var_name: String ="variable",
-              value_name: String ="value") : DataFrame = {
+              value_name: String ="value"): DataFrame = {
 
       // Start of melting the dataframe
       // Create array<struct<variable : str, value: ... >>

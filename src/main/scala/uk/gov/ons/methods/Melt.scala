@@ -9,7 +9,7 @@ class Melt(val dfIn: DataFrame) extends BaseMethod {
 
   /** Scala function that calls version 1 of the melt method.
     *
-    * @author stuart.russell@ext.ons.gov.ukzzz
+    * @author stuart.russell@ext.ons.gov.uk
     * @param input      DataFrame        - The input DataFrame
     * @param id_vars    Seq[String]    - Column(s) which are used as unique identifiers
     * @param value_vars Seq[String] - Column(s) which are being unpivoted

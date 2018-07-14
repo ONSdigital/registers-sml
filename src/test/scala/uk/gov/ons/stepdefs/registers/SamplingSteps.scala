@@ -1,27 +1,36 @@
 package uk.gov.ons.stepdefs.registers
 
+import org.apache.spark.sql.DataFrame
+
+import uk.gov.ons.registers.method.Sample
+
 import cucumber.api.scala.{EN, ScalaDsl}
-import uk.gov.ons.models.StratificationProperties.{startPoint, sampleSize}
+import uk.gov.ons.registers.models.StratificationProperties.cellNumber
 
 
 class SamplingSteps extends ScalaDsl with EN {
 
   When("""the Scala sampling method is ran on the pre-filtered input"""){ () =>
-    startingPoint = stratProps.rdd.first().getAs(startPoint)
-    outputSize = stratProps.rdd.first().getAs(sampleSize)
-    outputData = createSample(inputData)
+    outputData = Sample.sample(inputPath)
+      .create(stratificationPropertiesPath, outputPath)
   }
 
-  Then("""a DataFrame of sample size is returned"""){ () =>
-    expectedData = ???
-//    outputData.map(row => assert(row.getAs[Double](prn) >= startingPoint))
-    assert(outputData.collect() sameElements expectedData.collect())
-    assert(outputData.count == 1100L)
+  Then("""a DataFrame of given sample size is returned"""){ () =>
+    val expectedData: DataFrame = ???
+    assert(outputData.count == 20080L)
+    assert(outputData.first() equals expectedData.first())
+    assert(outputData.schema.fieldNames contains cellNumber)
 
-    println("Input Data")
+    assert(new java.io.File(s"$outputPath/*.csv").exists)
+
+    // check file has been created
+    // check number of rows
+    // check value has been appended at the end '*no'!!
+
+    println("Compare DataFrames")
     println("Expected Output")
     expectedData.show()
-    println("Scala Melt output")
+    println("Scala Sampling output")
     outputData.show()
   }
 
