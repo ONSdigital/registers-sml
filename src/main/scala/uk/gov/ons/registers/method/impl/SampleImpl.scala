@@ -4,8 +4,9 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.types.DataTypes
 
-import uk.gov.ons.registers.models.CommonUnitFrameDataFields.prn
-import uk.gov.ons.registers.models.StratificationProperties.cellNumber
+import uk.gov.ons.registers.model.CommonUnitFrameDataFields.prn
+import uk.gov.ons.registers.model.stratification.PrnStatisticalProperty.{precision, scale}
+import uk.gov.ons.registers.model.stratification.StratificationPropertiesFields.cellNumber
 
 
 object SampleImpl {
@@ -22,10 +23,14 @@ object SampleImpl {
       *         around the dataframe if needed
       */
     def sample1(startPoint: BigDecimal, sampleSize: Int, cellNo: Int): DataFrame = {
-      val filtered = inputDataDF
-        .withColumn(prn, inputDataDF.col(prn).cast(DataTypes.createDecimalType()))
-        .orderBy(prn)
-        .filter(inputDataDF(prn) >= startPoint)
+      val prnAsBigDecimal = s"${prn}_temp"
+      val inputDataWithBigDecimal = inputDataDF
+        .withColumn(prnAsBigDecimal, inputDataDF.col(prn).cast(DataTypes.createDecimalType(precision, scale)))
+
+      val filtered = inputDataWithBigDecimal
+        .orderBy(prnAsBigDecimal)
+        .filter(inputDataWithBigDecimal(prnAsBigDecimal) >= startPoint)
+        .drop(prnAsBigDecimal)
 
       val remainder = inputDataDF
         .except(filtered)

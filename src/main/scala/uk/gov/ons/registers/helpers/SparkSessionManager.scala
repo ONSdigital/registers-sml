@@ -10,7 +10,7 @@ private[registers] object SparkSessionManager {
     .getOrCreate()
 
 
-  def withSpark(doWithinSparkSession: SparkSession => DataFrame): DataFrame = {
+  def withSpark(doWithinSparkSession: SparkSession => DataFrame) = {
     implicit val sparkSession: SparkSession = SparkSession
       .builder()
       .appName("Registers Statistical Methods Library (SML)")

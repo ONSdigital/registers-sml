@@ -9,14 +9,15 @@ import org.apache.spark.sql._
 
 
 object CSVProcessor {
-  private val CSV = "csv"
+  val CSV = "csv"
   type FilePath = String
 
 
-  def export(dataFrame: DataFrame, path: FilePath): Unit =
+  def export(dataFrame: DataFrame, path: FilePath, headerOption: Boolean = true): Unit =
     dataFrame
       .coalesce(1)
       .write.format(CSV)
+      .option("header", headerOption)
       .mode(SaveMode.Append)
       .csv(path)
 
