@@ -7,7 +7,7 @@ import uk.gov.ons.registers.model.SelectionTypes
 import uk.gov.ons.registers.model.SelectionTypes.{census, prnSampling}
 import uk.gov.ons.registers.model.stratification.StratificationPropertiesFields.selectionType
 import uk.gov.ons.registers.model.stratification.StratificationPropertiesRecord
-import uk.gov.ons.registers.{SparkSessionManager, TransformFiles}
+import uk.gov.ons.registers.{ParamValidation, SparkSessionManager, TransformFiles}
 
 class Sample(inputPath: FilePath) {
 
@@ -25,11 +25,13 @@ class Sample(inputPath: FilePath) {
     // TODO - Check Join
     val arrayOfSamples: Array[DataFrame] = stratificationPropsDS
       .filter(checkSelType(census) || checkSelType(prnSampling)).rdd.collect
-      .map{ row: StratificationPropertiesRecord =>
+      .flatMap{ row: StratificationPropertiesRecord =>
           if (row.seltype == SelectionTypes.prnSampling)
-              inputDataDF.sample1(row.prn_start, row.no_reqd, row.cell_no)
-
-          else inputDataDF.sample1(row.cell_no)
+            ParamValidation.validate(maxSize = inputDfSize, strataNumber = row.cell_no, startingPrn = row.prn_start,
+              sampleSize = row.no_reqd).map( sampleSize =>
+                inputDataDF.sample1(row.prn_start, sampleSize, row.cell_no)
+              )
+          else Some(inputDataDF.sample1(row.cell_no))
       }
 
     val sampleDF = TransformFiles.exportDatasetAsCSV(arrayOfDatasets = arrayOfSamples, outputPath = outputPath)
