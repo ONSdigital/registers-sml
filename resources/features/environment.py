@@ -4,11 +4,11 @@ from pyspark.sql import SparkSession
 
 @fixture()
 def create_session(context):
-    context.spark = SparkSession.builder                                                                    \
-                                .master("local")                                                            \
-                                .appName("Behave")                                                          \
-                                .config("spark.jars", "target/registers-sml-1.0-SNAPSHOT-jar-with-dependencies.jar")  \
-                                .getOrCreate()
+    context.spark = SparkSession.builder\
+        .master("local")     \
+        .appName("Behave")   \
+        .config("spark.jars", "target/sml-1.0-SNAPSHOT-jar-with-dependencies.jar") \
+        .getOrCreate()
     context.spark.sparkContext.setLogLevel("ERROR")
 
 

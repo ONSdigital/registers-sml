@@ -67,13 +67,14 @@ send_output <- function(file,
 #' Title
 #'
 #' @param filepath A string of file path for instance here- absolute file path
+#' @param df_name name of the data set that input file to be read in
 #' @param sc spark connection
 #'
 #' @return sparklyr dataframe
 #' @export
 #'
 #' @examples
-read_data <- function(filepath, sc){
+read_data <- function(filepath, df){
   if(endsWith(filepath, "json")){
     sparklyr::spark_read_json(
       sc,

@@ -17,22 +17,3 @@ def given_paths(context):
 @Given('the user provides the function parameters')
 def step_impl(context):
     context.parameters = context.table.rows[0]
-
-@Given("there are datasets at the locations")
-def given_datasets(context):
-
-    # Load data table into context
-    context.data_row = []
-
-    for x in context.table.rows[0]:
-        context.data_row.append(str(x))
-
-
-@Given("the user provides the parameters")
-def given_parameters(context):
-
-    # Load data table into context
-    context.param_row = []
-
-    for x in context.table.rows[0]:
-        context.param_row.append(str(x))

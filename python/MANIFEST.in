@@ -1,1 +1,1 @@
-include sparkts/sml-1.0-SNAPSHOT-jar-with-dependencies.jar
+include sparkts/sml-*-SNAPSHOT-jar-with-dependencies.jar
