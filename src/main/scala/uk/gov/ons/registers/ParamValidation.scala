@@ -1,22 +1,27 @@
 package uk.gov.ons.registers
 
+import uk.gov.ons.registers.model.stratification.PrnStatisticalProperty
+
 
 object ParamValidation {
   private val min = 0
   private type ErrorMessage = String
+  private def toBigDecimal(limit: Long, scale: Int = PrnStatisticalProperty.scale) =
+    BigDecimal(unscaledVal = limit, scale = scale)
 
-  private def validatePrnStartPoint(strataNumber: Int, startingPrn: BigDecimal): Validation[BigDecimal, Nothing, ErrorMessage] = {
-    val max = 1
-    if (startingPrn > min && startingPrn < max) { Success(optA = Some(startingPrn)) }
-    else Failure(s"Error: Prn start point [$startingPrn] must be a decimal no smaller than $min and greater than $max")
+  private def validatePrnStartPoint(strataNumber: Int, startingPrn: BigDecimal): Validation[BigDecimal, ErrorMessage] = {
+    val max = toBigDecimal(limit = 1L)
+    val thisMin = toBigDecimal(min.toLong)
+    if (startingPrn > thisMin && startingPrn < max) Success(valid = startingPrn)
+    else Failure(s"Error: Prn start point [$startingPrn] must be a decimal no smaller than $thisMin and greater than $max")
   }
 
-  private def validateSampleSize(strataNumber: Int, maxSize: Int, sampleSize: Int): Validation[Nothing, Int, ErrorMessage] =
+  private def validateSampleSize(strataNumber: Int, maxSize: Int, sampleSize: Int): Validation[Int, ErrorMessage] =
     if (sampleSize > maxSize) {
       logWithErrorMsg(strataNumber)(msg = s"Error: Sample size [$sampleSize] must be a natural number less than $maxSize. " +
         s"Parameter overridden with with max sample size [$maxSize]")
-      Success(optB = Some(maxSize)) }
-    else if (sampleSize > min && sampleSize < maxSize) Success(optB = Some(sampleSize))
+      Success(valid = maxSize)
+    } else if (sampleSize > min && sampleSize <= maxSize) Success(valid = sampleSize)
     else Failure(s"Error: Sample size [$sampleSize] must be a natural number greater than $min and less than $maxSize")
 
 
@@ -28,7 +33,9 @@ object ParamValidation {
   }
 
   def validate(maxSize: Int, strataNumber: Int, startingPrn: BigDecimal, sampleSize: Int): Option[Int] =
-    Validation.mapOption(validatePrnStartPoint(strataNumber, startingPrn),
-      validateSampleSize(strataNumber, maxSize, sampleSize), strataNumber)(logWithErrorMsg)
+    Validation.toOption(
+      validatePrnStartPoint(strataNumber, startingPrn),
+      validateSampleSize(strataNumber, maxSize, sampleSize), strataNumber
+    )(logWithErrorMsg, (_, sampleSize) => Some(sampleSize))
 
 }

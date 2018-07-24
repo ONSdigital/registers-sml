@@ -4,6 +4,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 
 private[registers] object SparkSessionManager {
+  @deprecated("Migrate to withSpark in future commit(s)")
   val sparkSession: SparkSession = SparkSession
     .builder()
     .appName("Registers Statistical Methods Library (SML)")
