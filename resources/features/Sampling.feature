@@ -15,8 +15,8 @@ Feature: Making a Sample
 
         @JVM
         Examples:
-        | language | input_path                                 | strat_properties_path                         | output_path                             |
-        | Scala    | ./resources/inputs/sampling/frame_data.csv | ./resources/inputs/sampling/census.csv        | ./resources/outputs/sampling/census     |
+        | language | input_path                                       | strat_properties_path                         | output_path                             |
+        | Scala    | ./resources/inputs/stratification/frame_data.csv | ./resources/inputs/sampling/census.csv        | ./resources/outputs/sampling/census     |
 
 
     Scenario Outline: A strata for Prn-Sampling is created
@@ -28,8 +28,8 @@ Feature: Making a Sample
 
         @JVM
         Examples:
-        | language | input_path                                 | strat_properties_path                         | output_path                               |
-        | Scala    | ./resources/inputs/sampling/frame_data.csv | ./resources/inputs/sampling/prn_sampling.csv  | ./resources/outputs/sampling/prn_sampling |
+        | language | input_path                                       | strat_properties_path                         | output_path                               |
+        | Scala    | ./resources/inputs/stratification/frame_data.csv | ./resources/inputs/sampling/prn_sampling.csv  | ./resources/outputs/sampling/prn_sampling |
 
 
     Scenario Outline: Stratas contain Sample Size parameter that are out of bounds of the sorted frame records.
@@ -41,8 +41,8 @@ Feature: Making a Sample
 
         @JVM
         Examples:
-        | language | input_path                                 | strat_properties_path                          | output_path                                         |
-        | Scala    | ./resources/inputs/sampling/frame_data.csv | ./resources/inputs/sampling/out_bounds_prn.csv | ./resources/outputs/sampling/sample_data/out_bounds |
+        | language | input_path                                       | strat_properties_path                          | output_path                                         |
+        | Scala    | ./resources/inputs/stratification/frame_data.csv | ./resources/inputs/sampling/out_bounds_prn.csv | ./resources/outputs/sampling/sample_data/out_bounds |
 
 #    Scenario Outline: Frame file cannot be found in given frame directory
 #        Given a frame and a stratification properties file paths:
@@ -52,8 +52,8 @@ Feature: Making a Sample
 #
 #        @JVM
 #        Examples:
-#        | language | input_path                                 | strat_properties_path                                   | output_path                                         |
-#        | Scala    | ./resources/inputs/sampling/invalid.csv    | ./resources/inputs/sampling/strat_properties_short.csv  | ./resources/outputs/sampling/sample_data/in_bounds  |
+#        | language | input_path                                       | strat_properties_path                                   | output_path                                         |
+#        | Scala    | ./resources/inputs/stratification/invalid.csv    | ./resources/inputs/sampling/strat_properties_short.csv  | ./resources/outputs/sampling/sample_data/in_bounds  |
 
 #    Scenario Outline: Stratification properties file cannot be found in given directory and an exception is thrown
 #        Given a frame and a stratification properties file paths:
@@ -64,8 +64,8 @@ Feature: Making a Sample
 #
 #        @JVM
 #        Examples:
-#        | language | input_path                                    | strat_properties_path                    | output_path                                         |
-#        | Scala    | ./resources/inputs/sampling/frame_data.csv    | ./resources/inputs/sampling/invalid.csv  | ./resources/outputs/sampling/sample_data/in_bounds  |
+#        | language | input_path                                          | strat_properties_path                    | output_path                                         |
+#        | Scala    | ./resources/inputs/stratification/frame_data.csv    | ./resources/inputs/sampling/invalid.csv  | ./resources/outputs/sampling/sample_data/in_bounds  |
 
 #    Scenario Outline: An invalid Prn Start Point parameter is given in the stratification properties
 #        Given a frame and a stratification properties file paths:
@@ -76,8 +76,8 @@ Feature: Making a Sample
 #
 #        @JVM
 #        Examples:
-#        | language | input_path                                 | strat_properties_path                                   | output_path                                         |
-#        | Scala    | ./resources/inputs/sampling/frame_data.csv | ./resources/inputs/sampling/invalid_prn_start_point.csv | ./resources/outputs/sampling/sample_data/in_bounds  |
+#        | language | input_path                                       | strat_properties_path                                   | output_path                                         |
+#        | Scala    | ./resources/inputs/stratification/frame_data.csv | ./resources/inputs/sampling/invalid_prn_start_point.csv | ./resources/outputs/sampling/sample_data/in_bounds  |
 
     Scenario Outline: A Sample Size greater than the frame length is given in the stratification properties
         Given a frame and a stratification properties file paths:
@@ -88,8 +88,8 @@ Feature: Making a Sample
 
         @JVM
         Examples:
-        | language | input_path                                 | strat_properties_path                                 | output_path                                       |
-        | Scala    | ./resources/inputs/sampling/frame_data.csv | ./resources/inputs/sampling/sample_size_too_great.csv | ./resources/outputs/sampling/sample_size_greater  |
+        | language | input_path                                       | strat_properties_path                                 | output_path                                       |
+        | Scala    | ./resources/inputs/stratification/frame_data.csv | ./resources/inputs/sampling/sample_size_too_great.csv | ./resources/outputs/sampling/sample_size_greater  |
 
 #    Scenario Outline: A Sample Size less than 0 is given in the stratification properties
 #        Given a frame and a stratification properties file paths:
@@ -100,7 +100,7 @@ Feature: Making a Sample
 #
 #        @JVM
 #        Examples:
-#        | language | input_path                                 | strat_properties_path                                 | output_path                                         |
-#        | Scala    | ./resources/inputs/sampling/frame_data.csv | ./resources/inputs/sampling/invalid_sample_size.csv   | ./resources/outputs/sampling/sample_data/in_bounds  |
+#        | language | input_path                                       | strat_properties_path                                 | output_path                                         |
+#        | Scala    | ./resources/inputs/stratification/frame_data.csv | ./resources/inputs/sampling/invalid_sample_size.csv   | ./resources/outputs/sampling/sample_data/in_bounds  |
 
 

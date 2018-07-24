@@ -42,6 +42,19 @@ object SampleEnterpriseRow {
     )
   }
 
+
+  def apply2(
+     ern: String = empty, entref: String, name: String, tradingstyle: String = empty, address1: String,
+     address2: String = empty, address3: String = empty, address4: String = empty, address5: String = empty,
+     postcode: String, legalstatus: String, sic07: String, paye_empees: String = empty, paye_jobs: String = empty,
+     ent_turnover: String = empty, std_turnover: String = empty, grp_turnover: String = empty,
+     cntd_turnover: String = empty, app_turnover: String = empty, prn: String, cell_no: String): Row = {
+     Row(
+      ern, entref, name, tradingstyle, address1, address2, address3, address4, address5, postcode, legalstatus, sic07,
+      paye_empees, paye_jobs, ent_turnover, std_turnover, grp_turnover, cntd_turnover, app_turnover, prn, cell_no
+    )
+  }
+
   def enterpriseRowFromMap(csvRowAsColumnsWithMap: Map[String, String]): Row = {
     val parseStrFieldAsRowField = RowHelpers.getField(csvRowAsColumnsWithMap) _
     SampleEnterpriseRow(

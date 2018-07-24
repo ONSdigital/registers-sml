@@ -32,3 +32,4 @@ metastore_db
 resources/outputs/sampling/*
 test-reports
 sml.iml
+resources/outputs/stratification/*

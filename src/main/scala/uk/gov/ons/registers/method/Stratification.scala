@@ -10,13 +10,12 @@ class Stratification(inputPath: FilePath) {
 
   import uk.gov.ons.registers.method.impl.StratificationImpl._
 
-  def create(stratificationPropsPath: FilePath, outputPath: FilePath): DataFrame = {
+  def stratify(stratificationPropsPath: FilePath, outputPath: FilePath): DataFrame = {
     implicit val activeSession: SparkSession = SparkSessionManager.sparkSession
 
     val inputDataDF =  TransformFiles.readInputDataAsDF(inputPath)
     val stratificationPropsDS = TransformFiles.readStratificationPropsAsDS(stratificationPropsPath)
 
-    // TODO - validation ???
     val arrayOfStratification: Array[Dataset[Row]] = stratificationPropsDS.rdd.collect.map{ row: StratificationPropertiesRecord =>
       inputDataDF.stratify1(sic07LowerRange = row.lower_class, sic07UpperRange = row.upper_class,
         payeEmployeesLowerRange = row.lower_size, payeEmployeesUpperRange = row.upper_size, cellNo = row.cell_no)

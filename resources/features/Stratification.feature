@@ -5,11 +5,11 @@ Feature: Create a Stratified Frame
     then allocated a cell number (as per strata) which is appended to each of its rows.
 
     Scenario Outline: Apply sic07 and payeEmployee range filters on a Unstratified Frame
-        Given a Frame and a Stratification Properties file paths:
+        Given a frame and a stratification properties file paths:
             | data_input_path   | strat_properties        | expected_output   |
             | <input_path>      | <strat_properties_path> | <output_path>     |
-        When a <language> Stratfiied Frame is created from the pre-filtered Frame
-        Then a Stratfiied Frame for all given stratas is returned and exported to CSV
+        When a <language> Stratified Frame is created from the pre-filtered Frame
+        Then a Stratified Frame for all given stratas is returned and exported to CSV
 
         @JVM
         Examples:
