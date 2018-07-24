@@ -1,0 +1,6 @@
+{"identifier" : "ref1", "date" : "201803", "one" : 1 , "two":  7, "three": 13, "four": 19},
+{"identifier" : "ref1", "date" : "201803", "one" : 2 , "two":  8, "three": 14, "four": 20},
+{"identifier" : "ref2", "date" : "201802", "one" : 3 , "two":  9, "three": 15, "four": 21},
+{"identifier" : "ref2", "date" : "201802", "one" : 4 , "two": 10, "three": 16, "four": 22},
+{"identifier" : "ref3", "date" : "201801", "one" : 5 , "two": 11, "three": 17, "four": 23},
+{"identifier" : "ref3", "date" : "201801", "one" : 6 , "two": 12, "three": 18, "four": 24}

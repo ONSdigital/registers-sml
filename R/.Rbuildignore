@@ -1,0 +1,7 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^.*\.log$
+logs/
+^README\.Rmd$
+^README-.*\.png$
+README_cache/
