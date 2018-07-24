@@ -17,7 +17,7 @@ class CommonSteps extends ScalaDsl with EN {
       maps.get(FilePathsIndex).get(path)
   }
 
-  Given("a frame and a stratification properties file paths:$") { dataTable: DataTable =>
+  Given("a Stratified Frame and a stratification properties file paths:$") { dataTable: DataTable =>
     import ParsingUtils._
 
     val dataTableAsListOfMaps = dataTable.asMaps(classOf[String], classOf[String])

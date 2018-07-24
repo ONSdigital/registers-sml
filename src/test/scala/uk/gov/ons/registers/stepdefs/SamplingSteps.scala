@@ -20,7 +20,7 @@ class SamplingSteps extends ScalaDsl with EN{
   private val frameSize = 1000L
 
   //TODO - pass sparkSession implicit
-  When("""a Scala Sample is created from the pre-filtered frame"""){ () =>
+  When("""a Scala Sample is created from a Stratified Frame"""){ () =>
     outputDataDF = Sample.sample(inputPath)
       .create(stratificationPropertiesPath, outputPath)
   }
@@ -51,17 +51,18 @@ class SamplingSteps extends ScalaDsl with EN{
     displayData(expectedRow = expectedPrnSampleFirstRow)
   }
 
-  Then("""a Sample DataFrame is returned and exported to CSV with the inclusion of strata with outbound Sample Size parameter"""){ () =>
+  Then("""a Sample DataFrame is returned and exported to CSV with the inclusion of stratas with outbound Sample Size parameter"""){ () =>
+    println("djfiur9 0-450- =-=-=-=-")
     val prnSampleWithOutOfBoundsSampleSizeCsvFile = assertAndReturnCsvOfSampleCollection
     assertSampleCollectionSize(sampleCollectionCsv = prnSampleWithOutOfBoundsSampleSizeCsvFile, expectedNumberOfRecords = 2)
     assertNewCellNumberFieldHasBeenAdded(prnSampleWithOutOfBoundsSampleSizeCsvFile)
 
-    val firstRowPrn = outputDataDF.first.getAs[BigDecimal](prn)
-    val secondRowPrn = outputDataDF.take(2).last.getAs[BigDecimal](prn)
-    assert(firstRowPrn > secondRowPrn, message = s"expected prn of first row [$firstRowPrn] in DataFrame to be higher than prn of second row [$secondRowPrn]")
+    val firstRowPrn = outputDataDF.first.getAs[String](prn)
+    val secondRowPrn = outputDataDF.take(2).last.getAs[String](prn)
+    assert(BigDecimal(firstRowPrn) > BigDecimal(secondRowPrn), message = s"expected prn of first row [$firstRowPrn] in DataFrame to be higher than prn of second row [$secondRowPrn]")
   }
 
-  Then("""a Sample DataFrame is returned and exported to CSV, with the invalid Sample Size strata logged and entire frame returned for that strata"""){ () =>
+  Then("""a Sample DataFrame is returned and exported to CSV with the invalid Sample Size strata logged and entire Frame returned for that strata"""){ () =>
     val sampleSizeTooGreatCsvFile = assertAndReturnCsvOfSampleCollection
     assertSampleCollectionSize(sampleCollectionCsv = sampleSizeTooGreatCsvFile, expectedNumberOfRecords = frameSize)
     assertNewCellNumberFieldHasBeenAdded(sampleSizeTooGreatCsvFile)
