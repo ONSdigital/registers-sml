@@ -1,0 +1,4 @@
+inqcode,cell_no,cell_desc,seltype,lower_class,upper_class,lower_size,upper_size,prn_start,no_reqd
+687,5811,Admin,U,45111,45190,0,9,0.000000000,0
+687,5812,Admin,U,45111,45190,10,49,0.000000000,0
+687,5814,Census,C,45111,45190,100,999999999,0.000000000,0
