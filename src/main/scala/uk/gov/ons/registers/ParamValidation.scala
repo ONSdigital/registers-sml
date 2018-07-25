@@ -1,19 +1,15 @@
 package uk.gov.ons.registers
 
-import uk.gov.ons.registers.model.stratification.PrnStatisticalProperty
-
 
 object ParamValidation {
   private val min = 0
   private type ErrorMessage = String
-  private def toBigDecimal(limit: Long, scale: Int = PrnStatisticalProperty.scale) =
-    BigDecimal(unscaledVal = limit, scale = scale)
 
   private def validatePrnStartPoint(strataNumber: Int, startingPrn: BigDecimal): Validation[BigDecimal, ErrorMessage] = {
-    val max = toBigDecimal(limit = 1L)
-    val thisMin = toBigDecimal(min.toLong)
-    if (startingPrn > thisMin && startingPrn < max) Success(valid = startingPrn)
-    else Failure(s"Error: Prn start point [$startingPrn] must be a decimal no smaller than $thisMin and greater than $max")
+    val thisMax = BigDecimal(1L)
+    val thisMin = BigDecimal(min.toLong)
+    if (startingPrn > thisMin && startingPrn < thisMax) Success(valid = startingPrn)
+    else Failure(s"Error: Prn start point [$startingPrn] must be a decimal no smaller than $thisMin and greater than $thisMax")
   }
 
   private def validateSampleSize(strataNumber: Int, maxSize: Int, sampleSize: Int): Validation[Int, ErrorMessage] =
@@ -35,7 +31,6 @@ object ParamValidation {
   def validate(maxSize: Int, strataNumber: Int, startingPrn: BigDecimal, sampleSize: Int): Option[Int] =
     Validation.toOption(
       validatePrnStartPoint(strataNumber, startingPrn),
-      validateSampleSize(strataNumber, maxSize, sampleSize), strataNumber
-    )(logWithErrorMsg, (_, sampleSize) => Some(sampleSize))
-
+      validateSampleSize(strataNumber, maxSize, sampleSize)
+    )(onFailure = logWithErrorMsg(strataNumber) _, onSuccess = (_, sampleSize) => Some(sampleSize))
 }

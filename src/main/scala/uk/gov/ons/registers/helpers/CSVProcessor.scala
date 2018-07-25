@@ -21,18 +21,24 @@ object CSVProcessor {
       .mode(SaveMode.Append)
       .csv(path)
 
-  def readFileAsSQLDataContainerElseException[A](readFromFileFunc: String => A, filePathStr: FilePath)(implicit sparkSession: SparkSession): A =
+  @deprecated("Migrate to readFileAsSQLDataContainerElseException")
+  def readFileAsSQLDataContainerElseExceptionOLD[A](readFromFileFunc: String => A, filePathStr: FilePath)(implicit sparkSession: SparkSession): A =
     TrySupport.toEither(
       Try(if (filePathStr.endsWith(CSV)) readFromFileFunc(filePathStr)
         else throw new Exception(s"File [$filePathStr] is not in csv format or cannot be found")))
       .fold[A](ex => throw ex, identity)
 
-  private def schemaOf[A: TypeTag]: StructType = {
+  def readFileAsSQLDataContainerElseException[A](readFromFileFunc: String => A, filePathStr: FilePath)
+  (implicit sparkSession: SparkSession): Either[Throwable, A] =
+    TrySupport.toEither( Try(
+      readFromFileFunc(filePathStr)
+    ))
+
+  private def schemaOf[A: TypeTag]: StructType =
     ScalaReflection
       .schemaFor[A]
       .dataType
       .asInstanceOf[StructType]
-  }
 
   def readCsvFileAsDataset[A : Encoder : TypeTag](filePath: FilePath)(implicit sparkSession: SparkSession): Dataset[A] =
     sparkSession
