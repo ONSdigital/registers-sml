@@ -1,35 +1,44 @@
 package uk.gov.ons.registers.method
 
-import org.apache.spark.sql._
+
+import org.apache.spark.sql.{Column, DataFrame, SparkSession}
 
 import uk.gov.ons.registers.helpers.CSVProcessor.FilePath
 import uk.gov.ons.registers.model.SelectionTypes
 import uk.gov.ons.registers.model.SelectionTypes.{census, prnSampling}
 import uk.gov.ons.registers.model.stratification.StratificationPropertiesFields.selectionType
 import uk.gov.ons.registers.model.stratification.StratificationPropertiesRecord
-import uk.gov.ons.registers.{SparkSessionManager, TransformFiles}
+import uk.gov.ons.registers.{ParamValidation, TransformFiles}
 
-class Sample(inputPath: FilePath) {
+class Sample(stratifiedFramePath: FilePath)(implicit activeSession: SparkSession) {
 
   import uk.gov.ons.registers.method.impl.SampleImpl._
-  // TODO - USE SparkSessionManager.withSpark
-  // TODO - ADD logggers/ logging
-  def create(stratificationPropsPath: FilePath, outputPath: FilePath): DataFrame = {
-    implicit val activeSession: SparkSession = SparkSessionManager.sparkSession
 
-    val inputDataDF =  TransformFiles.readInputDataAsDF(inputPath)
-    val stratificationPropsDS = TransformFiles.readStratificationPropsAsDS(stratificationPropsPath)
-    val inputDfSize = inputDataDF.count.toInt
+  import activeSession.implicits._
+  // TODO - USE SparkSessionManager.withSpark - implicit
+  // TODO - ADD logggers/ logging
+
+  def create(stratificationPropsPath: FilePath, outputPath: FilePath): DataFrame = {
+
+    val (stratifiedFrameDF, stratificationPropsDS) =
+      TransformFiles.validateAndConstructInputs[StratificationPropertiesRecord](
+        properties = stratifiedFramePath, dataFile = stratificationPropsPath)
+
+    val inputDfSize = stratifiedFrameDF.count.toInt
     def checkSelType(`type`: String): Column = stratificationPropsDS(selectionType) === `type`
 
     // TODO - Check Join
-    val arrayOfSamples: Array[DataFrame] = stratificationPropsDS
+    val arrayOfSamples = stratificationPropsDS
       .filter(checkSelType(census) || checkSelType(prnSampling)).rdd.collect
-      .map{ row: StratificationPropertiesRecord =>
+      .flatMap{ row: StratificationPropertiesRecord =>
           if (row.seltype == SelectionTypes.prnSampling)
-              inputDataDF.sample1(row.prn_start, row.no_reqd, row.cell_no)
-
-          else inputDataDF.sample1(row.cell_no)
+            // TODO - type classes for prn-smapling + validation there and another with census with no validation
+            // read in row.seltype as case object to figure out which type of op it should be - getting right instance
+            ParamValidation.validate(maxSize = inputDfSize, strataNumber = row.cell_no, startingPrn = row.prn_start,
+              sampleSize = row.no_reqd).map( sampleSize =>
+                stratifiedFrameDF.sample1(row.prn_start, sampleSize, row.cell_no)
+              )
+          else Some(stratifiedFrameDF.sample1(row.cell_no))
       }
 
     val sampleDF = TransformFiles.exportDatasetAsCSV(arrayOfDatasets = arrayOfSamples, outputPath = outputPath)
@@ -38,6 +47,7 @@ class Sample(inputPath: FilePath) {
 }
 
 object Sample {
-  def sample(inputPath: FilePath): Sample = new Sample(inputPath)
+  def sample(inputPath: FilePath)(implicit sparkSession: SparkSession): Sample =
+    new Sample(inputPath)(sparkSession)
 }
 

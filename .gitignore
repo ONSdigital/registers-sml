@@ -31,4 +31,6 @@ feature-REG-1084.Rproj
 metastore_db
 resources/outputs/sampling/*
 test-reports
+test-reports/*
 sml.iml
+spark-warehouse

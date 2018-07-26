@@ -4,9 +4,10 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 
 private[registers] object SparkSessionManager {
-  val sparkSession: SparkSession = SparkSession
+  @deprecated("Migrate to withSpark in future commit(s)")
+  implicit val sparkSession: SparkSession = SparkSession
     .builder()
-    .appName("Registers Statistical Methods Library (SML)")
+    .appName(name = "Registers Statistical Methods Library (SML)")
     .getOrCreate()
 
 

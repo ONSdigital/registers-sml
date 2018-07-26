@@ -1,4 +1,4 @@
-Feature: Creating a Sample    
+Feature: Creating a Sample
     The Sample creation method will ingest a Frame and a set of stratification parameters to produce an output Sample. 
     Each of the stratification stratas with a selection type parameter set as 'Census' or 'Prn Sampling' (omitting 
     'Universal') is then processed. In the case of Prn Sampling, the Frame is sorted by 'prn' as a decimal type and 
@@ -46,7 +46,7 @@ Feature: Creating a Sample
         | Scala    | ./resources/inputs/sampling/frame_data.csv | ./resources/inputs/sampling/out_bounds_prn.csv | ./resources/outputs/sampling/sample_data/out_bounds |
 
 #    Scenario Outline: Frame file cannot be found in given Frame directory
-#        Given a Frame and a stratification properties file paths:
+#        Given a Stratified Frame and a stratification properties file paths:
 #            | data_input_path   | strat_properties        | expected_output   |
 #            | <input_path>      | <strat_properties_path> | <output_path>     |
 #        When a file not found Exception in <language> is thrown for Frame file upon trying to Sample
@@ -56,8 +56,9 @@ Feature: Creating a Sample
 #        | language | input_path                                 | strat_properties_path                                   | output_path                                         |
 #        | Scala    | ./resources/inputs/sampling/invalid.csv    | ./resources/inputs/sampling/strat_properties_short.csv  | ./resources/outputs/sampling/sample_data/in_bounds  |
 
+
 #    Scenario Outline: Stratification properties file cannot be found in given directory and an exception is thrown
-#        Given a Frame and a stratification properties file paths:
+#        Given a Stratified Frame and a stratification properties file paths:
 #            | data_input_path   | strat_properties        | expected_output   |
 #            | <input_path>      | <strat_properties_path> | <output_path>     |
 #        When a stratification properties file cannot be found upon trying to Sample
@@ -69,7 +70,7 @@ Feature: Creating a Sample
 #        | Scala    | ./resources/inputs/sampling/frame_data.csv    | ./resources/inputs/sampling/invalid.csv  | ./resources/outputs/sampling/sample_data/in_bounds  |
 
 #    Scenario Outline: An invalid Prn Start Point parameter is given in the stratification properties
-#        Given a Frame and a stratification properties file paths:
+#        Given a Stratified Frame and a stratification properties file paths:
 #            | data_input_path   | strat_properties        | expected_output   |
 #            | <input_path>      | <strat_properties_path> | <output_path>     |
 #        When a <language> Sample is created from the pre-filtered Frame
@@ -93,7 +94,7 @@ Feature: Creating a Sample
         | Scala    | ./resources/inputs/sampling/frame_data.csv | ./resources/inputs/sampling/sample_size_too_great.csv | ./resources/outputs/sampling/sample_size_greater  |
 
 #    Scenario Outline: A Sample Size less than 0 is given in the stratification properties
-#        Given a Frame and a stratification properties file paths:
+#        Given a Stratified Frame and a stratification properties file paths:
 #            | data_input_path   | strat_properties        | expected_output   |
 #            | <input_path>      | <strat_properties_path> | <output_path>     |
 #        When a <language> Sample is created from the pre-filtered Frame
