@@ -1,11 +1,11 @@
 Feature: Creating a Sample
-    The Sample creation method will ingest a Frame and a set of stratification parameters to produce an output Sample. 
-    Each of the stratification stratas with a selection type parameter set as 'Census' or 'Prn Sampling' (omitting 
-    'Universal') is then processed. In the case of Prn Sampling, the Frame is sorted by 'prn' as a decimal type and 
-    using the start point parameter as the point to being are sampling and then select units in prn order until the 
-    required Sample size is reached. Census strata are merely returned the entire Frame as a Sample. All Samples are 
-    outputted collectively as a DataFrame, with an appended 'Cell Number' to each to indicate the strata to which it 
-    belongs.
+    The Sample creation method will ingest a Frame and a set of Stratification Parameters to produce an output Sample.
+    Each of the stratification stratas will have a selection type assigned (Universe, Census, PRN). Only those strata 
+    marked as ‘Census’ or ‘PRN Sampling’ are then processed. In the case of PRN Sampling, the strata is sorted by ‘prn’ 
+    as a decimal type in ascending order; the prn start point from the selection parameters is identified and units are 
+    ‘selected’ in prn order until the number required is achieved. Census strata require all units in the strata to be 
+    returned. The selections for each strata are output collectively in a single DataFrame with the strata ID (cell 
+    number) appended to each record based on which strata it belongs to.
 
     Scenario Outline: A strata for Census is created
         Given a Stratified Frame and a stratification properties file paths:
