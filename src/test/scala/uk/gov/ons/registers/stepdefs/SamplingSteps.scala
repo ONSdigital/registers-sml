@@ -5,6 +5,7 @@ import uk.gov.ons.registers.support.AssertionHelpers._
 import uk.gov.ons.registers.support.FileProcessorHelper._
 import uk.gov.ons.registers.support.sample.SampleEnterpriseRow
 import uk.gov.ons.registers.support.sample.SampleEnterpriseRow._
+import uk.gov.ons.stepdefs.Helpers
 
 import cucumber.api.scala.{EN, ScalaDsl}
 //import org.junit.Assert._
@@ -21,7 +22,7 @@ class SamplingSteps extends ScalaDsl with EN{
 
   //TODO - pass sparkSession implicit
   When("""a Scala Sample is created from the pre-filtered frame"""){ () =>
-    outputDataDF = Sample.sample(inputPath)
+    outputDataDF = Sample.sample(inputPath = inputPath)(sparkSession = Helpers.sparkSession)
       .create(stratificationPropertiesPath, outputPath)
   }
 

@@ -1,32 +1,26 @@
 package uk.gov.ons.registers.method
 
-import org.apache.spark.sql.{SparkSession, DataFrame, Column}
+import org.apache.spark.sql.{Column, DataFrame, SparkSession}
 
-import uk.gov.ons.registers.EitherSupport.fromEithers
 import uk.gov.ons.registers.helpers.CSVProcessor.FilePath
 import uk.gov.ons.registers.model.SelectionTypes
 import uk.gov.ons.registers.model.SelectionTypes.{census, prnSampling}
 import uk.gov.ons.registers.model.stratification.StratificationPropertiesFields.selectionType
 import uk.gov.ons.registers.model.stratification.StratificationPropertiesRecord
-import uk.gov.ons.registers.{ParamValidation, SparkSessionManager, TransformFiles}
+import uk.gov.ons.registers.{ParamValidation, TransformFiles}
 
-class Sample(stratifiedFramePath: FilePath) {
+class Sample(stratifiedFramePath: FilePath)(implicit activeSession: SparkSession) {
 
   import uk.gov.ons.registers.method.impl.SampleImpl._
-  // TODO - USE SparkSessionManager.withSpark
+  import activeSession.implicits._
+  // TODO - USE SparkSessionManager.withSpark - implicit
   // TODO - ADD logggers/ logging
 
   def create(stratificationPropsPath: FilePath, outputPath: FilePath): DataFrame = {
-    implicit val activeSession: SparkSession = SparkSessionManager.sparkSession
 
-    val stratifiedFrameDfOrError = TransformFiles.readInputDataAsDF(stratifiedFramePath)
-    val stratificationPropsDsOrError = TransformFiles.readStratificationPropsAsDs(stratificationPropsPath)
-
-    // NOTE - In future we return a Report [C] not throw an Exception
     val (stratifiedFrameDF, stratificationPropsDS) =
-      fromEithers(stratifiedFrameDfOrError, stratificationPropsDsOrError)(
-        onFailure = errs => throw new Exception(s"${errs.map(_.getMessage)}"),
-        onSuccess = (dataFrame, stratificationPropsDataset) => dataFrame -> stratificationPropsDataset)
+      TransformFiles.validateAndConstructInputs[StratificationPropertiesRecord](
+        properties = stratifiedFramePath, dataFile = stratificationPropsPath)
 
     val inputDfSize = stratifiedFrameDF.count.toInt
     def checkSelType(`type`: String): Column = stratificationPropsDS(selectionType) === `type`
@@ -36,6 +30,8 @@ class Sample(stratifiedFramePath: FilePath) {
       .filter(checkSelType(census) || checkSelType(prnSampling)).rdd.collect
       .flatMap{ row: StratificationPropertiesRecord =>
           if (row.seltype == SelectionTypes.prnSampling)
+            // TODO - type classes for prn-smapling + validation there and another with census with no validation
+            // read in row.seltype as case object to figure out which type of op it should be - getting right instance
             ParamValidation.validate(maxSize = inputDfSize, strataNumber = row.cell_no, startingPrn = row.prn_start,
               sampleSize = row.no_reqd).map( sampleSize =>
                 stratifiedFrameDF.sample1(row.prn_start, sampleSize, row.cell_no)
@@ -49,6 +45,7 @@ class Sample(stratifiedFramePath: FilePath) {
 }
 
 object Sample {
-  def sample(inputPath: FilePath): Sample = new Sample(inputPath)
+  def sample(inputPath: FilePath)(implicit sparkSession: SparkSession): Sample =
+    new Sample(inputPath)(sparkSession)
 }
 

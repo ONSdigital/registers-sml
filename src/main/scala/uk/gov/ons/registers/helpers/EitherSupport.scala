@@ -1,5 +1,4 @@
-package uk.gov.ons.registers
-
+package uk.gov.ons.registers.helpers
 
 object EitherSupport {
   def fromEithers[A, B, C, E](ea: Either[E, A], eb: Either[E, B])
