@@ -23,7 +23,7 @@
 
     <groupId>uk.gov.ons</groupId>
     <artifactId>sml</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>A SML Example App</name>
     <description>An example of a distributed Polyglot method for Spark Work</description>

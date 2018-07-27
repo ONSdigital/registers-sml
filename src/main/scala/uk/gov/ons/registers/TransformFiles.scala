@@ -1,10 +1,8 @@
 package uk.gov.ons.registers
 
-import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
-
 import scala.reflect.runtime.universe.TypeTag
 
-import org.apache.spark.sql._
+import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession, _}
 
 import uk.gov.ons.registers.SparkSessionManager.sparkSession.{createDataFrame, sparkContext}
 import uk.gov.ons.registers.helpers.CSVProcessor._
@@ -13,7 +11,6 @@ import uk.gov.ons.registers.model.stratification.StratificationPropertiesRecord
 
 object TransformFiles {
   import SparkSessionManager.sparkSession.implicits._
-
 
   def validateAndConstructInputs[T : Encoder : TypeTag](properties: FilePath, dataFile: FilePath)
    (implicit sparkSession: SparkSession): (DataFrame, Dataset[T]) = {
