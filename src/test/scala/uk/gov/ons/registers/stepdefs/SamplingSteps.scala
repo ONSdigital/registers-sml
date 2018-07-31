@@ -5,6 +5,8 @@ import uk.gov.ons.registers.support.AssertionHelpers._
 import uk.gov.ons.registers.support.FileProcessorHelper._
 import uk.gov.ons.registers.support.sample.SampleEnterpriseRow
 import uk.gov.ons.registers.support.sample.SampleEnterpriseRow._
+import uk.gov.ons.stepdefs.Helpers
+
 
 import cucumber.api.scala.{EN, ScalaDsl}
 //import org.junit.Assert._
@@ -19,9 +21,8 @@ class SamplingSteps extends ScalaDsl with EN{
 
   private val frameSize = 1000L
 
-  //TODO - pass sparkSession implicit
   When("""a Scala Sample is created from a Stratified Frame"""){ () =>
-    outputDataDF = Sample.sample(inputPath)
+    outputDataDF = Sample.sample(inputPath = inputPath)(sparkSession = Helpers.sparkSession)
       .create(stratificationPropertiesPath, outputPath)
   }
 
@@ -52,7 +53,6 @@ class SamplingSteps extends ScalaDsl with EN{
   }
 
   Then("""a Sample DataFrame is returned and exported to CSV with the inclusion of stratas with outbound Sample Size parameter"""){ () =>
-    println("djfiur9 0-450- =-=-=-=-")
     val prnSampleWithOutOfBoundsSampleSizeCsvFile = assertAndReturnCsvOfSampleCollection
     assertSampleCollectionSize(sampleCollectionCsv = prnSampleWithOutOfBoundsSampleSizeCsvFile, expectedNumberOfRecords = 2)
     assertNewCellNumberFieldHasBeenAdded(prnSampleWithOutOfBoundsSampleSizeCsvFile)
