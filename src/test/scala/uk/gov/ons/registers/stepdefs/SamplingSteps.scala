@@ -83,15 +83,15 @@ class SamplingSteps extends ScalaDsl with EN{
     assertDataFrameEquality(expected = theExpectedResult)
   }
 
-  Then("""a Sample containing the sample selection from the Prn-Sample strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>
+  Then("""a Sample containing the Sample Size from the Prn-Sample strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>
     assertDataFrameEquality(expected = theExpectedResult)
   }
 
-  Then("""a Sample is returned and exported to CSV with the inclusion of stratas with outbound Sample Size parameter"""){ theExpectedResult: DataTable =>
+  Then("""a Sample containing the Sample Size from the PRN-sampling strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>
     assertDataFrameEquality(expected = theExpectedResult)
   }
 
-  Then("""a Sample is returned and exported to CSV with the strata containing an invalid Sample Size is logged"""){ theExpectedResult: DataTable =>
+  Then("""a Sample containing the total population in the strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>
     // TODO test log
     assertDataFrameEquality(expected = theExpectedResult)
   }
