@@ -29,7 +29,8 @@ R/NAMESPACE
 R/.Rapp.history
 feature-REG-1084.Rproj
 metastore_db
-resources/outputs/sampling/*
+resources/outputs/sampling
+resources/inputs/sampling
 test-reports
 test-reports/*
 sml.iml

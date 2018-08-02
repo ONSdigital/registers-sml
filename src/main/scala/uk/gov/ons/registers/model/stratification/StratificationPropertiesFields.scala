@@ -9,6 +9,6 @@ object StratificationPropertiesFields {
   val upperClassSIC07 = "upperClassSIC07"
   val lowerSizePayeEmployee = "lower_size"
   val upperSizePayeEmployee = "upper_size"
-  val startPoint = "prn_start"
+  val prnStartPoint = "prn_start"
   val sampleSize = "no_reqd"
 }
