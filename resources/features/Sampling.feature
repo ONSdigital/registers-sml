@@ -94,7 +94,7 @@ Feature: Creating a Sample
             | 687     | 5811    | Admin     | U       | 45111       | 45190       | 0          | 9          | 0.000000000 | 0       |
             | 687     | 5812    | Admin     | U       | 45111       | 45190       | 10         | 49         | 0.000000000 | 0       |
         When a <language> Sample is created from a Stratified Frame
-        Then a Sample is returned and exported to CSV with the inclusion of stratas with outbound Sample Size parameter
+        Then a Sample is returned and exported to CSV with the inclusion of stratas with out of bounds Sample Size parameter
             | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | paye_empees | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         | cell_no |
             | 1100000002 | 9906000045 | BUEADLIING SOLUTIONS LTD      |              | 1 HAZELWOOD LANE         | ABBOTS LANGLEY |             |                         |          | WD5 0HA  | 3           | 45190 | 1           | 0         | 100          | 100          | 0            | 0             | 0            | 0.63848639  | 5816    |
             | 1100000001 | 9906000015 | &EAGBBROWN                    |              | 1 HAWRIDGE HILL COTTAGES | THE VALE       | HAWRIDGE    | CHESHAM BUCKINGHAMSHIRE |          | HP5 3NU  | 1           | 45112 | 1           | 1         | 73           | 73           | 0            | 0             | 0            | 0.109636832 | 5816    |
@@ -172,7 +172,7 @@ Feature: Creating a Sample
             | inqcode | cell_no | cell_desc | seltype | lower_class | upper_class | lower_size | upper_size | prn_start   | no_reqd |
             | 687     | 5819    | Sample    | P       | 45111       | 45190       | 50         | 9          | 0.129177704 | 100000  |
         When a <language> Sample is created from a Stratified Frame
-        Then a Sample is returned and exported to CSV with the strata containing an invalid Sample Size is replaced with the population size and is logged
+        Then a Sample is returned and exported to CSV with the strata containing an invalid Sample Size is replaced with the population size
             | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | paye_empees | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         | cell_no |
             | 1100000005 | 9906000175 | HIBAER                        |              | 1 GEORGE SQUARE          | GLASGOW        |             |                         |          | G2 5LL   | 1           | 45400 | 1           | 1         | 106          | 106          | 0            | 0             | 0            | 0.147768898 | 5819    |
             | 1100000011 | 9906000415 | &BAMCFLINT                    |              | 1 GARENDON WAY           | GROBY          | LEICESTER   |                         |          | LE6 0YR  | 1           | 46160 | 1           | 0         | 400          | 400          | 0            | 0             | 0            | 0.269071541 | 5819    |
