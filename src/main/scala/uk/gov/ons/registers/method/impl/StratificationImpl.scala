@@ -11,14 +11,14 @@ object StratificationImpl {
   implicit class StratificationMethodsImpl(frameDf: DataFrame) {
     /**
       *
-      * @param sic07LowerRange
-      * @param sic07UpperRange
+      * @param sic07LowerClass
+      * @param sic07UpperClass
       * @param payeEmployeesLowerRange
       * @param payeEmployeesUpperRange
       * @param cellNo
       * @return
       */
-    def stratify1(sic07LowerRange: Int, sic07UpperRange: Int, payeEmployeesLowerRange: Long, payeEmployeesUpperRange: Long, cellNo: Int): Dataset[Row] = {
+    def stratify1(sic07LowerClass: Int, sic07UpperClass: Int, payeEmployeesLowerRange: Long, payeEmployeesUpperRange: Long, cellNo: Int): Dataset[Row] = {
       // TODO check if inclusive [Both  filters] - TEST
       val payeEmployeesAsIntField = s"temp_$paye_empees"
       val sic07AsLongField = s"temp_$sic07"
@@ -27,7 +27,7 @@ object StratificationImpl {
         .withColumn(colName = sic07AsLongField, frameDf.col(sic07).cast(IntegerType))
 
       castedDf
-        .filter(castedDf(sic07AsLongField) >= sic07LowerRange && castedDf(sic07AsLongField) <= sic07UpperRange)
+        .filter(castedDf(sic07AsLongField) >= sic07LowerClass && castedDf(sic07AsLongField) <= sic07UpperClass)
         .filter(castedDf(payeEmployeesAsIntField) >= payeEmployeesLowerRange && castedDf(payeEmployeesAsIntField) <= payeEmployeesUpperRange)
         .withColumn(cellNumber, lit(cellNo))
         .drop(payeEmployeesAsIntField, sic07AsLongField)

@@ -1,6 +1,6 @@
 package uk.gov.ons.registers.method
 
-import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
+import org.apache.spark.sql.{DataFrame, SparkSession}
 
 import uk.gov.ons.registers.helpers.CSVProcessor.FilePath
 import uk.gov.ons.registers.model.stratification.StratificationPropertiesRecord
@@ -16,8 +16,8 @@ class Stratification(inputPath: FilePath) {
     val inputDataDF =  TransformFiles.readInputDataAsDF(inputPath)
     val stratificationPropsDS = TransformFiles.readStratificationPropsAsDS(stratificationPropsPath)
 
-    val arrayOfStratification: Array[Dataset[Row]] = stratificationPropsDS.rdd.collect.map{ row: StratificationPropertiesRecord =>
-      inputDataDF.stratify1(sic07LowerRange = row.lower_class, sic07UpperRange = row.upper_class,
+    val arrayOfStratification = stratificationPropsDS.rdd.collect.map{ row: StratificationPropertiesRecord =>
+      inputDataDF.stratify1(sic07LowerClass = row.lower_class, sic07UpperClass = row.upper_class,
         payeEmployeesLowerRange = row.lower_size, payeEmployeesUpperRange = row.upper_size, cellNo = row.cell_no)
     }
     val stratificationDF = TransformFiles.exportDatasetAsCSV(arrayOfDatasets = arrayOfStratification, outputPath = outputPath)
