@@ -79,11 +79,11 @@ class SamplingSteps extends ScalaDsl with EN{
     })
   }
 
-  Then("""a Sample containing the Census strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>
+  Then("""a Sample containing the sample selection from the Census strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>
     assertDataFrameEquality(expected = theExpectedResult)
   }
 
-  Then("""a Sample containing the Prn-Sample strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>
+  Then("""a Sample containing the sample selection from the Prn-Sample strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>
     assertDataFrameEquality(expected = theExpectedResult)
   }
 
