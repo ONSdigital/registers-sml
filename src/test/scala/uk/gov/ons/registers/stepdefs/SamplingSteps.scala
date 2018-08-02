@@ -1,5 +1,7 @@
 package uk.gov.ons.registers.stepdefs
 
+import java.nio.file.Path
+
 import scala.collection.JavaConversions._
 
 import org.apache.spark.sql._
@@ -8,7 +10,7 @@ import org.apache.spark.sql.types.{StringType, StructField, StructType}
 import uk.gov.ons.registers.methods.Sample
 import uk.gov.ons.registers.support.AssertionHelpers._
 import uk.gov.ons.registers.support.FileProcessorHelper._
-import uk.gov.ons.registers.support.TestFileEnvSetup
+import uk.gov.ons.registers.support.TestFileEnvSetup.{createAPath, createTempDirectory}
 import uk.gov.ons.stepdefs.Helpers
 
 import cucumber.api.DataTable
@@ -45,26 +47,36 @@ class SamplingSteps extends ScalaDsl with EN{
     displayData(expectedDF = expectedOutputDF)
   }
 
-  private def createSampleTest(): Unit = {
-    outputPath = TestFileEnvSetup.createTempDirectory(prefix = "test_output_")
-    outputDataDF = Sample.sample(inputPath = stratifiedFramePath)(sparkSession = Helpers.sparkSession)
-      .create(stratificationPropsPath, outputPath)
+  private def createSampleTest(propertiesPath: Path = stratificationPropsPath,
+    inputDataPath: Path = stratifiedFramePath, outputDirectoryPath: Option[Path] = None): Unit = {
+    outputPath = outputDirectoryPath.getOrElse(createTempDirectory(prefix = "test_output_"))
+    outputDataDF = Sample.sample(inputDataPath)(sparkSession = Helpers.sparkSession)
+      .create(propertiesPath, outputPath)
   }
+
+  private def aFailureIsGeneratedBy[T](expression: => T): Boolean =
+    try {
+      expression
+      false
+    } catch {
+      case _: Throwable => true
+    }
 
   When("""a Scala Sample is created from a Stratified Frame"""){ () =>
     createSampleTest()
     outputDataDF = outputDataDF.na.fill(value = "")
   }
 
-  When("""an exception in Scala is thrown for Stratified [^\s]+ not being found upon trying to Sample"""){ () =>
-    val expectedFailureException = try {
-      createSampleTest()
-      false
-    } catch {
-      case _: Exception => true
-      case _ => false
-    }
-    assert(expectedFailureException)
+  When("""an exception in Scala is thrown for Stratified Properties not being found upon trying to Sample"""){ () =>
+    assert(aFailureIsGeneratedBy {
+      createSampleTest(propertiesPath = createAPath(pathStr = "invalid_stratified_properties_path"))
+    })
+  }
+
+  When("""an exception in Scala is thrown for Stratified Frame not being found upon trying to Sample"""){ () =>
+    assert(aFailureIsGeneratedBy {
+      createSampleTest(inputDataPath = createAPath(pathStr = "invalid_stratified_frame_path"))
+    })
   }
 
   Then("""a Sample containing the Census strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>

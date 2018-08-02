@@ -1,5 +1,6 @@
 package uk.gov.ons.registers.support
 
+import java.io.File
 import java.nio.file.{Files, Path}
 
 object TestFileEnvSetup {
@@ -17,4 +18,7 @@ object TestFileEnvSetup {
     println(s"Temporary directory [${testDir.getFileName}] created at parent path: $testDir")
     testDir
   }
+
+  def createAPath(pathStr: String): Path =
+    new File(pathStr).toPath
 }
