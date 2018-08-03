@@ -1,11 +1,9 @@
 package uk.gov.ons.registers.stepdefs
 
-import java.nio.file.Path
-
 import uk.gov.ons.registers.methods.Sample
 import uk.gov.ons.registers.support.AssertionHelpers._
 import uk.gov.ons.registers.support.DataTableExportUtil.saveTableAsCsv
-import uk.gov.ons.registers.support.TestFileEnvSetup.{createAPath, createTempDirectory}
+import uk.gov.ons.registers.support.TestFileEnvSetup.createAPath
 import uk.gov.ons.stepdefs.Helpers
 
 import cucumber.api.DataTable
@@ -16,11 +14,9 @@ class SamplingSteps extends ScalaDsl with EN{
 
   private val printLabel = "Sampling"
 
-  private def createSampleTest(outputDirectoryPath: Option[Path] = None): Unit = {
-    outputPath = outputDirectoryPath.getOrElse(createTempDirectory(prefix = "sample_test_output_"))
+  private def createSampleTest(): Unit =
     outputDataDF = Sample.sample(stratifiedFramePath)(sparkSession = Helpers.sparkSession)
       .create(stratificationPropsPath, outputPath)
-  }
 
   Given("""a Stratified Frame:$"""){ aFrameTable: DataTable =>
     stratifiedFramePath = saveTableAsCsv(
