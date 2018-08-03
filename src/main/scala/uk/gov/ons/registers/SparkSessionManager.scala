@@ -10,9 +10,13 @@ private[registers] object SparkSessionManager {
     .appName(name = sparkAppName)
     .getOrCreate()
 
-  // TODO - ADD logger that SparkSession is being closed
   def stopSession(): Unit =
     SparkSession.getActiveSession.foreach{ activeSession =>
-      if (activeSession.sparkContext.appName == sparkAppName) activeSession.close
+      if (activeSession.sparkContext.appName == sparkAppName) {
+        // TODO - ADD logger that SparkSession is being closed
+        println(s"[INFO] Stopping active session [${activeSession.sparkContext.appName}] started on " +
+          s"[${activeSession.sparkContext.startTime}] in thread.")
+        activeSession.close
+      }
     }
 }

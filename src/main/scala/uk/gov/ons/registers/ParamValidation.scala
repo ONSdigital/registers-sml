@@ -1,9 +1,24 @@
 package uk.gov.ons.registers
 
+import org.apache.spark.sql.DataFrame
+
+import uk.gov.ons.registers.model.stratification.StratificationPropertiesFields.cellNumber
+
 
 object ParamValidation {
   private val lowerBoundLimit = 0
   private type ErrorMessage = String
+
+  // TODO - error control
+  private def inputDfSize(dataFrame: DataFrame)(thisCellNumber: Int): Long =
+    dataFrame.filter(_.getAs[String](cellNumber).toInt == thisCellNumber).count()
+
+  private def logWithErrorMsg[A](strataNumber: Int)(msg: A): Option[Nothing] = {
+    val logErrorMsg = s"[WARN] Could not process strata ($strataNumber): $msg"
+    // TODO - REPLACE AND ADD LOGGER
+    println(logErrorMsg)
+    None
+  }
 
   private def validatePrnStartPoint(strataNumber: Int, startingPrn: BigDecimal): Validation[BigDecimal, ErrorMessage] = {
     val max = BigDecimal(1L)
@@ -20,17 +35,9 @@ object ParamValidation {
     } else if (sampleSize > lowerBoundLimit && sampleSize <= maxSize) Success(valid = sampleSize)
     else Failure(s"Error: Sample size [$sampleSize] must be a natural number greater than $lowerBoundLimit and less than $maxSize")
 
-
-  private def logWithErrorMsg[A](strataNumber: Int)(msg: A): Option[Nothing] = {
-    val logErrorMsg = s"[WARN] Could not process strata ($strataNumber): $msg"
-    // TODO - REPLACE AND ADD LOGGER
-    println(logErrorMsg)
-    None
-  }
-
-  def validate(maxSize: Int, strataNumber: Int, startingPrn: BigDecimal, sampleSize: Int): Option[Int] =
+  def validate(inputDF: DataFrame, strataNumber: Int, startingPrn: BigDecimal, sampleSize: Int): Option[Int] =
     Validation.toOption(
       validatePrnStartPoint(strataNumber, startingPrn),
-      validateSampleSize(strataNumber, maxSize, sampleSize)
+      validateSampleSize(strataNumber, inputDfSize(inputDF)(strataNumber).toInt, sampleSize)
     )(onFailure = logWithErrorMsg(strataNumber) _, onSuccess = (_, sampleSize) => Some(sampleSize))
 }
