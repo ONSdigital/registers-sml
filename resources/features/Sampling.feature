@@ -61,7 +61,7 @@ Feature: Creating a Sample
             | 687     | 5811    | Admin     | U       | 45111       | 45190       | 0          | 9          | 0.000000000 | 0       |
             | 687     | 5812    | Admin     | U       | 45111       | 45190       | 10         | 49         | 0.000000000 | 0       |
         When a <language> Sample is created from a Stratified Frame
-        Then a Sample containing the Sample Size from the Prn-Sample strata is returned and exported to CSV
+        Then a Sample containing the Sample Size from the Prn-Sampling strata is returned and exported to CSV
             | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | paye_empees | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         | cell_no |
             | 1100000007 | 9906000275 | IBANOCTRACTS UK LTD           |              | 1 GLYNDE PLACE           | HORSHAM        | WEST SUSSEX |                         |          | RH12 1NZ | 1           | 46120 | 2           | 2         | 287          | 287          | 0            | 0             | 0            | 0.155647458 | 5813    |
             | 1100000008 | 9906000325 | TLUBARE                       |              | 1 GORSE ROAD             | REYDON         | SOUTHWOLD   |                         |          | IP18 6NQ | 1           | 46130 | 3           | 3         | 197          | 197          | 0            | 0             | 0            | 0.446872271 | 5813    |
@@ -94,7 +94,7 @@ Feature: Creating a Sample
             | 687     | 5811    | Admin     | U       | 45111       | 45190       | 0          | 9          | 0.000000000 | 0       |
             | 687     | 5812    | Admin     | U       | 45111       | 45190       | 10         | 49         | 0.000000000 | 0       |
         When a <language> Sample is created from a Stratified Frame
-        Then a Sample containing the Sample Size from the PRN-sampling strata is returned and exported to CSV
+        Then a Sample containing the Sample Size from the Prn-Sampling strata is returned and exported to CSV
             | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | paye_empees | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         | cell_no |
             | 1100000002 | 9906000045 | BUEADLIING SOLUTIONS LTD      |              | 1 HAZELWOOD LANE         | ABBOTS LANGLEY |             |                         |          | WD5 0HA  | 3           | 45190 | 1           | 0         | 100          | 100          | 0            | 0             | 0            | 0.63848639  | 5816    |
             | 1100000001 | 9906000015 | &EAGBBROWN                    |              | 1 HAWRIDGE HILL COTTAGES | THE VALE       | HAWRIDGE    | CHESHAM BUCKINGHAMSHIRE |          | HP5 3NU  | 1           | 45112 | 1           | 1         | 73           | 73           | 0            | 0             | 0            | 0.109636832 | 5816    |

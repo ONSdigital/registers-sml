@@ -4,15 +4,13 @@ import java.nio.file.Path
 
 import scala.reflect.runtime.universe.TypeTag
 
-import org.apache.spark.sql.{DataFrame, Dataset, Encoder, Row, SparkSession}
+import org.apache.spark.sql._
 
 import uk.gov.ons.registers.SparkSessionManager.sparkSession.{createDataFrame, sparkContext}
 import uk.gov.ons.registers.helpers.CSVProcessor._
 import uk.gov.ons.registers.helpers.EitherSupport.fromEithers
-import uk.gov.ons.registers.model.stratification.Strata
 
 object TransformFiles {
-  import SparkSessionManager.sparkSession.implicits._
 
   def validateAndConstructInputs[T : Encoder : TypeTag](properties: Path, dataFile: Path)
                                                        (implicit sparkSession: SparkSession): (DataFrame, Dataset[T]) = {
@@ -23,19 +21,9 @@ object TransformFiles {
       onSuccess = (inputDataFrame, propertiesDataset) => inputDataFrame -> propertiesDataset)
   }
 
-  @deprecated("Migrate to readInputDataAsDF")
-  def readInputDataAsDfOLD(inputPath: Path)(implicit sparkSession: SparkSession): DataFrame =
-    readFileAsSQLDataContainerElseExceptionOLD[DataFrame](
-      readFromFileFunc = readCsvFileAsDataFrame, filePathStr = inputPath)
-
   private def readInputDataAsDF(dataInputPath: Path)(implicit sparkSession: SparkSession): Either[Throwable, DataFrame] =
     readFileAsSQLDataContainerElseException[DataFrame](
       readFromFileFunc = readCsvFileAsDataFrame, filePathStr = dataInputPath)
-
-  @deprecated("Migrate to readStratificationPropsAsDs")
-  def readStratificationPropsAsDsOLD(stratificationPropsPath: Path)(implicit sparkSession: SparkSession): Dataset[Strata] =
-    readFileAsSQLDataContainerElseExceptionOLD[Dataset[Strata]](
-      readFromFileFunc = readCsvFileAsDataset[Strata], filePathStr = stratificationPropsPath)
 
   private def readPropertiesAsDs[T : Encoder : TypeTag](propertiesPath: Path)
                                                        (implicit sparkSession: SparkSession): Either[Throwable, Dataset[T]] =

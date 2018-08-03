@@ -4,7 +4,7 @@ Feature: Create a Stratified Frame
     set of numerical range filters (e.g. payeEmployee, sic07) are imposed on the Frame. A produced stratified cell is
     then allocated a cell number (as per strata) which is appended to each of its rows.
 
-    Scenario Outline: Apply sic07 and payeEmployee range filters on a Unstratified Frame
+    Scenario Outline: Apply sic07 and payeEmployee range filters on a Frame
         Given a Frame:
             | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | paye_empees | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         |
             | 1100000001 | 9906000015 | &EAGBBROWN                    |              | 1 HAWRIDGE HILL COTTAGES | THE VALE       | HAWRIDGE    | CHESHAM BUCKINGHAMSHIRE |          | HP5 3NU  | 1           | 45112 | 39          | 1         | 73           | 73           | 0            | 0             | 0            | 0.109636832 |
@@ -18,7 +18,7 @@ Feature: Create a Stratified Frame
             | 1100000009 | 9906000355 | BUCARR                        |              | 1 GRANVILLE AVENUE       | LONG EATON     | NOTTINGHAM  |                         |          | NG10 4HA | 1           | 46140 | 1           | 1         | 18           | 18           | 0            | 0             | 0            | 0.847311602 |
             | 1100000010 | 9906000405 | DCAJ&WALTON                   |              | 1 GRANVILLE AVENUE       | LONG EATON     | NOTTINGHAM  |                         |          | NG10 4HA | 1           | 46150 | 2           | 2         | 72           | 72           | 0            | 0             | 0            | 0.548604086 |
             | 1100000011 | 9906000415 | &BAMCFLINT                    |              | 1 GARENDON WAY           | GROBY          | LEICESTER   |                         |          | LE6 0YR  | 1           | 46160 | 1           | 0         | 400          | 400          | 0            | 0             | 0            | 0.269071541 |
-        And a Strata of selection type Universal from Stratification Properties file:
+        And a Strata from Stratification Properties file:
             | inqcode | cell_no | cell_desc | seltype | lower_class | upper_class | lower_size | upper_size | prn_start   | no_reqd |
             | 687     | 5812    | Admin     | U       | 45111       | 45190       | 10         | 49         | 0.000000000 | 0       |
         When a <language> Stratified Frame is created from a Frame

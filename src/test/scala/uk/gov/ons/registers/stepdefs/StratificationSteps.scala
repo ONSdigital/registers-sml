@@ -9,6 +9,7 @@ import uk.gov.ons.stepdefs.Helpers
 
 import cucumber.api.DataTable
 import cucumber.api.scala.{EN, ScalaDsl}
+import uk.gov.ons.registers.support.DataTableExportUtil.saveTableAsCsv
 
 class StratificationSteps extends ScalaDsl with EN {
 
@@ -18,6 +19,12 @@ class StratificationSteps extends ScalaDsl with EN {
     outputPath = outputDirectoryPath.getOrElse(createTempDirectory(prefix = "stratification_test_output_"))
     outputDataDF = Stratification.stratification(inputPath = framePath)(sparkSession = Helpers.sparkSession)
       .stratify(stratificationPropsPath = stratificationPropsPath, outputPath = outputPath)
+  }
+
+  Given("""a Frame:$"""){ aFrameTable: DataTable =>
+    framePath = saveTableAsCsv(
+      dataTable = aFrameTable,
+      prefix = "frame")
   }
 
   Given("""a Frame does not exist$"""){ () =>

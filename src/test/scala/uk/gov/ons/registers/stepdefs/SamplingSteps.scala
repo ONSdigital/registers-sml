@@ -4,6 +4,7 @@ import java.nio.file.Path
 
 import uk.gov.ons.registers.methods.Sample
 import uk.gov.ons.registers.support.AssertionHelpers._
+import uk.gov.ons.registers.support.DataTableExportUtil.saveTableAsCsv
 import uk.gov.ons.registers.support.TestFileEnvSetup.{createAPath, createTempDirectory}
 import uk.gov.ons.stepdefs.Helpers
 
@@ -21,6 +22,12 @@ class SamplingSteps extends ScalaDsl with EN{
       .create(stratificationPropsPath, outputPath)
   }
 
+  Given("""a Stratified Frame:$"""){ aFrameTable: DataTable =>
+    stratifiedFramePath = saveTableAsCsv(
+      dataTable = aFrameTable,
+      prefix = "stratified_frame")
+  }
+
   Given("""a Stratified Frame does not exist$"""){ () =>
     stratifiedFramePath = createAPath(pathStr = "invalid_stratified_frame_path")
   }
@@ -30,13 +37,7 @@ class SamplingSteps extends ScalaDsl with EN{
     outputDataDF = outputDataDF.na.fill(value = "")
   }
 
-  When("""an exception in Scala is thrown for Stratified Properties not being found upon trying to Sample"""){ () =>
-    assert(aFailureIsGeneratedBy {
-      createSampleTest()
-    })
-  }
-
-  When("""an exception in Scala is thrown for Stratified Frame not being found upon trying to Sample"""){ () =>
+  When("""an exception in Scala is thrown for Stratified .+ not being found upon trying to Sample"""){ () =>
     assert(aFailureIsGeneratedBy {
       createSampleTest()
     })
@@ -46,11 +47,7 @@ class SamplingSteps extends ScalaDsl with EN{
     assertDataFrameEquality(expected = theExpectedResult, printLabel)
   }
 
-  Then("""a Sample containing the Sample Size from the Prn-Sample strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>
-    assertDataFrameEquality(expected = theExpectedResult, printLabel)
-  }
-
-  Then("""a Sample containing the Sample Size from the PRN-sampling strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>
+  Then("""a Sample containing the Sample Size from the Prn-Sampling strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>
     assertDataFrameEquality(expected = theExpectedResult, printLabel)
   }
 
