@@ -1,23 +1,22 @@
 package uk.gov.ons.registers
 
-import org.apache.spark.sql.{DataFrame, SparkSession}
-
+import org.apache.spark.sql.SparkSession
 
 private[registers] object SparkSessionManager {
-  val sparkSession: SparkSession = SparkSession
+  private val sparkAppName = "Registers Statistical Methods Library (SML)"
+
+  implicit val sparkSession: SparkSession = SparkSession
     .builder()
-    .appName("Registers Statistical Methods Library (SML)")
+    .appName(name = sparkAppName)
     .getOrCreate()
 
-
-  def withSpark(doWithinSparkSession: SparkSession => DataFrame) = {
-    implicit val sparkSession: SparkSession = SparkSession
-      .builder()
-      .appName("Registers Statistical Methods Library (SML)")
-      .getOrCreate()
-    val df = doWithinSparkSession(sparkSession)
-
-    sparkSession.stop()
-    df
-  }
+  def stopSession(): Unit =
+    SparkSession.getActiveSession.foreach{ activeSession =>
+      if (activeSession.sparkContext.appName == sparkAppName) {
+        // TODO - ADD logger that SparkSession is being closed
+        println(s"[INFO] Stopping active session [${activeSession.sparkContext.appName}] started on " +
+          s"[${activeSession.sparkContext.startTime}] in thread.")
+        activeSession.close
+      }
+    }
 }

@@ -18,15 +18,12 @@ Feature: Create a Stratified Frame
             | 1100000009 | 9906000355 | BUCARR                        |              | 1 GRANVILLE AVENUE       | LONG EATON     | NOTTINGHAM  |                         |          | NG10 4HA | 1           | 46140 | 1           | 1         | 18           | 18           | 0            | 0             | 0            | 0.847311602 |
             | 1100000010 | 9906000405 | DCAJ&WALTON                   |              | 1 GRANVILLE AVENUE       | LONG EATON     | NOTTINGHAM  |                         |          | NG10 4HA | 1           | 46150 | 2           | 2         | 72           | 72           | 0            | 0             | 0            | 0.548604086 |
             | 1100000011 | 9906000415 | &BAMCFLINT                    |              | 1 GARENDON WAY           | GROBY          | LEICESTER   |                         |          | LE6 0YR  | 1           | 46160 | 1           | 0         | 400          | 400          | 0            | 0             | 0            | 0.269071541 |
-        And a Strata of selection type Census from Stratification Properties file:
+        And a Strata of selection type Universal from Stratification Properties file:
             | inqcode | cell_no | cell_desc | seltype | lower_class | upper_class | lower_size | upper_size | prn_start   | no_reqd |
-            | 687     | 5814    | Census    | C       | 45111       | 45190       | 100        | 999999999  | 0.000000000 | 0       |
             | 687     | 5812    | Admin     | U       | 45111       | 45190       | 10         | 49         | 0.000000000 | 0       |
-        When a <language> Sample is created from a Stratified Frame
-        Then a Stratified Frame with the strata assigned the Strata number from the Stratification Strata is returned and exported to CSV
+        When a <language> Stratified Frame is created from a Frame
+        Then a Stratified Frame is returned and exported to CSV with the strata assigned the Strata number from the Stratification Strata
             | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | paye_empees | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         | cell_no |
-            | 1100000002 | 9906000045 | BUEADLIING SOLUTIONS LTD      |              | 1 HAZELWOOD LANE         | ABBOTS LANGLEY |             |                         |          | WD5 0HA  | 3           | 45190 | 1567        | 0         | 100          | 100          | 0            | 0             | 0            | 0.63848639  | 5814    |
-            | 1100000003 | 9906000075 | JO2WMILITED                   |              | 1 BARRASCROFTS           | CANONBIE       |             |                         |          | DG14 0RZ | 1           | 45189 | 1000        | 0         | 56           | 56           | 0            | 0             | 0            | 0.095639204 | 5814    |
             | 1100000001 | 9906000015 | &EAGBBROWN                    |              | 1 HAWRIDGE HILL COTTAGES | THE VALE       | HAWRIDGE    | CHESHAM BUCKINGHAMSHIRE |          | HP5 3NU  | 1           | 45112 | 39          | 1         | 73           | 73           | 0            | 0             | 0            | 0.109636832 | 5812    |
             | 1100000008 | 9906000325 | TLUBARE                       |              | 1 GORSE ROAD             | REYDON         | SOUTHWOLD   |                         |          | IP18 6NQ | 1           | 45130 | 13          | 3         | 197          | 197          | 0            | 0             | 0            | 0.446872271 | 5812    |
 
@@ -36,13 +33,13 @@ Feature: Create a Stratified Frame
             | Scala    |
 
       Scenario Outline: Frame file cannot be found in given Frame directory and an exception is thrown
-          Given a Stratified Frame does not exist:
+          Given a Frame does not exist
           And a Strata of selection type Prn-Sampling from Stratification Properties file:
               | inqcode | cell_no | cell_desc | seltype | lower_class | upper_class | lower_size | upper_size | prn_start   | no_reqd |
               | 687     | 5816    | Sample    | P       | 45111       | 45190       | 50         | 9          | 0.539298879 | 3       |
               | 687     | 5811    | Admin     | U       | 45111       | 45190       | 0          | 9          | 0.000000000 | 0       |
               | 687     | 5812    | Admin     | U       | 45111       | 45190       | 10         | 49         | 0.000000000 | 0       |
-          Then an exception in <language> is thrown for Stratified Frame not being found upon trying to Stratify
+          When an exception in <language> is thrown for Frame not being found upon trying to Stratify
 
           @JVM
           Examples:
@@ -50,7 +47,7 @@ Feature: Create a Stratified Frame
           | Scala    |
 
       Scenario Outline: Stratification Properties file cannot be found in given directory and an exception is thrown
-          Given a Stratified Frame:
+          Given a Frame:
               | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | paye_empees | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         |
               | 1100000001 | 9906000015 | &EAGBBROWN                    |              | 1 HAWRIDGE HILL COTTAGES | THE VALE       | HAWRIDGE    | CHESHAM BUCKINGHAMSHIRE |          | HP5 3NU  | 1           | 45112 | 1           | 1         | 73           | 73           | 0            | 0             | 0            | 0.109636832 |
               | 1100000002 | 9906000045 | BUEADLIING SOLUTIONS LTD      |              | 1 HAZELWOOD LANE         | ABBOTS LANGLEY |             |                         |          | WD5 0HA  | 3           | 45190 | 1567        | 0         | 100          | 100          | 0            | 0             | 0            | 0.63848639  |
@@ -63,8 +60,8 @@ Feature: Create a Stratified Frame
               | 1100000009 | 9906000355 | BUCARR                        |              | 1 GRANVILLE AVENUE       | LONG EATON     | NOTTINGHAM  |                         |          | NG10 4HA | 1           | 46140 | 1           | 1         | 18           | 18           | 0            | 0             | 0            | 0.847311602 |
               | 1100000010 | 9906000405 | DCAJ&WALTON                   |              | 1 GRANVILLE AVENUE       | LONG EATON     | NOTTINGHAM  |                         |          | NG10 4HA | 1           | 46150 | 2           | 2         | 72           | 72           | 0            | 0             | 0            | 0.548604086 |
               | 1100000011 | 9906000415 | &BAMCFLINT                    |              | 1 GARENDON WAY           | GROBY          | LEICESTER   |                         |          | LE6 0YR  | 1           | 46160 | 1           | 0         | 400          | 400          | 0            | 0             | 0            | 0.269071541 |
-          And a Stratification Properties file that does not exist:
-          Then an exception in <language> is thrown for Stratified Properties not being found upon trying to Stratify
+          And a Stratification Properties file that does not exist
+          When an exception in <language> is thrown for Stratified Properties not being found upon trying to Stratify
 
           @JVM
           Examples:
