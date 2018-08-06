@@ -42,7 +42,7 @@ object StratificationImpl {
 
       val unallocated = frameDf
         .except(allocatedWithCellNumField)
-        .withColumn(StratificationPropertiesFields.cellNumber, lit(literal = "Error"))
+        .withColumn(StratificationPropertiesFields.cellNumber, lit(literal = "-1"))
         .withColumn(colName = prnAsLongField, col = frameDf.col(prn).cast(DataTypes.createDecimalType(precision, scale)))
         .orderBy(prnAsLongField)
         .drop(prnAsLongField)
