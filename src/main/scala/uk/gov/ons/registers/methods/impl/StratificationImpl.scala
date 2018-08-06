@@ -1,11 +1,12 @@
 package uk.gov.ons.registers.methods.impl
 
 import org.apache.spark.sql.functions.lit
-import org.apache.spark.sql.types.{IntegerType, LongType}
+import org.apache.spark.sql.types.{DataTypes, IntegerType, LongType}
 import org.apache.spark.sql.{DataFrame, Dataset, Row}
 
 import uk.gov.ons.registers.model.CommonUnitFrameDataFields._
 import uk.gov.ons.registers.model.stratification.StratificationPropertiesFields
+import uk.gov.ons.registers.model.stratification.PrnStatisticalProperty.{precision, scale}
 
 object StratificationImpl {
   implicit class StratificationMethodsImpl(frameDf: DataFrame) {
@@ -31,6 +32,23 @@ object StratificationImpl {
         .filter(castedDf(payeEmployeesAsIntField) >= payeEmployeesLowerRange && castedDf(payeEmployeesAsIntField) <= payeEmployeesUpperRange)
         .withColumn(StratificationPropertiesFields.cellNumber, lit(cellNo.toString))
         .drop(payeEmployeesAsIntField, sic07AsLongField)
+    }
+
+    def postStratification(strataAllocatedDataFrame: DataFrame): Dataset[Row] = {
+      val prnAsLongField = s"temp_$prn"
+      val allocatedWithCellNumField = strataAllocatedDataFrame
+        .drop(cellNumber)
+        .distinct
+
+      val unallocated = frameDf
+        .except(allocatedWithCellNumField)
+        .withColumn(StratificationPropertiesFields.cellNumber, lit(literal = "Error"))
+        .withColumn(colName = prnAsLongField, col = frameDf.col(prn).cast(DataTypes.createDecimalType(precision, scale)))
+        .orderBy(prnAsLongField)
+        .drop(prnAsLongField)
+
+      strataAllocatedDataFrame
+        .union(unallocated)
     }
   }
 }

@@ -34,7 +34,7 @@ class StratificationSteps extends ScalaDsl with EN {
     outputDataDF = outputDataDF.na.fill(value = "")
   }
 
-  Then("""a Stratified Frame is returned and exported to CSV with the strata assigned the Strata number from the Stratification Strata"""){ theExpectedResult: DataTable =>
+  Then("""a Stratified Frame is returned and exported to CSV with the strata assigned the Strata number from the Stratification Strata.*"""){ theExpectedResult: DataTable =>
     assertEqualityAndPrintResults(expected = theExpectedResult)
   }
 

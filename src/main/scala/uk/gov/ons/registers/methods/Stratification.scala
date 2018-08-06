@@ -4,9 +4,10 @@ import java.nio.file.Path
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
+import uk.gov.ons.registers.TransformFilesAndDataFrames.exportDfAsCsvOrError
 import uk.gov.ons.registers.methods.impl.StratificationImpl
 import uk.gov.ons.registers.model.stratification.Strata
-import uk.gov.ons.registers.{SparkSessionManager, TransformFiles}
+import uk.gov.ons.registers.{SparkSessionManager, TransformFilesAndDataFrames}
 
 class Stratification(inputPath: Path)(implicit activeSession: SparkSession) {
 
@@ -15,17 +16,19 @@ class Stratification(inputPath: Path)(implicit activeSession: SparkSession) {
   import activeSession.implicits._
 
   def stratify(stratificationPropsPath: Path, outputPath: Path): DataFrame = {
-    val (stratifiedFrameDF, stratificationPropsDS) =
-      TransformFiles.validateAndConstructInputs[Strata](
+    val (frameDF, stratificationPropsDS) =
+      TransformFilesAndDataFrames.validateAndConstructInputs[Strata](
         properties = inputPath, dataFile = stratificationPropsPath)
 
-    val arrayOfStratification = stratificationPropsDS.rdd.collect.map{ row: Strata =>
-      stratifiedFrameDF.stratify1(sic07LowerClass = row.lower_class, sic07UpperClass = row.upper_class,
+    val arrayOfStratifiedFrames = stratificationPropsDS.rdd.collect.map{ row: Strata =>
+      frameDF.stratify1(sic07LowerClass = row.lower_class, sic07UpperClass = row.upper_class,
         payeEmployeesLowerRange = row.lower_size, payeEmployeesUpperRange = row.upper_size, cellNo = row.cell_no)
     }
-    val stratificationDF = TransformFiles.exportDatasetAsCSV(arrayOfDatasets = arrayOfStratification, outputPath = outputPath)
+    val collectStrataFramesDF = TransformFilesAndDataFrames.tranformToDataFrame(arrayOfDatasets = arrayOfStratifiedFrames)
+    val strataFramesDF = frameDF.postStratification(strataAllocatedDataFrame = collectStrataFramesDF)
+    exportDfAsCsvOrError(dataFrame = strataFramesDF, path = outputPath)
     SparkSessionManager.stopSession()
-    stratificationDF
+    strataFramesDF
   }
 }
 
