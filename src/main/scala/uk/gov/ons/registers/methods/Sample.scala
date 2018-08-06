@@ -29,12 +29,12 @@ class Sample(stratifiedFramePath: Path)(implicit activeSession: SparkSession) {
       .filter(checkSelType(census) || checkSelType(prnSampling)).rdd.collect
       .flatMap{ row: Strata =>
         if (row.seltype == SelectionTypes.prnSampling)
-          // TODO - type classes for prn-sampling + validation there and another with census with no validation
-          // read in row.seltype as case object to figure out which type of op it should be - getting right instance
+        // TODO - type classes for prn-sampling + validation there and another with census with no validation
+        // read in row.seltype as case object to figure out which type of op it should be - getting right instance
           ParamValidation.validate(inputDF = stratifiedFrameDF, strataNumber = row.cell_no, startingPrn = row.prn_start,
             sampleSize = row.no_reqd).map( sampleSize =>
-              stratifiedFrameDF.sample2(row.prn_start, sampleSize, row.cell_no)
-            )
+            stratifiedFrameDF.sample2(row.prn_start, sampleSize, row.cell_no)
+          )
         else Some(stratifiedFrameDF.sample2(row.cell_no))
       }
 
