@@ -10,10 +10,8 @@ import uk.gov.ons.registers.stepdefs.outputDataDF
 import uk.gov.ons.registers.support.DataFrameTransformation.{createCsvOutputDataFrame, createExpectedDataFrame}
 
 import cucumber.api.DataTable
-//import org.junit.Assert._
 
 object AssertionHelpers {
-  // Assert if CSV file is saved - distributed, and thus cannot use fixed naming match
   def assertAndReturnCsvOfSampleCollection(outputPath: Path): File = {
     val sampleOutputDir = outputPath.toFile
     assert(sampleOutputDir.exists && sampleOutputDir.isDirectory, message = s"output path [$outputPath] does not exist and/ or is not a directory")
