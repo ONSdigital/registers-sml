@@ -20,12 +20,12 @@ object AssertionHelpers {
     listOfCsvOutputFiles.head
   }
 
-  def assertDataFrameEquality(expected: DataTable, printLabel: String): Unit = {
+  def assertDataFrameEquality(expected: DataTable): DataFrame = {
     val expectedOutputDF = createExpectedDataFrame(expected)
     assert(outputDataDF.collect sameElements expectedOutputDF.collect)
     val csvFileOutputDF = createCsvOutputDataFrame
     assert(csvFileOutputDF.collect sameElements expectedOutputDF.collect)
-    displayData(expectedDF = expectedOutputDF, printLabel)
+    expectedOutputDF
   }
 
   def aFailureIsGeneratedBy[T](expression: => T): Boolean =
@@ -36,11 +36,11 @@ object AssertionHelpers {
       case _: Throwable => true
     }
 
-  private def displayData(expectedDF: DataFrame, displayLabel: String): Unit = {
+  def displayData(expectedDF: DataFrame, printLabel: String): Unit = {
     println("Compare Rows")
-    println(s"Expected $displayLabel Output")
+    println(s"Expected $printLabel Output")
     expectedDF.show()
-    println(s"Scala $displayLabel output")
+    println(s"Scala $printLabel output")
     outputDataDF.show()
   }
 }

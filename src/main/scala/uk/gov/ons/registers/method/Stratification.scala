@@ -1,17 +1,19 @@
 package uk.gov.ons.registers.method
 
+import java.nio.file.Path
+
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-import uk.gov.ons.registers.{SparkSessionManager, TransformFiles}
-import uk.gov.ons.registers.helpers.CSVProcessor.FilePath
 import uk.gov.ons.registers.model.stratification.Strata
+import uk.gov.ons.registers.{SparkSessionManager, TransformFiles}
 
-class Stratification(inputPath: FilePath)(implicit activeSession: SparkSession) {
+class Stratification(inputPath: Path)(implicit activeSession: SparkSession) {
 
   import uk.gov.ons.registers.method.impl.StratificationImpl._
+
   import activeSession.implicits._
 
-  def stratify(stratificationPropsPath: FilePath, outputPath: FilePath): DataFrame = {
+  def stratify(stratificationPropsPath: Path, outputPath: Path): DataFrame = {
     val (stratifiedFrameDF, stratificationPropsDS) =
       TransformFiles.validateAndConstructInputs[Strata](
         properties = inputPath, dataFile = stratificationPropsPath)
@@ -27,6 +29,6 @@ class Stratification(inputPath: FilePath)(implicit activeSession: SparkSession) 
 }
 
 object Stratification {
-  def stratification(inputPath: FilePath)(implicit sparkSession: SparkSession): Stratification =
+  def stratification(inputPath: Path)(implicit sparkSession: SparkSession): Stratification =
     new Stratification(inputPath)(sparkSession)
 }

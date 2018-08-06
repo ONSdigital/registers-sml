@@ -9,13 +9,12 @@ import org.apache.spark.sql._
 import org.apache.spark.sql.catalyst.ScalaReflection
 import org.apache.spark.sql.types.StructType
 
-
+// TODO - ADD ERROR CONTROL
 object CSVProcessor {
   val CSV = "csv"
-  val Header = "header"
-  type FilePath = Path
+  private val Header = "header"
 
-  def export(dataFrame: DataFrame, path: Path, headerOption: Boolean = true): Unit =
+  def export(dataFrame: DataFrame, path: Path, headerOption: Boolean): Unit =
     dataFrame
       .coalesce(numPartitions = 1)
       .write.format(CSV)
@@ -48,5 +47,4 @@ object CSVProcessor {
       .read
       .option(Header, value = true)
       .csv(filePath.toString)
-
 }

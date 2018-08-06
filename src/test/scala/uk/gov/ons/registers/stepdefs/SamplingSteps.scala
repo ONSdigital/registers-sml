@@ -3,7 +3,7 @@ package uk.gov.ons.registers.stepdefs
 import uk.gov.ons.registers.methods.Sample
 import uk.gov.ons.registers.support.AssertionHelpers._
 import uk.gov.ons.registers.support.DataTableExportUtil.saveTableAsCsv
-import uk.gov.ons.registers.support.TestFileEnvSetup.createAPath
+import uk.gov.ons.registers.support.TestFileEnvSetup.{createAPath, createTempDirectory}
 import uk.gov.ons.stepdefs.Helpers
 
 import cucumber.api.DataTable
@@ -11,12 +11,14 @@ import cucumber.api.scala.{EN, ScalaDsl}
 
 
 class SamplingSteps extends ScalaDsl with EN{
+  private def assertEqualityAndPrintResults(expected: DataTable): Unit =
+    displayData(expectedDF = assertDataFrameEquality(expected), printLabel = "Sampling")
 
-  private val printLabel = "Sampling"
-
-  private def createSampleTest(): Unit =
+  private def createSampleTest(): Unit = {
+    outputPath = createTempDirectory(prefix = "sample_test_output_")
     outputDataDF = Sample.sample(stratifiedFramePath)(sparkSession = Helpers.sparkSession)
       .create(stratificationPropsPath, outputPath)
+  }
 
   Given("""a Stratified Frame:$"""){ aFrameTable: DataTable =>
     stratifiedFramePath = saveTableAsCsv(
@@ -40,15 +42,15 @@ class SamplingSteps extends ScalaDsl with EN{
   }
 
   Then("""a Sample containing the sample selection from the Census strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>
-    assertDataFrameEquality(expected = theExpectedResult, printLabel)
+    assertEqualityAndPrintResults(expected = theExpectedResult)
   }
 
   Then("""a Sample containing the Sample Size from the Prn-Sampling strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>
-    assertDataFrameEquality(expected = theExpectedResult, printLabel)
+    assertEqualityAndPrintResults(expected = theExpectedResult)
   }
 
   Then("""a Sample containing the total population in the strata is returned and exported to CSV"""){ theExpectedResult: DataTable =>
     // TODO test log
-    assertDataFrameEquality(expected = theExpectedResult, printLabel)
+    assertEqualityAndPrintResults(expected = theExpectedResult)
   }
 }
