@@ -6,11 +6,9 @@ Feature: Create a Stratified Frame
 
     Scenario Outline: Frame file cannot be found in given Frame directory and an exception is thrown
         Given a Frame does not exist
-        And a Strata of selection type Prn-Sampling from Stratification Properties file:
+        And a Strata from Stratification Properties file:
             | inqcode | cell_no | cell_desc | seltype | lower_class | upper_class | lower_size | upper_size | prn_start   | no_reqd |
             | 687     | 5816    | Sample    | P       | 45111       | 45190       | 50         | 9          | 0.539298879 | 3       |
-            | 687     | 5811    | Admin     | U       | 45111       | 45190       | 0          | 9          | 0.000000000 | 0       |
-            | 687     | 5812    | Admin     | U       | 45111       | 45190       | 10         | 49         | 0.000000000 | 0       |
         When an exception in <language> is thrown for Frame not being found upon trying to Stratify
 
         @JVM
@@ -59,7 +57,7 @@ Feature: Create a Stratified Frame
         | language |
         | Scala    |
 
-    Scenario Outline: Apply sic07 and payeEmployee range filters on a Frame with the remaining unallocated units returned with no strata ID allocated
+    Scenario Outline: Apply sic07 and payeEmployee range filters on a Frame with the remaining unallocated units returned with -1 allocated to them
         Given a Frame:
             | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | paye_empees | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         |
             | 1100000001 | 9906000015 | &EAGBBROWN                    |              | 1 HAWRIDGE HILL COTTAGES | THE VALE       | HAWRIDGE    | CHESHAM BUCKINGHAMSHIRE |          | HP5 3NU  | 1           | 45112 | 39          | 1         | 73           | 73           | 0            | 0             | 0            | 0.109636832 |
@@ -77,7 +75,7 @@ Feature: Create a Stratified Frame
             | inqcode | cell_no | cell_desc | seltype | lower_class | upper_class | lower_size | upper_size | prn_start   | no_reqd |
             | 687     | 5819    | Admin     | C       | 45111       | 45190       | 10         | 49         | 0.000000000 | 0       |
         When a <language> Stratified Frame is created from a Frame
-        Then a Stratified Frame is returned and exported to CSV with the strata assigned the Strata number from the Stratification Strata and unallocated units are labelled as Error
+        Then a Stratified Frame is returned and exported to CSV with the strata assigned the Strata number from the Stratification Strata and unallocated units are labelled as -1
             | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | paye_empees | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         | cell_no |
             | 1100000001 | 9906000015 | &EAGBBROWN                    |              | 1 HAWRIDGE HILL COTTAGES | THE VALE       | HAWRIDGE    | CHESHAM BUCKINGHAMSHIRE |          | HP5 3NU  | 1           | 45112 | 39          | 1         | 73           | 73           | 0            | 0             | 0            | 0.109636832 | 5819    |
             | 1100000008 | 9906000325 | TLUBARE                       |              | 1 GORSE ROAD             | REYDON         | SOUTHWOLD   |                         |          | IP18 6NQ | 1           | 45130 | 13          | 3         | 197          | 197          | 0            | 0             | 0            | 0.446872271 | 5819    |
