@@ -24,7 +24,7 @@ object SampleImpl {
     def sample1(startPoint: BigDecimal, sampleSize: Int, cellNo: Int): DataFrame = {
       val prnAsBigDecimal = s"${prn}_temp"
       val inputDataWithBigDecimal = inputDataDF
-        .withColumn(prnAsBigDecimal, inputDataDF.col(prn).cast(DataTypes.createDecimalType(precision, scale)))
+        .withColumn(colName = prnAsBigDecimal, col = inputDataDF.col(prn).cast(DataTypes.createDecimalType(precision, scale)))
 
       val filtered = inputDataWithBigDecimal
         .orderBy(prnAsBigDecimal)

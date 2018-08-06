@@ -4,11 +4,12 @@ import java.nio.file.Path
 
 import org.apache.spark.sql.{Column, DataFrame, SparkSession}
 
+import uk.gov.ons.registers.TransformFilesAndDataFrames.exportDfAsCsvOrError
 import uk.gov.ons.registers.model.SelectionTypes
 import uk.gov.ons.registers.model.SelectionTypes.{census, prnSampling}
 import uk.gov.ons.registers.model.stratification.Strata
 import uk.gov.ons.registers.model.stratification.StratificationPropertiesFields.selectionType
-import uk.gov.ons.registers.{ParamValidation, SparkSessionManager, TransformFiles}
+import uk.gov.ons.registers.{ParamValidation, SparkSessionManager, TransformFilesAndDataFrames}
 
 class Sample(stratifiedFramePath: Path)(implicit activeSession: SparkSession) {
 
@@ -20,7 +21,7 @@ class Sample(stratifiedFramePath: Path)(implicit activeSession: SparkSession) {
   def create(stratificationPropsPath: Path, outputPath: Path): DataFrame = {
 
     val (stratifiedFrameDF, stratificationPropsDS) =
-      TransformFiles.validateAndConstructInputs[Strata](
+      TransformFilesAndDataFrames.validateAndConstructInputs[Strata](
         properties = stratifiedFramePath, dataFile = stratificationPropsPath)
     def checkSelType(`type`: String): Column = stratificationPropsDS(selectionType) === `type`
 
@@ -38,9 +39,10 @@ class Sample(stratifiedFramePath: Path)(implicit activeSession: SparkSession) {
         else Some(stratifiedFrameDF.sample2(row.cell_no))
       }
 
-    val sampleDF = TransformFiles.exportDatasetAsCSV(arrayOfDatasets = arrayOfSamples, outputPath = outputPath)
+    val sampleStratasDF = TransformFilesAndDataFrames.tranformToDataFrame(arrayOfDatasets = arrayOfSamples)
+    exportDfAsCsvOrError(dataFrame = sampleStratasDF, path = outputPath)
     SparkSessionManager.stopSession()
-    sampleDF
+    sampleStratasDF
   }
 }
 

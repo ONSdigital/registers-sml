@@ -34,10 +34,6 @@ class StratificationSteps extends ScalaDsl with EN {
     outputDataDF = outputDataDF.na.fill(value = "")
   }
 
-  Then("""a Stratified Frame is returned and exported to CSV with the strata assigned the Strata number from the Stratification Strata"""){ theExpectedResult: DataTable =>
-    assertEqualityAndPrintResults(expected = theExpectedResult)
-  }
-
   When("""an exception in Scala is thrown for Frame not being found upon trying to Stratify"""){ () =>
     assert(aFailureIsGeneratedBy {
       stratifyTestFrame()
@@ -48,5 +44,9 @@ class StratificationSteps extends ScalaDsl with EN {
     assert(aFailureIsGeneratedBy {
       stratifyTestFrame()
     })
+  }
+
+  Then("""a Stratified Frame is returned and exported to CSV with the strata assigned the Strata number from the Stratification Strata.*"""){ theExpectedResult: DataTable =>
+    assertEqualityAndPrintResults(expected = theExpectedResult)
   }
 }
