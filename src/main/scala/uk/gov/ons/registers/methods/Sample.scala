@@ -23,6 +23,7 @@ class Sample(stratifiedFramePath: Path)(implicit activeSession: SparkSession) {
     val (stratifiedFrameDF, stratificationPropsDS) =
       TransformFilesAndDataFrames.validateAndConstructInputs[Strata](
         properties = stratifiedFramePath, dataFile = stratificationPropsPath)
+    TransformFilesAndDataFrames.validateOutputDirectory(outputPath)
     def checkSelType(`type`: String): Column = stratificationPropsDS(selectionType) === `type`
 
     // TODO - Check Join || make inputDF distributed and pass props
@@ -39,7 +40,7 @@ class Sample(stratifiedFramePath: Path)(implicit activeSession: SparkSession) {
         else Some(stratifiedFrameDF.sample2(row.cell_no))
       }
 
-    val sampleStratasDF = TransformFilesAndDataFrames.tranformToDataFrame(arrayOfDatasets = arrayOfSamples)
+    val sampleStratasDF = TransformFilesAndDataFrames.transformToDataFrame(arrayOfDatasets = arrayOfSamples)
     exportDfAsCsvOrError(dataFrame = sampleStratasDF, path = outputPath)
     SparkSessionManager.stopSession()
     sampleStratasDF

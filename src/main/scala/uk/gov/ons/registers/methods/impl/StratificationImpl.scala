@@ -11,6 +11,7 @@ import uk.gov.ons.registers.model.stratification.PrnStatisticalProperty.{precisi
 object StratificationImpl {
   implicit class StratificationMethodsImpl(frameDf: DataFrame) {
     /**
+      * USAGE:
       *
       * @param sic07LowerClass
       * @param sic07UpperClass
@@ -20,7 +21,6 @@ object StratificationImpl {
       * @return
       */
     def stratify1(sic07LowerClass: Int, sic07UpperClass: Int, payeEmployeesLowerRange: Long, payeEmployeesUpperRange: Long, cellNo: Int): Dataset[Row] = {
-      // TODO check if inclusive [Both  filters] - TEST
       val payeEmployeesAsIntField = s"temp_$payeEmployees"
       val sic07AsLongField = s"temp_$sic07"
       val castedDf = frameDf
@@ -34,7 +34,13 @@ object StratificationImpl {
         .drop(payeEmployeesAsIntField, sic07AsLongField)
     }
 
-    def postStratification(strataAllocatedDataFrame: DataFrame): Dataset[Row] = {
+    /**
+      * USAGE:
+      *
+      * @param strataAllocatedDataFrame
+      * @return
+      */
+    def postStratification1(strataAllocatedDataFrame: DataFrame): Dataset[Row] = {
       val prnAsLongField = s"temp_$prn"
       val allocatedWithCellNumField = strataAllocatedDataFrame
         .drop(cellNumber)
