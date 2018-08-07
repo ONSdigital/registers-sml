@@ -6,19 +6,15 @@ import org.apache.spark.sql.{DataFrame, Dataset, Row}
 
 import uk.gov.ons.registers.model.CommonUnitFrameDataFields._
 import uk.gov.ons.registers.model.stratification.StratificationPropertiesFields
-import uk.gov.ons.registers.model.stratification.PrnStatisticalProperty.{precision, scale}
+import uk.gov.ons.registers.model.stratification.PrnNumericalProperty.{precision, scale}
 
 object StratificationImpl {
   implicit class StratificationMethodsImpl(frameDf: DataFrame) {
     /**
-      * USAGE:
+      * USAGE: Stratified a Frame
       *
-      * @param sic07LowerClass
-      * @param sic07UpperClass
-      * @param payeEmployeesLowerRange
-      * @param payeEmployeesUpperRange
-      * @param cellNo
-      * @return
+      * @param cellNo - to denote the strata to which it is allocated
+      * @return Frame - A DataSet that has strata(s) composed from filtering units by sic07 and Paye Employment range
       */
     def stratify1(sic07LowerClass: Int, sic07UpperClass: Int, payeEmployeesLowerRange: Long, payeEmployeesUpperRange: Long, cellNo: Int): Dataset[Row] = {
       val payeEmployeesAsIntField = s"temp_$payeEmployees"
@@ -29,16 +25,17 @@ object StratificationImpl {
 
       castedDf
         .filter(castedDf(sic07AsLongField) >= sic07LowerClass && castedDf(sic07AsLongField) <= sic07UpperClass)
-        .filter(castedDf(payeEmployeesAsIntField) >= payeEmployeesLowerRange && castedDf(payeEmployeesAsIntField) <= payeEmployeesUpperRange)
+        .filter(castedDf(payeEmployeesAsIntField) >= payeEmployeesLowerRange &&
+          castedDf(payeEmployeesAsIntField) <= payeEmployeesUpperRange)
         .withColumn(StratificationPropertiesFields.cellNumber, lit(cellNo.toString))
         .drop(payeEmployeesAsIntField, sic07AsLongField)
     }
 
     /**
-      * USAGE:
+      * USAGE: A post step of Stratification, where any unallocated unit is flagged with the error code (-1)
       *
-      * @param strataAllocatedDataFrame
-      * @return
+      * @param strataAllocatedDataFrame - a Stratified Frame
+      * @return Frame - A DataSet, maintains all the stratas compiled, but includes all units unallocated
       */
     def postStratification1(strataAllocatedDataFrame: DataFrame): Dataset[Row] = {
       val prnAsLongField = s"temp_$prn"
