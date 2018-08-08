@@ -2,7 +2,7 @@ package uk.gov.ons.registers.model.stratification
 
 import uk.gov.ons.api.java.methods.registers.annotation.Description
 
-case class Strata(
+case class SelectionStrata(
   @Description(value = "inqueryCode", description = "numerical code to identify survey, set to 687") inqcode: Int,
   @Description(value = "cellNumber", description = "unique identifier for each strata") cell_no: Int,
   @Description(value = "cellDescription", description = "text label for cell (strata)") cell_desc: String,

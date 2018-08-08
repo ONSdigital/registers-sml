@@ -12,10 +12,11 @@ import uk.gov.ons.stepdefs.Helpers.sparkSession
 
 import cucumber.api.DataTable
 
-
 object DataFrameTransformation {
+  private val HeaderIndex = 1
+
   private def createDataFrame(aListOfLines: Seq[List[String]]): DataFrame = {
-    val rows = aListOfLines.drop(1).map(Row.fromSeq(_))
+    val rows = aListOfLines.drop(HeaderIndex).map(Row.fromSeq(_))
     val rdd = sparkSession.sparkContext.makeRDD(rows)
     val fieldTypes = aListOfLines.head.map(StructField(_, dataType = StringType, nullable = false))
     sparkSession.createDataFrame(rdd, StructType(fieldTypes))

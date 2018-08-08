@@ -17,7 +17,7 @@ object SelectionTypes {
 
   @deprecated
   private object Description {
-    val census = "census"
+    val census = "Census"
     val prnSampling = "Sample"
     val universal = "Admin"
   }
