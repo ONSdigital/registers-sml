@@ -1,6 +1,6 @@
 package uk.gov.ons.registers.stepdefs
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters.asScalaBufferConverter
 
 import uk.gov.ons.registers.support.DataTableExportUtil.saveTableAsCsv
 import uk.gov.ons.registers.support.TestFileEnvSetup.{createAPath, createTempDirectory}
@@ -22,7 +22,7 @@ class CommonSteps extends ScalaDsl with EN {
   }
 
   And("""an output path to store the result is given:$"""){ aPathTable: DataTable =>
-    val outputPathPrefix = aPathTable.asList(classOf[String]).toList.head
+    val outputPathPrefix = aPathTable.asList(classOf[String]).asScala.toList.head
     outputPath = createTempDirectory(prefix = outputPathPrefix)
   }
 

@@ -1,6 +1,6 @@
 package uk.gov.ons.registers.support
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters.asScalaBufferConverter
 
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
 import org.apache.spark.sql.{DataFrame, Row}
@@ -23,7 +23,7 @@ object DataFrameTransformation {
 
   def createExpectedDataFrame(dataTable: DataTable): DataFrame = {
     val aListOfExpectedRows = dataTable.asLists(classOf[String])
-    createDataFrame(aListOfLines = aListOfExpectedRows.toList.map(_.toList))
+    createDataFrame(aListOfLines = aListOfExpectedRows.asScala.toList.map(_.asScala.toList))
   }
 
   def createCsvOutputDataFrame: DataFrame = {
