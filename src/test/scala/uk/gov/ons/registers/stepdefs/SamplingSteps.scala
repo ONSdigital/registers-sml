@@ -9,7 +9,6 @@ import uk.gov.ons.stepdefs.Helpers
 import cucumber.api.DataTable
 import cucumber.api.scala.{EN, ScalaDsl}
 
-
 class SamplingSteps extends ScalaDsl with EN{
   private def assertEqualityAndPrintResults(expected: DataTable): Unit =
     displayData(expectedDF = assertDataFrameEquality(expected), printLabel = "Sampling")
@@ -21,7 +20,7 @@ class SamplingSteps extends ScalaDsl with EN{
   Given("""a Stratified Frame:$"""){ aFrameTable: DataTable =>
     stratifiedFramePath = saveTableAsCsv(
       dataTable = aFrameTable,
-      prefix = "stratified_frame")
+      prefix = "stratified_frame_")
   }
 
   Given("""a Stratified Frame does not exist$"""){ () =>
@@ -33,23 +32,15 @@ class SamplingSteps extends ScalaDsl with EN{
     outputDataDF = outputDataDF.na.fill(value = "")
   }
 
-  When("""an exception in Scala is thrown for .+ not being found upon trying to Sample$"""){ () =>
-    assert(aFailureIsGeneratedBy {
+  When("""a Sample creation is attempted$"""){ () =>
+    methodFailureFlag = aFailureIsGeneratedBy {
       createSampleTest()
-    })
+    }
   }
 
   Then("""a Sample containing the Sample \w+ from the .+ strata is returned and exported to CSV:$"""){ theExpectedResult: DataTable =>
     assertEqualityAndPrintResults(expected = theExpectedResult)
   }
-
-//  Then("""a Sample containing the sample selection from the Census strata is returned and exported to CSV:$"""){ theExpectedResult: DataTable =>
-//    assertEqualityAndPrintResults(expected = theExpectedResult)
-//  }
-//
-//  Then("""a Sample containing the Sample Size from the Prn-Sampling strata is returned and exported to CSV:$"""){ theExpectedResult: DataTable =>
-//    assertEqualityAndPrintResults(expected = theExpectedResult)
-//  }
 
   Then("""a Sample containing the total population in the strata is returned and exported to CSV:$"""){ theExpectedResult: DataTable =>
     // TODO test log

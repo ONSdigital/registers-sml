@@ -38,6 +38,7 @@ object TransformFilesAndDataFrames {
     arrayOfDatasets.foldLeft(emptyDF)((curr, next) => curr.union(next))
   }
 
+  // TODO move this into validateAndConstructInputs()
   def validateOutputDirectory(outputPath: Path): Unit =
     if (!outputPath.toFile.isDirectory) throw new FileNotFoundException(s"Cannot find output directory [$outputPath]")
 

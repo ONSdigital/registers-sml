@@ -6,9 +6,11 @@ import org.apache.spark.sql.DataFrame
 
 package object stepdefs {
   var outputPath: Path = _
-  var outputDataDF: DataFrame = _
-
   var framePath: Path = _
   var stratifiedFramePath: Path = _
   var stratificationPropsPath: Path = _
+
+  var outputDataDF: DataFrame = _
+
+  var methodFailureFlag: Boolean = _
 }

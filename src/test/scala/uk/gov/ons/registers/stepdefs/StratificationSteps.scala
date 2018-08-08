@@ -20,7 +20,7 @@ class StratificationSteps extends ScalaDsl with EN {
   Given("""a Frame:$"""){ aFrameTable: DataTable =>
     framePath = saveTableAsCsv(
       dataTable = aFrameTable,
-      prefix = "frame")
+      prefix = "frame_")
   }
 
   Given("""a Frame does not exist$"""){ () =>
@@ -32,10 +32,10 @@ class StratificationSteps extends ScalaDsl with EN {
     outputDataDF = outputDataDF.na.fill(value = "")
   }
 
-  When("""an exception in Scala is thrown for .+ not being found upon trying to Stratify$"""){ () =>
-    assert(aFailureIsGeneratedBy {
+  When("""a Stratified Frame creation is attempted$"""){ () =>
+    methodFailureFlag = aFailureIsGeneratedBy {
       stratifyTestFrame()
-    })
+    }
   }
 
   Then("""a Stratified Frame is returned and exported to CSV with the strata assigned the Strata number from the Stratification Strata.*?:$"""){ theExpectedResult: DataTable =>

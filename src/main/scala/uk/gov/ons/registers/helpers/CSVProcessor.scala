@@ -9,7 +9,6 @@ import org.apache.spark.sql._
 import org.apache.spark.sql.catalyst.ScalaReflection
 import org.apache.spark.sql.types.StructType
 
-// TODO - ADD ERROR CONTROL
 object CSVProcessor {
   val CSV = "csv"
   private val Header = "header"
@@ -23,7 +22,7 @@ object CSVProcessor {
       .csv(path.toString)
 
   def readFileAsSQLDataContainerElseException[A](readFromFileFunc: Path => A, filePathStr: Path)
-                                                (implicit sparkSession: SparkSession): Either[Throwable, A] =
+    (implicit sparkSession: SparkSession): Either[Throwable, A] =
     TrySupport.toEither( Try(
       readFromFileFunc(filePathStr)
     ))

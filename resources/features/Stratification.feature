@@ -12,7 +12,8 @@ Feature: Create a Stratified Frame
         And an output path to store the result is given:
             | output_path                 |
             | stratification_test_output_ |
-        When an exception in <language> is thrown for Frame not being found upon trying to Stratify
+        When a Stratified Frame creation is attempted
+        Then an exception in <language> is thrown for Frame not being found upon trying to Stratify
 
         @JVM
         Examples:
@@ -37,7 +38,8 @@ Feature: Create a Stratified Frame
         And an output path to store the result is given:
             | output_path                 |
             | stratification_test_output_ |
-        When an exception in <language> is thrown for Stratified Properties not being found upon trying to Stratify
+        When a Stratified Frame creation is attempted
+        Then an exception in <language> is thrown for Stratified Properties not being found upon trying to Stratify
 
         @JVM
         Examples:
@@ -62,7 +64,8 @@ Feature: Create a Stratified Frame
             | inqcode | cell_no | cell_desc | seltype | lower_class | upper_class | lower_size | upper_size | prn_start   | no_reqd |
             | 687     | 5816    | Sample    | P       | 45111       | 45190       | 50         | 9          | 0.539298879 | 3       |
         And an output path to store the result is not given
-        When an exception in <language> is thrown for output directory not being found upon trying to Stratify
+        When a Stratified Frame creation is attempted
+        Then an exception in <language> is thrown for output directory not being found upon trying to Stratify
 
         @JVM
         Examples:

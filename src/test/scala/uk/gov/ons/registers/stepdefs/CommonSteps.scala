@@ -13,7 +13,7 @@ class CommonSteps extends ScalaDsl with EN {
   And("""a (?:Strata|Strata of selection type Prn-Sampling|Strata of selection type Census|Stratas) from Stratification Properties file:$"""){ aPropertiesTable: DataTable =>
     stratificationPropsPath = saveTableAsCsv(
       dataTable = aPropertiesTable,
-      prefix = "stratified_properties"
+      prefix = "stratified_properties_"
     )
   }
 
@@ -28,6 +28,9 @@ class CommonSteps extends ScalaDsl with EN {
 
   And("""an output path to store the result is not given"""){ () =>
     outputPath = createAPath(pathStr = "")
+  }
 
+  Then("""an exception in Scala is thrown for .+ not being found upon trying to (?:Sample|Stratify)$"""){ () =>
+    assert(methodFailureFlag)
   }
 }

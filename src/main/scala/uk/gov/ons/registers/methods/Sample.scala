@@ -16,7 +16,7 @@ class Sample(stratifiedFramePath: Path)(implicit activeSession: SparkSession) {
 
   import activeSession.implicits._
 
-  // TODO - ADD logggers/ logging
+  // TODO - ADD loggers/ logging
   def create(stratificationPropsPath: Path, outputPath: Path): DataFrame = {
 
     val (stratifiedFrameDF, stratificationPropsDS) =

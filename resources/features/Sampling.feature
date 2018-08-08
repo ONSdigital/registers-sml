@@ -17,7 +17,8 @@ Feature: Creating a Sample
         And an output path to store the result is given:
             | output_path         |
             | sample_test_output_ |
-        When an exception in <language> is thrown for Stratified Frame not being found upon trying to Sample
+        When a Sample creation is attempted
+        Then an exception in <language> is thrown for Stratified Frame not being found upon trying to Sample
 
         @JVM
         Examples:
@@ -42,7 +43,8 @@ Feature: Creating a Sample
         And an output path to store the result is given:
             | output_path         |
             | sample_test_output_ |
-        When an exception in <language> is thrown for Stratified Properties not being found upon trying to Sample
+        When a Sample creation is attempted
+        Then an exception in <language> is thrown for Stratified Properties not being found upon trying to Sample
 
         @JVM
         Examples:
@@ -69,7 +71,8 @@ Feature: Creating a Sample
             | 687     | 5811    | Admin     | U       | 45111       | 45190       | 0          | 9          | 0.000000000 | 0       |
             | 687     | 5812    | Admin     | U       | 45111       | 45190       | 10         | 49         | 0.000000000 | 0       |
         And an output path to store the result is not given
-        When an exception in <language> is thrown for output directory not being found upon trying to Sample
+        When a Sample creation is attempted
+        Then an exception in <language> is thrown for output directory not being found upon trying to Sample
 
         @JVM
         Examples:

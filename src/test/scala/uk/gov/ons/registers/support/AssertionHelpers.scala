@@ -33,7 +33,9 @@ object AssertionHelpers {
       expression
       false
     } catch {
-      case _: Throwable => true
+      case ex: Throwable =>
+        println(s"[INFO] Found expected error: ${ex.getMessage}") //TODO change to test log
+        true
     }
 
   def displayData(expectedDF: DataFrame, printLabel: String): Unit = {
