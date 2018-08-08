@@ -5,7 +5,7 @@ import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.types.DataTypes
 
 import uk.gov.ons.registers.model.CommonUnitFrameDataFields.prn
-import uk.gov.ons.registers.model.stratification.PrnStatisticalProperty.{precision, scale}
+import uk.gov.ons.registers.model.stratification.PrnNumericalProperty.{precision, scale}
 import uk.gov.ons.registers.model.stratification.StratificationPropertiesFields.cellNumber
 
 object SampleImpl {

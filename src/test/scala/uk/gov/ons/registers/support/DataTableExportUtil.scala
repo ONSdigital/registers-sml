@@ -3,7 +3,7 @@ package uk.gov.ons.registers.support
 import java.io.{BufferedWriter, File, FileWriter}
 import java.nio.file.Path
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters.collectionAsScalaIterableConverter
 
 import cucumber.api.DataTable
 
@@ -24,9 +24,9 @@ object DataTableExportUtil {
     val aListOfTableRows = dataTable.asLists(classOf[String])
     val testTempPath = TestFileEnvSetup.createTempFile(prefix = prefix)
     withWriter(file = testTempPath.toFile){ writer =>
-      aListOfTableRows.foreach { row =>
+      aListOfTableRows.asScala.foreach { row =>
         // TODO - move delimitor
-        writer.append(row.mkString(","))
+        writer.append(row.asScala.mkString(","))
         writer.newLine()
       }
     }

@@ -19,13 +19,14 @@ class Stratification(inputPath: Path)(implicit activeSession: SparkSession) {
     val (frameDF, stratificationPropsDS) =
       TransformFilesAndDataFrames.validateAndConstructInputs[Strata](
         properties = inputPath, dataFile = stratificationPropsPath)
+    TransformFilesAndDataFrames.validateOutputDirectory(outputPath)
 
     val arrayOfStratifiedFrames = stratificationPropsDS.rdd.collect.map{ row: Strata =>
       frameDF.stratify1(sic07LowerClass = row.lower_class, sic07UpperClass = row.upper_class,
         payeEmployeesLowerRange = row.lower_size, payeEmployeesUpperRange = row.upper_size, cellNo = row.cell_no)
     }
-    val collectStrataFramesDF = TransformFilesAndDataFrames.tranformToDataFrame(arrayOfDatasets = arrayOfStratifiedFrames)
-    val strataFramesDF = frameDF.postStratification(strataAllocatedDataFrame = collectStrataFramesDF)
+    val collectStrataFramesDF = TransformFilesAndDataFrames.transformToDataFrame(arrayOfDatasets = arrayOfStratifiedFrames)
+    val strataFramesDF = frameDF.postStratification1(strataAllocatedDataFrame = collectStrataFramesDF)
     exportDfAsCsvOrError(dataFrame = strataFramesDF, path = outputPath)
     SparkSessionManager.stopSession()
     strataFramesDF

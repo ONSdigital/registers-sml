@@ -40,7 +40,7 @@ object AssertionHelpers {
     println("Compare Rows")
     println(s"Expected $printLabel Output")
     expectedDF.show()
-    println(s"Scala $printLabel output")
+    println(s"Scala $printLabel Output")
     outputDataDF.show()
   }
 }
