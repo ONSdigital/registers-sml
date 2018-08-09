@@ -5,6 +5,8 @@ import java.nio.file.Path
 
 import scala.collection.JavaConverters.collectionAsScalaIterableConverter
 
+import uk.gov.ons.registers.helpers.CSVProcessor.DefaultFileDelimiter
+
 import cucumber.api.DataTable
 
 
@@ -22,11 +24,10 @@ object DataTableExportUtil {
 
   def saveTableAsCsv(dataTable: DataTable, prefix: String): Path = {
     val aListOfTableRows = dataTable.asLists(classOf[String])
-    val testTempPath = TestFileEnvSetup.createTempFile(prefix = prefix)
+    val testTempPath = TestFileEnvSetup.createTempFile(prefix)
     withWriter(file = testTempPath.toFile){ writer =>
       aListOfTableRows.asScala.foreach { row =>
-        // TODO - move delimitor
-        writer.append(row.asScala.mkString(","))
+        writer.append(row.asScala.mkString(DefaultFileDelimiter))
         writer.newLine()
       }
     }

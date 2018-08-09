@@ -10,6 +10,7 @@ import org.apache.spark.sql.catalyst.ScalaReflection
 import org.apache.spark.sql.types.StructType
 
 object CSVProcessor {
+  val DefaultFileDelimiter = ","
   val CSV = "csv"
   private val Header = "header"
 

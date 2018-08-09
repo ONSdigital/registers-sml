@@ -1,7 +1,7 @@
 package uk.gov.ons.registers.stepdefs
 
 import uk.gov.ons.registers.methods.Stratification
-import uk.gov.ons.registers.support.AssertionHelpers._
+import uk.gov.ons.registers.support.AssertionHelpers.{aFailureIsGeneratedBy, assertDataFrameEquality, displayData}
 import uk.gov.ons.registers.support.DataTableExportUtil.saveTableAsCsv
 import uk.gov.ons.registers.support.TestFileEnvSetup.createAPath
 import uk.gov.ons.stepdefs.Helpers

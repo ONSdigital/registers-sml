@@ -9,9 +9,9 @@ import scala.util.Try
 import org.apache.spark.sql._
 
 import uk.gov.ons.registers.SparkSessionManager.sparkSession.{createDataFrame, sparkContext}
-import uk.gov.ons.registers.helpers.CSVProcessor._
+import uk.gov.ons.registers.helpers.CSVProcessor.{DefaultFileDelimiter, readCsvFileAsDataFrame, readCsvFileAsDataset, readFileAsSQLDataContainerElseException}
 import uk.gov.ons.registers.helpers.EitherSupport.fromEithers
-import uk.gov.ons.registers.helpers.TrySupport
+import uk.gov.ons.registers.helpers.{CSVProcessor, TrySupport}
 
 object TransformFilesAndDataFrames {
   private def readInputDataAsDF(dataInputPath: Path)(implicit sparkSession: SparkSession): Either[Throwable, DataFrame] =
@@ -29,7 +29,7 @@ object TransformFilesAndDataFrames {
     val dataInputDfOrError = readInputDataAsDF(properties)
     val propertiesDsOrError = readPropertiesAsDs[T](dataFile)
     fromEithers(dataInputDfOrError, propertiesDsOrError)(
-      onFailure = errs => throw new Exception(errs.map(_.getMessage).mkString(",")),
+      onFailure = errs => throw new Exception(errs.map(_.getMessage).mkString(DefaultFileDelimiter)),
       onSuccess = (inputDataFrame, propertiesDataset) => inputDataFrame -> propertiesDataset)
   }
 
@@ -44,7 +44,6 @@ object TransformFilesAndDataFrames {
 
   // Throws error as a temporary solution until reporting is introduced
   def exportDfAsCsvOrError(dataFrame: DataFrame, path: Path, headerOption: Boolean = true): Unit =
-    TrySupport.toEither(
-      Try(export(dataFrame, path, headerOption))
-    ).fold(err => throw new Exception(s"Failed to export to CSV with error: ${err.getMessage}"), identity)
+    TrySupport.toEither( Try(CSVProcessor.export(dataFrame, path, headerOption)) )
+      .fold(err => throw new Exception(s"Failed to export to CSV with error: ${err.getMessage}"), identity)
 }

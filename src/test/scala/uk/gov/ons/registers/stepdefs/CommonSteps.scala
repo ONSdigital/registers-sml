@@ -10,7 +10,7 @@ import cucumber.api.scala.{EN, ScalaDsl}
 
 class CommonSteps extends ScalaDsl with EN {
 
-  And("""a (?:Strata|Strata of selection type Prn-Sampling|Strata of selection type Census|Stratas) from Stratification Properties file:$"""){ aPropertiesTable: DataTable =>
+  And("""a Strata(?:|s| of selection type (?:Prn-Sampling|Census)) from Stratification Properties file:$"""){ aPropertiesTable: DataTable =>
     stratificationPropsPath = saveTableAsCsv(
       dataTable = aPropertiesTable,
       prefix = "stratified_properties_"
