@@ -21,6 +21,7 @@ object SampleImpl {
       * @return a DataFrame of size defined by sampleSize and is sequentially after the given start point - looping
       *         around the DataFrame if needed
       */
+    @deprecated
     def sample1(startPoint: BigDecimal, sampleSize: Int, cellNo: Int): DataFrame = {
       val prnAsBigDecimal = s"${prn}_temp"
       val inputDataWithBigDecimal = inputDataDF
@@ -82,6 +83,7 @@ object SampleImpl {
       * @param cellNo number appended to each frame row of sample to correspond to strata
       * @return a DataFrame with all records for census
       */
+    @deprecated
     def sample1(cellNo: Int): DataFrame =
       inputDataDF
         .withColumn(cellNumber, lit(cellNo))

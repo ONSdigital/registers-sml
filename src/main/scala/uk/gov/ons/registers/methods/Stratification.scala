@@ -21,7 +21,12 @@ class Stratification(inputPath: Path)(implicit activeSession: SparkSession) {
         properties = inputPath, dataFile = stratificationPropsPath)
     TransformFilesAndDataFrames.validateOutputDirectory(outputPath)
 
-    val arrayOfStratifiedFrames = stratificationPropsDS.rdd.collect.map{ selectionStrata: SelectionStrata =>
+    /**
+      * NOTE - the driver is solely aware of the type T in Dataset[T] and cannot be inferred by worker nodes.
+      *        Collect forces the transformation to be returned to the node allowing the proceeding step to incur
+      *        as desired
+      */
+    val arrayOfStratifiedFrames = stratificationPropsDS.collect.map{ selectionStrata: SelectionStrata =>
       frameDF.stratify1(sic07LowerClass = selectionStrata.lower_class, sic07UpperClass = selectionStrata.upper_class,
         payeEmployeesLowerRange = selectionStrata.lower_size, payeEmployeesUpperRange = selectionStrata.upper_size,
         cellNo = selectionStrata.cell_no)

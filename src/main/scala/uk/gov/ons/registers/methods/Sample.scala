@@ -25,9 +25,13 @@ class Sample(stratifiedFramePath: Path)(implicit activeSession: SparkSession) {
     TransformFilesAndDataFrames.validateOutputDirectory(outputPath)
     def checkSelType(`type`: String): Column = stratificationPropsDS(selectionType) === `type`
 
-    // TODO - Check Join || make inputDF distributed and pass props
+    /**
+      * NOTE - the driver is solely aware of the type T in Dataset[T] and cannot be inferred by worker nodes.
+      *        Collect forces the transformation to be returned to the node allowing the proceeding step to incur
+      *        as desired
+      */
     val arrayOfSamples = stratificationPropsDS
-      .filter(checkSelType(Initial.census) || checkSelType(Initial.prnSampling)).rdd.collect
+      .filter(checkSelType(Initial.census) || checkSelType(Initial.prnSampling)).collect
       .flatMap{ selectionStrata: SelectionStrata =>
         if (selectionStrata.seltype == Initial.prnSampling)
         // TODO - type classes for prn-sampling + validation there and another with census with no validation
