@@ -5,7 +5,7 @@ import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.types.DataTypes
 
 import uk.gov.ons.registers.model.CommonUnitFrameDataFields.prn
-import uk.gov.ons.registers.model.stratification.PrnStatisticalProperty.{precision, scale}
+import uk.gov.ons.registers.model.stratification.PrnNumericalProperty.{precision, scale}
 import uk.gov.ons.registers.model.stratification.StratificationPropertiesFields.cellNumber
 
 object SampleImpl {
@@ -21,10 +21,11 @@ object SampleImpl {
       * @return a DataFrame of size defined by sampleSize and is sequentially after the given start point - looping
       *         around the DataFrame if needed
       */
+    @deprecated
     def sample1(startPoint: BigDecimal, sampleSize: Int, cellNo: Int): DataFrame = {
       val prnAsBigDecimal = s"${prn}_temp"
       val inputDataWithBigDecimal = inputDataDF
-        .withColumn(prnAsBigDecimal, inputDataDF.col(prn).cast(DataTypes.createDecimalType(precision, scale)))
+        .withColumn(colName = prnAsBigDecimal, col = inputDataDF.col(prn).cast(DataTypes.createDecimalType(precision, scale)))
 
       val filtered = inputDataWithBigDecimal
         .orderBy(prnAsBigDecimal)
@@ -82,6 +83,7 @@ object SampleImpl {
       * @param cellNo number appended to each frame row of sample to correspond to strata
       * @return a DataFrame with all records for census
       */
+    @deprecated
     def sample1(cellNo: Int): DataFrame =
       inputDataDF
         .withColumn(cellNumber, lit(cellNo))

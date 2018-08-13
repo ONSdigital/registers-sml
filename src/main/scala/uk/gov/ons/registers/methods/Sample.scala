@@ -4,11 +4,11 @@ import java.nio.file.Path
 
 import org.apache.spark.sql.{Column, DataFrame, SparkSession}
 
-import uk.gov.ons.registers.model.SelectionTypes
-import uk.gov.ons.registers.model.SelectionTypes.{census, prnSampling}
-import uk.gov.ons.registers.model.stratification.Strata
+import uk.gov.ons.registers.TransformFilesAndDataFrames.exportDfAsCsvOrError
+import uk.gov.ons.registers.model.SelectionTypes.Initial
+import uk.gov.ons.registers.model.stratification.SelectionStrata
 import uk.gov.ons.registers.model.stratification.StratificationPropertiesFields.selectionType
-import uk.gov.ons.registers.{ParamValidation, SparkSessionManager, TransformFiles}
+import uk.gov.ons.registers.{ParamValidation, SparkSessionManager, TransformFilesAndDataFrames}
 
 class Sample(stratifiedFramePath: Path)(implicit activeSession: SparkSession) {
 
@@ -16,31 +16,38 @@ class Sample(stratifiedFramePath: Path)(implicit activeSession: SparkSession) {
 
   import activeSession.implicits._
 
-  // TODO - ADD logggers/ logging
+  // TODO - ADD loggers/ logging
   def create(stratificationPropsPath: Path, outputPath: Path): DataFrame = {
 
     val (stratifiedFrameDF, stratificationPropsDS) =
-      TransformFiles.validateAndConstructInputs[Strata](
+      TransformFilesAndDataFrames.validateAndConstructInputs[SelectionStrata](
         properties = stratifiedFramePath, dataFile = stratificationPropsPath)
+    TransformFilesAndDataFrames.validateOutputDirectory(outputPath)
     def checkSelType(`type`: String): Column = stratificationPropsDS(selectionType) === `type`
 
-    // TODO - Check Join || make inputDF distributed and pass props
+    /**
+      * NOTE - the driver is solely aware of the type T in Dataset[T] and cannot be inferred by worker nodes.
+      *        Collect forces the transformation to be returned to the node allowing the proceeding step to incur
+      *        as desired
+      */
     val arrayOfSamples = stratificationPropsDS
-      .filter(checkSelType(census) || checkSelType(prnSampling)).rdd.collect
-      .flatMap{ row: Strata =>
-        if (row.seltype == SelectionTypes.prnSampling)
-          // TODO - type classes for prn-sampling + validation there and another with census with no validation
-          // read in row.seltype as case object to figure out which type of op it should be - getting right instance
-          ParamValidation.validate(inputDF = stratifiedFrameDF, strataNumber = row.cell_no, startingPrn = row.prn_start,
-            sampleSize = row.no_reqd).map( sampleSize =>
-              stratifiedFrameDF.sample2(row.prn_start, sampleSize, row.cell_no)
-            )
-        else Some(stratifiedFrameDF.sample2(row.cell_no))
+      .filter(checkSelType(Initial.census) || checkSelType(Initial.prnSampling)).collect
+      .flatMap{ selectionStrata: SelectionStrata =>
+        if (selectionStrata.seltype == Initial.prnSampling)
+        // TODO - type classes for prn-sampling + validation there and another with census with no validation
+        // read in selectionStrata.seltype as case object to figure out which type of op it should be - getting right instance
+          ParamValidation.validate(inputDF = stratifiedFrameDF, strataNumber = selectionStrata.cell_no, startingPrn = selectionStrata.prn_start,
+            sampleSize = selectionStrata.no_reqd).map( sampleSize =>
+            stratifiedFrameDF.sample2(selectionStrata.prn_start, sampleSize, selectionStrata.cell_no)
+          )
+        else Some(stratifiedFrameDF.sample2(selectionStrata.cell_no))
       }
 
-    val sampleDF = TransformFiles.exportDatasetAsCSV(arrayOfDatasets = arrayOfSamples, outputPath = outputPath)
+    val sampleStratasDF = TransformFilesAndDataFrames.transformToDataFrame(arrayOfDatasets = arrayOfSamples)
+    exportDfAsCsvOrError(dataFrame = sampleStratasDF, path = outputPath)
+    // TODO - doesn;t close when failure
     SparkSessionManager.stopSession()
-    sampleDF
+    sampleStratasDF
   }
 }
 
