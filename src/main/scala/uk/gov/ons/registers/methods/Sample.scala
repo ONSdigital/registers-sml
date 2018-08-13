@@ -45,6 +45,7 @@ class Sample(stratifiedFramePath: Path)(implicit activeSession: SparkSession) {
 
     val sampleStratasDF = TransformFilesAndDataFrames.transformToDataFrame(arrayOfDatasets = arrayOfSamples)
     exportDfAsCsvOrError(dataFrame = sampleStratasDF, path = outputPath)
+    // TODO - doesn;t close when failure
     SparkSessionManager.stopSession()
     sampleStratasDF
   }

@@ -33,7 +33,7 @@ class StratificationSteps extends ScalaDsl with EN {
   }
 
   When("""a Stratified Frame creation is attempted$"""){ () =>
-    methodFailureFlag = aFailureIsGeneratedBy {
+    methodResult = aFailureIsGeneratedBy {
       stratifyTestFrame()
     }
   }

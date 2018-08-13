@@ -15,6 +15,7 @@ import cucumber.api.DataTable
 object DataFrameTransformation {
   private val HeaderIndex = 1
 
+  // TODO - look into cucumber transformers
   private def createDataFrame(aListOfLines: Seq[List[String]]): DataFrame = {
     val rows = aListOfLines.drop(HeaderIndex).map(Row.fromSeq(_))
     val rdd = sparkSession.sparkContext.makeRDD(rows)

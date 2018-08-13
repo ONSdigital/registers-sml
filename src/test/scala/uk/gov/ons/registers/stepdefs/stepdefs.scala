@@ -12,5 +12,5 @@ package object stepdefs {
 
   var outputDataDF: DataFrame = _
 
-  var methodFailureFlag: Boolean = _
+  var methodResult: Option[Exception] = _
 }

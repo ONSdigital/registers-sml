@@ -33,7 +33,7 @@ class SamplingSteps extends ScalaDsl with EN{
   }
 
   When("""a Sample creation is attempted$"""){ () =>
-    methodFailureFlag = aFailureIsGeneratedBy {
+    methodResult = aFailureIsGeneratedBy {
       createSampleTest()
     }
   }

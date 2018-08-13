@@ -2,6 +2,7 @@ package uk.gov.ons.registers.stepdefs
 
 import scala.collection.JavaConverters.asScalaBufferConverter
 
+import uk.gov.ons.registers.support.AssertionHelpers.assertThrown
 import uk.gov.ons.registers.support.DataTableExportUtil.saveTableAsCsv
 import uk.gov.ons.registers.support.TestFileEnvSetup.{createAPath, createTempDirectory}
 
@@ -31,6 +32,6 @@ class CommonSteps extends ScalaDsl with EN {
   }
 
   Then("""an exception in Scala is thrown for .+ not being found upon trying to (?:Sample|Stratify)$"""){ () =>
-    assert(methodFailureFlag)
+    assertThrown()
   }
 }
