@@ -14,9 +14,8 @@ object ParamValidation {
     dataFrame.filter(_.getAs[String](cellNumber).toInt == thisCellNumber).count()
 
   private def logWithErrorMsg[A](strataNumber: Int)(msg: A): Option[Nothing] = {
-    val logErrorMsg = s"[WARN] Could not process strata ($strataNumber): $msg"
-    // TODO - REPLACE AND ADD LOGGER
-    println(logErrorMsg)
+    val logErrorMsg = s"ould not process strata ($strataNumber): $msg"
+    LogPatch.log(level = "warn", msg = logErrorMsg)
     None
   }
 

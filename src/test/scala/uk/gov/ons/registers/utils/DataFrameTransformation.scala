@@ -1,4 +1,4 @@
-package uk.gov.ons.registers.support
+package uk.gov.ons.registers.utils
 
 import scala.collection.JavaConverters.asScalaBufferConverter
 
@@ -7,7 +7,7 @@ import org.apache.spark.sql.{DataFrame, Row}
 
 import uk.gov.ons.registers.stepdefs.outputPath
 import uk.gov.ons.registers.support.AssertionHelpers.assertAndReturnCsvOfSampleCollection
-import uk.gov.ons.registers.support.FileProcessorHelper.lineAsListOfFields
+import uk.gov.ons.registers.utils.FileProcessorHelper.lineAsListOfFields
 import uk.gov.ons.stepdefs.Helpers.sparkSession
 
 import cucumber.api.DataTable

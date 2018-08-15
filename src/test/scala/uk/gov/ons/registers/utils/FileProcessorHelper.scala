@@ -1,4 +1,4 @@
-package uk.gov.ons.registers.support
+package uk.gov.ons.registers.utils
 
 import java.io.File
 

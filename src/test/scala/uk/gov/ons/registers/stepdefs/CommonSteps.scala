@@ -3,7 +3,7 @@ package uk.gov.ons.registers.stepdefs
 import scala.collection.JavaConverters.asScalaBufferConverter
 
 import uk.gov.ons.registers.support.AssertionHelpers.assertThrown
-import uk.gov.ons.registers.support.DataTableExportUtil.saveTableAsCsv
+import uk.gov.ons.registers.utils.DataTableExportUtil.saveTableAsCsv
 import uk.gov.ons.registers.support.TestFileEnvSetup.{createAPath, createTempDirectory}
 
 import cucumber.api.DataTable

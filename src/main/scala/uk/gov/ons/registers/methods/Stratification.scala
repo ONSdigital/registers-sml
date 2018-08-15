@@ -16,26 +16,26 @@ class Stratification(inputPath: Path)(implicit activeSession: SparkSession) {
   import activeSession.implicits._
 
   def stratify(stratificationPropsPath: Path, outputPath: Path): DataFrame = {
-    val (frameDF, stratificationPropsDS) =
-      TransformFilesAndDataFrames.validateAndConstructInputs[SelectionStrata](
-        properties = inputPath, dataFile = stratificationPropsPath)
-    TransformFilesAndDataFrames.validateOutputDirectory(outputPath)
-
-    /**
-      * NOTE - the driver is solely aware of the type T in Dataset[T] and cannot be inferred by worker nodes.
-      *        Collect forces the transformation to be returned to the node allowing the proceeding step to incur
-      *        as desired
-      */
-    val arrayOfStratifiedFrames = stratificationPropsDS.collect.map{ selectionStrata: SelectionStrata =>
-      frameDF.stratify1(sic07LowerClass = selectionStrata.lower_class, sic07UpperClass = selectionStrata.upper_class,
-        payeEmployeesLowerRange = selectionStrata.lower_size, payeEmployeesUpperRange = selectionStrata.upper_size,
-        cellNo = selectionStrata.cell_no)
+    SparkSessionManager.terminateSession {
+      val (frameDF, stratificationPropsDS) =
+        TransformFilesAndDataFrames.validateAndConstructInputs[SelectionStrata](
+          properties = inputPath, dataFile = stratificationPropsPath)
+      TransformFilesAndDataFrames.validateOutputDirectory(outputPath)
+      /**
+        * NOTE - the driver is solely aware of the type T in Dataset[T] and cannot be inferred by worker nodes.
+        *        Collect forces the transformation to be returned to the node allowing the proceeding step to incur
+        *        as desired
+        */
+      val arrayOfStratifiedFrames = stratificationPropsDS.collect.map{ selectionStrata: SelectionStrata =>
+        frameDF.stratify1(sic07LowerClass = selectionStrata.lower_class, sic07UpperClass = selectionStrata.upper_class,
+          payeEmployeesLowerRange = selectionStrata.lower_size, payeEmployeesUpperRange = selectionStrata.upper_size,
+          cellNo = selectionStrata.cell_no)
+      }
+      val collectStrataFramesDF = TransformFilesAndDataFrames.transformToDataFrame(arrayOfDatasets = arrayOfStratifiedFrames)
+      val strataFramesDF = frameDF.postStratification1(strataAllocatedDataFrame = collectStrataFramesDF)
+      exportDfAsCsvOrError(dataFrame = strataFramesDF, path = outputPath)
+      strataFramesDF
     }
-    val collectStrataFramesDF = TransformFilesAndDataFrames.transformToDataFrame(arrayOfDatasets = arrayOfStratifiedFrames)
-    val strataFramesDF = frameDF.postStratification1(strataAllocatedDataFrame = collectStrataFramesDF)
-    exportDfAsCsvOrError(dataFrame = strataFramesDF, path = outputPath)
-    SparkSessionManager.stopSession()
-    strataFramesDF
   }
 }
 

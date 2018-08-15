@@ -5,9 +5,10 @@ import java.nio.file.Path
 
 import org.apache.spark.sql.DataFrame
 
+import uk.gov.ons.registers.TestLogPatch
 import uk.gov.ons.registers.helpers.CSVProcessor.CSV
 import uk.gov.ons.registers.stepdefs.{methodResult, outputDataDF}
-import uk.gov.ons.registers.support.DataFrameTransformation.{createCsvOutputDataFrame, createExpectedDataFrame}
+import uk.gov.ons.registers.utils.DataFrameTransformation.{createCsvOutputDataFrame, createExpectedDataFrame}
 
 import cucumber.api.DataTable
 
@@ -27,14 +28,13 @@ object AssertionHelpers {
     assert(csvFileOutputDF.collect sameElements expectedOutputDF.collect)
     expectedOutputDF
   }
-
   def aFailureIsGeneratedBy[T](expression: => T): Option[Exception] =
     try {
       expression
       None
     } catch {
       case ex: Throwable =>
-        println(s"[INFO] Found expected error: ${ex.getMessage}") //TODO change to test log
+        TestLogPatch.log(msg = s"Found expected error: ${ex.getMessage}")
         Some(new Exception(ex.getMessage))
     }
 

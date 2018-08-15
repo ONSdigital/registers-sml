@@ -1,4 +1,4 @@
-package uk.gov.ons.registers.support
+package uk.gov.ons.registers.utils
 
 import java.io.{BufferedWriter, File, FileWriter}
 import java.nio.file.Path
@@ -6,6 +6,7 @@ import java.nio.file.Path
 import scala.collection.JavaConverters.collectionAsScalaIterableConverter
 
 import uk.gov.ons.registers.helpers.CSVProcessor.DefaultFileDelimiter
+import uk.gov.ons.registers.support.TestFileEnvSetup
 
 import cucumber.api.DataTable
 
