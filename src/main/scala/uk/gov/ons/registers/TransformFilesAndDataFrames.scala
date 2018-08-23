@@ -8,7 +8,7 @@ import scala.util.Try
 
 import org.apache.spark.sql._
 
-import uk.gov.ons.registers.SparkSessionManager.sparkSession.{createDataFrame, sparkContext}
+//import uk.gov.ons.registers.SparkSessionManager.sparkSession.{createDataFrame, sparkContext}
 import uk.gov.ons.registers.helpers.CSVProcessor.{DefaultFileDelimiter, readCsvFileAsDataFrame, readCsvFileAsDataset, readFileAsSQLDataContainerElseException}
 import uk.gov.ons.registers.helpers.EitherSupport.fromEithers
 import uk.gov.ons.registers.helpers.{CSVProcessor, TrySupport}
@@ -33,9 +33,11 @@ object TransformFilesAndDataFrames {
       onSuccess = (inputDataFrame, propertiesDataset) => inputDataFrame -> propertiesDataset)
   }
 
-  def transformToDataFrame(arrayOfDatasets: Array[Dataset[Row]]): DataFrame = {
+  def transformToDataFrame(arrayOfDatasets: Array[Dataset[Row]])(implicit sparkSession: SparkSession): Dataset[Row] = {
+    import sparkSession.{sparkContext, createDataFrame}
+
     val emptyDF = createDataFrame(sparkContext.emptyRDD[Row], arrayOfDatasets.head.schema)
-    arrayOfDatasets.foldLeft(emptyDF)((curr, next) => curr.union(next))
+    arrayOfDatasets.fold(emptyDF)((curr, next) => curr.union(next))
   }
 
   // TODO move this into validateAndConstructInputs()

@@ -36,11 +36,10 @@ class Sample(stratifiedFramePath: Path)(implicit activeSession: SparkSession) {
           // read in selectionStrata.seltype as case object to figure out which type of op it should be - getting right instance
             ParamValidation.validate(inputDF = stratifiedFrameDF, strataNumber = selectionStrata.cell_no, startingPrn = selectionStrata.prn_start,
               sampleSize = selectionStrata.no_reqd).map( sampleSize =>
-              stratifiedFrameDF.sample2(selectionStrata.prn_start, sampleSize, selectionStrata.cell_no)
+              stratifiedFrameDF.sample1(selectionStrata.prn_start, sampleSize, selectionStrata.cell_no)
             )
-          else Some(stratifiedFrameDF.sample2(selectionStrata.cell_no))
+          else Some(stratifiedFrameDF.sample1(selectionStrata.cell_no))
         }
-
       val sampleStratasDF = TransformFilesAndDataFrames.transformToDataFrame(arrayOfDatasets = arrayOfSamples)
       exportDfAsCsvOrError(dataFrame = sampleStratasDF, path = outputPath)
       sampleStratasDF

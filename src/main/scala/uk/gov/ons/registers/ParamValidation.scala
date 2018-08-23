@@ -2,19 +2,18 @@ package uk.gov.ons.registers
 
 import org.apache.spark.sql.DataFrame
 
+import uk.gov.ons.registers.Validation.ErrorMessage
 import uk.gov.ons.registers.model.stratification.StratificationPropertiesFields.cellNumber
 
 
 object ParamValidation {
   private val lowerBoundLimit = 0
-  private type ErrorMessage = String
-
   // TODO - error control
   private def inputDfSize(dataFrame: DataFrame)(thisCellNumber: Int): Long =
     dataFrame.filter(_.getAs[String](cellNumber).toInt == thisCellNumber).count()
 
   private def logWithErrorMsg[A](strataNumber: Int)(msg: A): Option[Nothing] = {
-    val logErrorMsg = s"ould not process strata ($strataNumber): $msg"
+    val logErrorMsg = s"Could not process strata ($strataNumber): $msg"
     LogPatch.log(level = "warn", msg = logErrorMsg)
     None
   }
