@@ -11,4 +11,10 @@ object TrySupport {
       case Success(s) => Right(s)
       case Failure(ex) => Left(ex)
     }
+
+  def fold[A, B](aTry: Try[A])(onFailure: Throwable => B, onSuccess: A => B): B =
+    aTry match {
+      case Success(s) => onSuccess(s)
+      case Failure(ex) => onFailure(ex)
+    }
 }

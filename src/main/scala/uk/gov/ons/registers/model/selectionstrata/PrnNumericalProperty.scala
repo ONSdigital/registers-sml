@@ -1,4 +1,4 @@
-package uk.gov.ons.registers.model.stratification
+package uk.gov.ons.registers.model.selectionstrata
 
 object PrnNumericalProperty {
   val scale = 9

@@ -15,6 +15,7 @@ private[registers] object SparkSessionManager {
       val resultDF = try method
       catch {
         case ex: Exception =>
+//          throw ex(s"Failed to construct DataFrame when running method with error; [${ex.getMessage}]")
           throw new Exception(s"Failed to construct DataFrame when running method with error; [${ex.getMessage}]")
       }
       finally

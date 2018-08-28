@@ -10,9 +10,10 @@ import uk.gov.ons.registers.support.TestFileEnvSetup
 
 import cucumber.api.DataTable
 
-
+@deprecated
 object DataTableExportUtil {
   // Loan
+  @deprecated
   private def withWriter(file: File)(f: BufferedWriter => Unit): Unit = {
     val fileWriter = new FileWriter(file)
     try {
@@ -23,6 +24,7 @@ object DataTableExportUtil {
     finally fileWriter.close()
   }
 
+  @deprecated
   def saveTableAsCsv(dataTable: DataTable, prefix: String): Path = {
     val aListOfTableRows = dataTable.asLists(classOf[String])
     val testTempPath = TestFileEnvSetup.createTempFile(prefix)

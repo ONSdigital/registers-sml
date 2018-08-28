@@ -1,14 +1,11 @@
 package uk.gov.ons.registers
 
-import java.nio.file.Path
-
 import org.apache.spark.sql.DataFrame
 
 package object stepdefs {
-  var outputPath: Path = _
-  var framePath: Path = _
-  var stratifiedFramePath: Path = _
-  var stratificationPropsPath: Path = _
+  var frameDF: DataFrame = _
+  var stratifiedFrameDF: DataFrame = _
+  var stratificationPropsDF: DataFrame = _
 
   var outputDataDF: DataFrame = _
 

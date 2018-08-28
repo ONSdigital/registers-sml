@@ -1,47 +1,38 @@
 package uk.gov.ons.registers.methods.impl
 
 import org.apache.spark.sql.DataFrame
-import org.apache.spark.sql.types.DataTypes
 
+import uk.gov.ons.registers.TransformDataFrames.filterByCellNumber
 import uk.gov.ons.registers.model.CommonUnitFrameDataFields.prn
-import uk.gov.ons.registers.model.stratification.PrnNumericalProperty.{precision, scale}
-import uk.gov.ons.registers.model.stratification.StratificationPropertiesFields.cellNumber
 
 object SampleImpl {
-
   implicit class SampleMethodsImpl(inputDataDF: DataFrame) {
     /**
       * USAGE: PRN Sampling (P)
       *
-      * @note  The omitted (by filter expression) rows is appended to the resulting filtered DataFrame. As a result
-      *        given a high starting point or a large enough sample size the selection of a Sample can loop the
-      *        DataFrame sequentially.
+      * @note The omitted (by filter expression) rows is appended to the resulting filtered DataFrame. As a result
+      *       given a high starting point or a large enough sample size the selection of a Sample can loop the
+      *       DataFrame sequentially.
       * @param startPoint - splitting point of frame DataFrame [Stratification Property]
       * @param sampleSize - number of frame rows to return [Stratification Property]
-      * @param cellNo - appended value to each row per strata [Stratification Property]
+      * @param cellNo     - appended value to each row per strata [Stratification Property]
       * @return a DataFrame of a subset population of Stratified Frame defined by Sample Size all of which with the
       *         expected Cell Number.
       */
     def sample1(startPoint: BigDecimal, sampleSize: Int, cellNo: Int): DataFrame = {
-      val strata = inputDataDF
-        .filter(_.getAs[String](cellNumber).toInt == cellNo)
+      val strata = filterByCellNumber(inputDataDF)(cellNo)
 
-      val prnAsBigDecimal = s"${prn}_temp"
-      val inputDataWithBigDecimal = strata
-        .withColumn(prnAsBigDecimal, strata.col(prn).cast(DataTypes.createDecimalType(precision, scale)))
+      val filtered = strata
+        .orderBy(prn)
+        .filter(strata(prn) >= startPoint)
 
-      val filtered = inputDataWithBigDecimal
-        .orderBy(prnAsBigDecimal)
-        .filter(inputDataWithBigDecimal(prnAsBigDecimal) >= startPoint)
-
-      val remainder = inputDataWithBigDecimal
+      val remainder = strata
         .except(filtered)
-        .orderBy(prnAsBigDecimal)
+        .orderBy(prn)
 
       filtered
         .union(remainder)
         .limit(sampleSize)
-        .drop(prnAsBigDecimal)
     }
 
     /**
@@ -51,7 +42,6 @@ object SampleImpl {
       * @return the entire population for the given strata
       */
     def sample1(cellNo: Int): DataFrame =
-      inputDataDF
-        .filter(_.getAs[String](cellNumber).toInt == cellNo)
+      filterByCellNumber(inputDataDF)(cellNo)
   }
 }

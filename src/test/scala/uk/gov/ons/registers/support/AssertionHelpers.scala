@@ -8,25 +8,24 @@ import org.apache.spark.sql.DataFrame
 import uk.gov.ons.registers.TestLogPatch
 import uk.gov.ons.registers.helpers.CSVProcessor.CSV
 import uk.gov.ons.registers.stepdefs.{methodResult, outputDataDF}
-import uk.gov.ons.registers.utils.DataFrameTransformation.{createCsvOutputDataFrame, createExpectedDataFrame}
+import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, createDataFrame}
 
-import cucumber.api.DataTable
+object AssertionHelpers{
+  def assertDataFrameEquality(expected: RawDataTableList)(castExepctedMandatoryFields: DataFrame => DataFrame): DataFrame = {
+    val expectedOutputDF = createDataFrame(expected)
+    val castedExpectedOutputDF = castExepctedMandatoryFields(expectedOutputDF)
 
-object AssertionHelpers {
-  def assertAndReturnCsvOfSampleCollection(outputPath: Path): File = {
-    val sampleOutputDir = outputPath.toFile
-    assert(sampleOutputDir.exists && sampleOutputDir.isDirectory, message = s"output path [$outputPath] does not exist and/ or is not a directory")
-    val listOfCsvOutputFiles = sampleOutputDir.listFiles.filter(_.getName.endsWith(s".$CSV"))
-    assert(listOfCsvOutputFiles.nonEmpty, message = s"found no files with extension [.$CSV] in [$outputPath] directory")
-    listOfCsvOutputFiles.head
-  }
+//    println("outputDataDF.show")
+//    outputDataDF.show()
+//    outputDataDF.printSchema()
+//
+//    println("castedExpectedOutputDF.show")
+//    castedExpectedOutputDF.show()
+//    castedExpectedOutputDF
 
-  def assertDataFrameEquality(expected: DataTable): DataFrame = {
-    val expectedOutputDF = createExpectedDataFrame(expected)
-    assert(outputDataDF.collect sameElements expectedOutputDF.collect)
-    val csvFileOutputDF = createCsvOutputDataFrame
-    assert(csvFileOutputDF.collect sameElements expectedOutputDF.collect)
-    expectedOutputDF
+    assert(outputDataDF.collect sameElements castedExpectedOutputDF.collect, s"the output dataframe " +
+      s"[${outputDataDF.collect.toList}] was not equal to expected output dataframe [${castedExpectedOutputDF.collect.toList}]")
+    castedExpectedOutputDF
   }
   def aFailureIsGeneratedBy[T](expression: => T): Option[Exception] =
     try {
@@ -39,7 +38,7 @@ object AssertionHelpers {
     }
 
   def assertThrown(): Unit =
-    assert(methodResult.fold(false)(_ => true))
+    assert(methodResult.fold(false)(_ => true), "expected Exception to be thrown from running method with an invalid argument")
 
   def displayData(expectedDF: DataFrame, printLabel: String): Unit = {
     println("Compare Rows")
@@ -47,5 +46,14 @@ object AssertionHelpers {
     expectedDF.show()
     println(s"Scala $printLabel Output")
     outputDataDF.show()
+  }
+
+  @deprecated
+  def assertAndReturnCsvOfSampleCollection(outputPath: Path): File = {
+    val sampleOutputDir = outputPath.toFile
+    assert(sampleOutputDir.exists && sampleOutputDir.isDirectory, message = s"output path [$outputPath] does not exist and/ or is not a directory")
+    val listOfCsvOutputFiles = sampleOutputDir.listFiles.filter(_.getName.endsWith(s".$CSV"))
+    assert(listOfCsvOutputFiles.nonEmpty, message = s"found no files with extension [.$CSV] in [$outputPath] directory")
+    listOfCsvOutputFiles.head
   }
 }

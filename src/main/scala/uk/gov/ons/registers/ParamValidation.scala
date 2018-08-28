@@ -2,15 +2,11 @@ package uk.gov.ons.registers
 
 import org.apache.spark.sql.DataFrame
 
+import uk.gov.ons.registers.TransformDataFrames.filterByCellNumber
 import uk.gov.ons.registers.Validation.ErrorMessage
-import uk.gov.ons.registers.model.stratification.StratificationPropertiesFields.cellNumber
-
 
 object ParamValidation {
   private val lowerBoundLimit = 0
-  // TODO - error control
-  private def inputDfSize(dataFrame: DataFrame)(thisCellNumber: Int): Long =
-    dataFrame.filter(_.getAs[String](cellNumber).toInt == thisCellNumber).count()
 
   private def logWithErrorMsg[A](strataNumber: Int)(msg: A): Option[Nothing] = {
     val logErrorMsg = s"Could not process strata ($strataNumber): $msg"
@@ -36,6 +32,6 @@ object ParamValidation {
   def validate(inputDF: DataFrame, strataNumber: Int, startingPrn: BigDecimal, sampleSize: Int): Option[Int] =
     Validation.toOption(
       validatePrnStartPoint(strataNumber, startingPrn),
-      validateSampleSize(strataNumber, inputDfSize(inputDF)(strataNumber).toInt, sampleSize)
+      validateSampleSize(strataNumber, filterByCellNumber(inputDF)(strataNumber).count.toInt, sampleSize)
     )(onFailure = logWithErrorMsg(strataNumber) _, onSuccess = (_, sampleSize) => Some(sampleSize))
 }

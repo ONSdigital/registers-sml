@@ -2,29 +2,27 @@ package uk.gov.ons.registers.stepdefs
 
 import uk.gov.ons.registers.methods.Sample
 import uk.gov.ons.registers.support.AssertionHelpers.{aFailureIsGeneratedBy, assertDataFrameEquality, displayData}
-import uk.gov.ons.registers.utils.DataTableExportUtil.saveTableAsCsv
-import uk.gov.ons.registers.support.TestFileEnvSetup.createAPath
+import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, castWithStratifiedUnitMandatoryFields, createDataFrame}
 import uk.gov.ons.stepdefs.Helpers
 
-import cucumber.api.DataTable
 import cucumber.api.scala.{EN, ScalaDsl}
 
 class SamplingSteps extends ScalaDsl with EN{
-  private def assertEqualityAndPrintResults(expected: DataTable): Unit =
-    displayData(expectedDF = assertDataFrameEquality(expected), printLabel = "Sampling")
-
-  private def createSampleTest(): Unit =
-    outputDataDF = Sample.sample(stratifiedFramePath)(sparkSession = Helpers.sparkSession)
-      .create(stratificationPropsPath, outputPath)
-
-  Given("""a Stratified Frame:$"""){ aFrameTable: DataTable =>
-    stratifiedFramePath = saveTableAsCsv(
-      dataTable = aFrameTable,
-      prefix = "stratified_frame_")
+  private def assertEqualityAndPrintResults(expected: RawDataTableList): Unit = {
+    val output = assertDataFrameEquality(expected)(castExepctedMandatoryFields = castWithStratifiedUnitMandatoryFields)
+    displayData(expectedDF = output, printLabel = "Stratification")
   }
 
-  Given("""a Stratified Frame does not exist$"""){ () =>
-    stratifiedFramePath = createAPath(pathStr = "invalid_stratified_frame_path")
+  private def createSampleTest(): Unit =
+    outputDataDF = Sample.sample(sparkSession = Helpers.sparkSession)
+      .create(stratifiedFrameDF, stratificationPropsDF)
+
+  Given("""a Stratified Frame:$"""){ aFrameTable: RawDataTableList =>
+    stratifiedFrameDF = createDataFrame(aFrameTable)
+  }
+
+  Given("""a Stratified Frame with an invalid required field:$"""){ anInvalidFrameTable: RawDataTableList =>
+    stratifiedFrameDF = createDataFrame(anInvalidFrameTable)
   }
 
   When("""a Scala Sample is created from a Stratified Frame$"""){ () =>
@@ -38,11 +36,11 @@ class SamplingSteps extends ScalaDsl with EN{
     }
   }
 
-  Then("""a Sample containing the Sample \w+ from the .+ strata is returned and exported to CSV:$"""){ theExpectedResult: DataTable =>
+  Then("""a Sample containing the Sample \w+ from the .+ strata is returned:$"""){ theExpectedResult: RawDataTableList =>
     assertEqualityAndPrintResults(expected = theExpectedResult)
   }
 
-  Then("""a Sample containing the total population in the strata is returned and exported to CSV:$"""){ theExpectedResult: DataTable =>
+  Then("""a Sample containing the total population in the strata is returned:$"""){ theExpectedResult: RawDataTableList =>
     // TODO test log
     assertEqualityAndPrintResults(expected = theExpectedResult)
   }
