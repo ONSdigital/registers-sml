@@ -15,14 +15,6 @@ object AssertionHelpers{
     val expectedOutputDF = createDataFrame(expected)
     val castedExpectedOutputDF = castExepctedMandatoryFields(expectedOutputDF)
 
-//    println("outputDataDF.show")
-//    outputDataDF.show()
-//    outputDataDF.printSchema()
-//
-//    println("castedExpectedOutputDF.show")
-//    castedExpectedOutputDF.show()
-//    castedExpectedOutputDF
-
     assert(outputDataDF.collect sameElements castedExpectedOutputDF.collect, s"the output dataframe " +
       s"[${outputDataDF.collect.toList}] was not equal to expected output dataframe [${castedExpectedOutputDF.collect.toList}]")
     castedExpectedOutputDF

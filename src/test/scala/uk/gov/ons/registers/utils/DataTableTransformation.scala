@@ -4,10 +4,11 @@ import java.io.File
 
 import scala.collection.JavaConverters.asScalaBufferConverter
 
-import org.apache.spark.sql.types.{StringType, StructField, StructType}
+import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
 import org.apache.spark.sql.{DataFrame, Row}
 
 import uk.gov.ons.registers.model.UnitFieldsCasting
+import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields.cellNumber
 import uk.gov.ons.registers.support.AssertionHelpers.assertAndReturnCsvOfSampleCollection
 import uk.gov.ons.registers.utils.FileProcessorHelper.lineAsListOfFields
 import uk.gov.ons.stepdefs.Helpers.sparkSession
@@ -34,7 +35,8 @@ object DataTableTransformation {
   }
 
   def castWithUnitMandatoryFields: DataFrame => DataFrame =
-    UnitFieldsCasting.checkUnitForMandatoryFields
+    (UnitFieldsCasting.checkUnitForMandatoryFields _).andThen(df =>
+    df.withColumn(colName = cellNumber, df.col(cellNumber).cast(IntegerType)))
 
   def castWithStratifiedUnitMandatoryFields: DataFrame => DataFrame =
     UnitFieldsCasting.checkStratifiedFrameForMandatoryFields

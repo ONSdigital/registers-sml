@@ -21,9 +21,8 @@ object StratificationImpl {
         .filter(frameDf(sic07) >= sic07LowerClass && frameDf(sic07) <= sic07UpperClass)
         .filter(frameDf(payeEmployees) >= payeEmployeesLowerRange &&
           frameDf(payeEmployees) <= payeEmployeesUpperRange)
-        .withColumn(StratificationPropertiesFields.cellNumber, lit(cellNo.toString))
+        .withColumn(StratificationPropertiesFields.cellNumber, lit(cellNo))
     // TODO -- change 'lit(cellNo.toString)' without toString
-
 
 
     /**
