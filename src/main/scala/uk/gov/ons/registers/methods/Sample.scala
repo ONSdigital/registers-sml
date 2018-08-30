@@ -6,7 +6,7 @@ import org.apache.spark.sql.{Column, DataFrame, SparkSession}
 
 import uk.gov.ons.registers.TransformDataFrames.{transformToDataFrame, validateAndParseInputs}
 import uk.gov.ons.registers.model.SelectionTypes.Initial
-import uk.gov.ons.registers.model.UnitFieldsCasting.checkStratifiedFrameForMandatoryFields
+import uk.gov.ons.registers.model.CommonFrameAndPropertiesFieldsCasting.checkStratifiedFrameForMandatoryFields
 import uk.gov.ons.registers.model.selectionstrata.SelectionStrata
 import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields.selectionType
 import uk.gov.ons.registers.{ParamValidation, SparkSessionManager}

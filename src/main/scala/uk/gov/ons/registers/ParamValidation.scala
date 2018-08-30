@@ -14,14 +14,14 @@ object ParamValidation {
     None
   }
 
-  private def validatePrnStartPoint(strataNumber: Int, startingPrn: BigDecimal): Validation[BigDecimal, ErrorMessage] = {
+  private def validatePrnStartPoint(strataNumber: Int, startingPrn: BigDecimal): Validation[ErrorMessage, BigDecimal] = {
     val max = BigDecimal(1L)
     val thisMin = BigDecimal(lowerBoundLimit.toLong)
     if (startingPrn > thisMin && startingPrn < max) Success(valid = startingPrn)
     else Failure(s"Error: Prn start point [$startingPrn] must be a decimal no smaller than $thisMin and greater than $max")
   }
 
-  private def validateSampleSize(strataNumber: Int, maxSize: Int, sampleSize: Int): Validation[Int, ErrorMessage] =
+  private def validateSampleSize(strataNumber: Int, maxSize: Int, sampleSize: Int): Validation[ErrorMessage, Int] =
     if (sampleSize > maxSize) {
       logWithErrorMsg(strataNumber)(msg = s"Error: Sample size [$sampleSize] must be a natural number less than $maxSize. " +
         s"Parameter overridden with with max sample size [$maxSize]")

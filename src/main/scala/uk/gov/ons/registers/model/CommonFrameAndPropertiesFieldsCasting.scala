@@ -3,11 +3,11 @@ package uk.gov.ons.registers.model
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.{DataTypes, IntegerType, LongType}
 
-import uk.gov.ons.registers.model.CommonUnitFrameDataFields.{payeEmployees, prn, sic07}
+import uk.gov.ons.registers.model.CommonFrameDataFields.{payeEmployees, prn, sic07}
 import uk.gov.ons.registers.model.selectionstrata.PrnNumericalProperty.{precision, scale}
 import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields.cellNumber
 
-object UnitFieldsCasting {
+object CommonFrameAndPropertiesFieldsCasting {
   private val NullableValuesAllowed = 0
 
   def checkUnitForMandatoryFields(unitDF: DataFrame): DataFrame = {
@@ -18,7 +18,7 @@ object UnitFieldsCasting {
 
     if (castedUnitDf.filter(castedUnitDf(payeEmployees).isNull || castedUnitDf(sic07).isNull ||
       castedUnitDf(prn).isNull).count > NullableValuesAllowed)
-      throw new IllegalArgumentException(s"Check mandatory fields [$payeEmployees, $sic07, $prn] are of expected type")
+      throw new IllegalArgumentException(s"Check common mandatory fields [$payeEmployees, $sic07, $prn] are of expected type")
     else castedUnitDf
   }
 
@@ -29,7 +29,7 @@ object UnitFieldsCasting {
 
     if (castedStratifiedDF.filter(castedStratifiedDF(cellNumber).isNull ||
       castedStratifiedDF(prn).isNull).count > NullableValuesAllowed)
-      throw new IllegalArgumentException(s"Check mandatory fields [$cellNumber, $prn] are of expected type")
+      throw new IllegalArgumentException(s"Check common mandatory fields [$cellNumber, $prn] are of expected type")
     else castedStratifiedDF
   }
 }

@@ -3,7 +3,7 @@ package uk.gov.ons.registers.methods.impl
 import org.apache.spark.sql.DataFrame
 
 import uk.gov.ons.registers.TransformDataFrames.filterByCellNumber
-import uk.gov.ons.registers.model.CommonUnitFrameDataFields.prn
+import uk.gov.ons.registers.model.CommonFrameDataFields.prn
 
 object SampleImpl {
   implicit class SampleMethodsImpl(inputDataDF: DataFrame) {

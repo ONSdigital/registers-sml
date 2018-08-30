@@ -6,7 +6,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 import uk.gov.ons.registers.SparkSessionManager
 import uk.gov.ons.registers.TransformDataFrames.{transformToDataFrame, validateAndParseInputs}
-import uk.gov.ons.registers.model.UnitFieldsCasting.checkUnitForMandatoryFields
+import uk.gov.ons.registers.model.CommonFrameAndPropertiesFieldsCasting.checkUnitForMandatoryFields
 import uk.gov.ons.registers.model.selectionstrata.SelectionStrata
 
 @Singleton

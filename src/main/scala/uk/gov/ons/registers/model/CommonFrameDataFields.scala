@@ -1,6 +1,6 @@
 package uk.gov.ons.registers.model
 
-object CommonUnitFrameDataFields {
+object CommonFrameDataFields {
   val prn = "prn"
   val cellNumber = "cell_no"
   val payeEmployees = "paye_empees"

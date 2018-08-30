@@ -4,7 +4,7 @@ import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.{DataFrame, Dataset, Row}
 
 import uk.gov.ons.registers.Codes
-import uk.gov.ons.registers.model.CommonUnitFrameDataFields.{cellNumber, payeEmployees, prn, sic07}
+import uk.gov.ons.registers.model.CommonFrameDataFields.{cellNumber, payeEmployees, prn, sic07}
 import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields
 
 object StratificationImpl {
@@ -22,8 +22,6 @@ object StratificationImpl {
         .filter(frameDf(payeEmployees) >= payeEmployeesLowerRange &&
           frameDf(payeEmployees) <= payeEmployeesUpperRange)
         .withColumn(StratificationPropertiesFields.cellNumber, lit(cellNo))
-    // TODO -- change 'lit(cellNo.toString)' without toString
-
 
     /**
       * USAGE: A post step of Stratification, where any unallocated unit is flagged with the error code (-1)

@@ -7,7 +7,7 @@ import scala.collection.JavaConverters.asScalaBufferConverter
 import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
 import org.apache.spark.sql.{DataFrame, Row}
 
-import uk.gov.ons.registers.model.UnitFieldsCasting
+import uk.gov.ons.registers.model.CommonFrameAndPropertiesFieldsCasting
 import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields.cellNumber
 import uk.gov.ons.registers.support.AssertionHelpers.assertAndReturnCsvOfSampleCollection
 import uk.gov.ons.registers.utils.FileProcessorHelper.lineAsListOfFields
@@ -20,7 +20,6 @@ object DataTableTransformation {
 
   type RawDataTableList = java.util.List[java.util.List[String]]
 
-  // TODO - look into cucumber transformers
   def createDataFrame: RawDataTableList => DataFrame =
     (fromDataTableToLists _).andThen(toDataFrame)
 
@@ -35,11 +34,11 @@ object DataTableTransformation {
   }
 
   def castWithUnitMandatoryFields: DataFrame => DataFrame =
-    (UnitFieldsCasting.checkUnitForMandatoryFields _).andThen(df =>
+    (CommonFrameAndPropertiesFieldsCasting.checkUnitForMandatoryFields _).andThen(df =>
     df.withColumn(colName = cellNumber, df.col(cellNumber).cast(IntegerType)))
 
   def castWithStratifiedUnitMandatoryFields: DataFrame => DataFrame =
-    UnitFieldsCasting.checkStratifiedFrameForMandatoryFields
+    CommonFrameAndPropertiesFieldsCasting.checkStratifiedFrameForMandatoryFields
 
   def emptyDataFrame: DataFrame = {
     val nonsensicalSchema =
