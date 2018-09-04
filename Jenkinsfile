@@ -22,6 +22,14 @@ pipeline {
         ARTIFACTORY_HOST_NAME = "art-p-01"
         MASTER = "master"
         SBR_METHODS_ARTIFACTORY_PYPI_REPO = "sbr-methods-pypi"
+
+        ENV = "${params.ENV_NAME}"
+        PROD1_NODE = "cdhdn-p01-01"
+        SSH_KEYNAME = "sbr-${params.ENV}-ci-ssh-key"
+        MODULE_NAME = 'registers-sml'
+    }
+    parameters {
+        choice(choices: 'dev\ntest\nbeta', description: 'Into what environment wants to deploy oozie config e.g. dev, test or beta?', name: 'ENV_NAME')
     }
     stages {
         stage('Init') {
@@ -44,16 +52,6 @@ pipeline {
             steps {
                 colourText("info", "Building ${env.BUILD_ID} on ${env.JENKINS_URL} from branch ${env.BRANCH_NAME}")
                 readFile('/usr/share/maven/conf/settings.xml')
-//                sh 'mvn clean compile'
-            }
-        }
-        stage('Package') {
-            agent any
-            environment{
-                STAGE = "Package"
-            }
-            steps {
-                sh 'mvn package -Dmaven.test.skip=true'
             }
         }
         stage('Static Analysis') {
@@ -63,84 +61,103 @@ pipeline {
             }
             steps {
                 parallel (
-                    "Java and Scala": {
-                        colourText("info","Running Maven tests for Java wrapper and Scala")
-                        sh "mvn clean test"
-                    },
-                    "Python": {
-                        colourText("info","Using behave to run Python tests.")
-                        sh """
-                            pip install virtualenv -i http://${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW}@${ARTIFACTORY_HOST_NAME}/artifactory/api/pypi/yr-python/simple --trusted-host ${ARTIFACTORY_HOST_NAME} -t "$WORKSPACE/.local"
-                            mkdir venv
-                            python ${WORKSPACE}/.local/virtualenv.py --distribute -p /usr/bin/python2.7 ${WORKSPACE}/venv
-                            source venv/bin/activate
+                        "Java and Scala": {
+                            colourText("info","Running Maven tests for Java wrapper and Scala")
+                           // sh "mvn clean test"
+                        }
+                        // "Python": {
+                        //     colourText("info","Using behave to run Python tests.")
+                        //     sh """
+                        //         pip install virtualenv -i http://${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW}@${ARTIFACTORY_HOST_NAME}/artifactory/api/pypi/yr-python/simple --trusted-host ${ARTIFACTORY_HOST_NAME} -t "$WORKSPACE/.local"
+                        //         mkdir venv
+                        //         python ${WORKSPACE}/.local/virtualenv.py --distribute -p /usr/bin/python2.7 ${WORKSPACE}/venv
+                        //         source venv/bin/activate
 
-                            pip install behave -i http://${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW}@${ARTIFACTORY_HOST_NAME}/artifactory/api/pypi/yr-python/simple --trusted-host ${ARTIFACTORY_HOST_NAME}
-                            pip install pypandoc -i http://${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW}@${ARTIFACTORY_HOST_NAME}/artifactory/api/pypi/yr-python/simple --trusted-host ${ARTIFACTORY_HOST_NAME}
-                            pip install pyspark -i http://${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW}@${ARTIFACTORY_HOST_NAME}/artifactory/api/pypi/yr-python/simple --trusted-host ${ARTIFACTORY_HOST_NAME}
+                        //         pip install behave -i http://${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW}@${ARTIFACTORY_HOST_NAME}/artifactory/api/pypi/yr-python/simple --trusted-host ${ARTIFACTORY_HOST_NAME}
+                        //         pip install pypandoc -i http://${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW}@${ARTIFACTORY_HOST_NAME}/artifactory/api/pypi/yr-python/simple --trusted-host ${ARTIFACTORY_HOST_NAME}
+                        //         pip install pyspark -i http://${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW}@${ARTIFACTORY_HOST_NAME}/artifactory/api/pypi/yr-python/simple --trusted-host ${ARTIFACTORY_HOST_NAME}
 
-                            chmod -R 777 ${WORKSPACE}/venv
-                            behave --verbose
-                        """
-                        // installPythonModule("behave")
-                        // installPythonModule("pypandoc")
-                        // installPythonModule("pyspark")
-                    },
-                    "R": {
-                        colourText("info","Using devtools to run R tests.")
-                        // sh "devtools::test_dir($WORKSPACE/R)"
-                    }
+                        //         chmod -R 777 ${WORKSPACE}/venv
+                        //         behave --verbose
+                        //     """
+                        //     // installPythonModule("behave")
+                        //     // installPythonModule("pypandoc")
+                        //     // installPythonModule("pyspark")
+                        // },
+                        // "R": {
+                        //     colourText("info","Using devtools to run R tests.")
+                        //     // sh "devtools::test_dir($WORKSPACE/R)"
+                        // }
                 )
             }
             post {
                 success {
                     colourText("info","Generating reports for tests")
-                    junit '**/target/*-reports/*.xml'
+                    // junit '**/target/*-reports/*.xml'
                 }
                 failure {
                     colourText("warn","Failed to retrieve reports.")
                 }
             }
         }
-        stage('PyPackage'){
+        stage('Package') {
             agent any
-            when {
-                expression {
-                    isBranch(MASTER)
-                }
+            environment{
+                STAGE = "Package"
             }
             steps {
-                script {
-                    colourText("info","Python Package Stage")
-                    colourText("info", "Update Versions before packaging")
-                    sh 'cd python && python setup.py sdist'
-                }
+                sh """
+                    mvn package -Dmaven.test.skip=true
+                    mkdir ${WORKSPACE}/$MODULE_NAME
+                    cp -v ${WORKSPACE}/target/sml-1.0-SNAPSHOT-jar-with-dependencies.jar ${WORKSPACE}/$MODULE_NAME
+                """
             }
         }
-        stage ('PyDeploy '){
+        stage("Store") {
             agent any
-            when {
-                expression {
-                    isBranch(MASTER)
-                }
-            }
             steps {
                 script {
-                    println('Final Deploy Stage')
-                    sh """
-                        curl -u ${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW} -T python/dist/* "http://${ARTIFACTORY_HOST_NAME}/artifactory/${SBR_METHODS_ARTIFACTORY_PYPI_REPO}/"
-                    """
+                    STAGE = "Store"
                 }
-            }
-            post {
-                success {
-                    colourText("success", "Successfully push to pypi art repository!")
-                }
-                failure {
-                    colourText("warn","Failed to archive")
-                }
+                archiveToHDFS()
             }
         }
+
+        // stage('PyPackage'){
+        //     agent any
+        //     when {
+        //         branch MASTER
+        //     }
+        //     steps {
+        //         script {
+        //             colourText("info","Python Package Stage")
+        //             colourText("info", "Update Versions before packaging")
+        //             sh 'cd python && python setup.py sdist'
+        //         }
+        //     }
+        // }
+        // stage ('PyDeploy '){
+        //     agent any
+        //     when {
+        //         branch MASTER
+        //     }
+        //     steps {
+        //         script {
+        //             println('Final Deploy Stage')
+        //             sh """
+        //                 curl -u ${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW} -T python/dist/* "http://${ARTIFACTORY_HOST_NAME}/artifactory/${SBR_METHODS_ARTIFACTORY_PYPI_REPO}/"
+        //             """
+        //         }
+        //     }
+        //     post {
+        //         success {
+        //             colourText("success", "Successfully push to pypi art repository!")
+        //         }
+        //         failure {
+        //             colourText("warn","Failed to archive")
+        //         }
+        //     }
+        // }
     }
     post {
         always {
@@ -168,7 +185,17 @@ def installPythonModule(String module){
     sh """pip install ${module} -i http://${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW}@${ARTIFACTORY_HOST_NAME}/artifactory/api/pypi/yr-python/simple --trusted-host ${ARTIFACTORY_HOST_NAME}"""
 }
 
-//NOTE: temporary solution until when clause is fixed in flow branching plugin
-def isBranch(String branchName) {
-    env.BRANCH_NAME.toString().equals(branchName)
+def archiveToHDFS(){
+    echo "archiving jar to [$ENV] environment"
+    sshagent(credentials: ["sbr-$ENV-ci-ssh-key"]){
+        sh """
+            ssh sbr-$ENV-ci@$PROD1_NODE mkdir -p $MODULE_NAME/
+            echo "Successfully created new directory [$MODULE_NAME/]"
+            scp -r $WORKSPACE/$MODULE_NAME/* sbr-$ENV-ci@$PROD1_NODE:$MODULE_NAME/
+            echo "Successfully moved artifact [JAR] and scripts to $MODULE_NAME/"
+            ssh sbr-$ENV-ci@$PROD1_NODE hdfs dfs -put -f $MODULE_NAME/ hdfs://prod1/user/sbr-$ENV-ci/lib/
+            echo "Successfully copied jar file to HDFS"
+
+        """
+    }
 }
