@@ -4,7 +4,7 @@ import global.AppParams
 import org.apache.spark.sql.functions.explode_outer
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-class PAYE(implicit spark: SparkSession) {
+class PAYE(implicit activeSession: SparkSession) {
 
   val jobs = "paye_jobs"
   val employees = "paye_empees"
@@ -15,7 +15,7 @@ class PAYE(implicit spark: SparkSession) {
     calculatedPayeDF
   }
 
-  def getGroupedByPayeRefs(BIDF: DataFrame, payeDF: DataFrame, quarter: String, luTableName: String = "LEGAL_UNITS", payeDataTableName: String = "PAYE_DATA")(implicit spark: SparkSession) ={
+  def getGroupedByPayeRefs(BIDF: DataFrame, payeDF: DataFrame, quarter: String, luTableName: String = "LEGAL_UNITS", payeDataTableName: String = "PAYE_DATA")(implicit activeSession: SparkSession) ={
     val flatUnitDf = BIDF.withColumn("payeref", explode_outer(BIDF.apply("PayeRefs")))
 
     flatUnitDf.createOrReplaceTempView(luTableName)
