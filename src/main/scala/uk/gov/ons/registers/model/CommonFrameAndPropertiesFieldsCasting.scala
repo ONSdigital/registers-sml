@@ -2,10 +2,10 @@ package uk.gov.ons.registers.model
 
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.{DataTypes, IntegerType, LongType}
-
 import uk.gov.ons.registers.model.CommonFrameDataFields.{payeEmployees, prn, sic07}
 import uk.gov.ons.registers.model.selectionstrata.PrnNumericalProperty.{precision, scale}
 import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields.cellNumber
+import uk.gov.ons.registers.model.CommonPayeFrameFields.{employees, jobs}
 
 object CommonFrameAndPropertiesFieldsCasting {
   private val NullableValuesAllowed = 0
@@ -31,5 +31,15 @@ object CommonFrameAndPropertiesFieldsCasting {
       castedStratifiedDF(prn).isNull).count > NullableValuesAllowed)
       throw new IllegalArgumentException(s"Check common mandatory fields [$cellNumber, $prn] are of expected type")
     else castedStratifiedDF
+  }
+
+  def checkPayeforMandatoryFields(PayeDF: DataFrame): DataFrame = {
+    val castedPayeDF = PayeDF
+      .withColumn(colName = employees, PayeDF.col(employees).cast(LongType))
+      .withColumn(colName = jobs, PayeDF.col(jobs).cast(IntegerType))
+
+    if (castedPayeDF.filter(castedPayeDF(employees).isNull || castedPayeDF(jobs).isNull).count() > NullableValuesAllowed)
+      throw new IllegalArgumentException(s"Check mandatory fields [$employees, $jobs] are of expected type")
+    else castedPayeDF
   }
 }

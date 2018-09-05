@@ -15,7 +15,7 @@ class CommonSteps extends ScalaDsl with EN {
     stratificationPropsDF = createDataFrame(anInvalidPropertiesTable)
   }
 
-  Then("""an exception in Scala is thrown for .+ due to a mismatch field type upon trying to (?:Sample|Stratify)$"""){ () =>
+  Then("""an exception in Scala is thrown for .+ due to a mismatch field type upon trying to (?:Sample|Stratify|Calculate PAYE)$"""){ () =>
     assertThrown()
   }
 }
