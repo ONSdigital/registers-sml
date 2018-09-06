@@ -1,12 +1,11 @@
-package uk.gov.ons.registers.stepdefs
+package uk.gov.ons.registers.stepdefs.admin_data
 
 import cucumber.api.scala.{EN, ScalaDsl}
-import org.apache.spark.sql.DataFrame
 import uk.gov.ons.registers.methods.VAT
-import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, createDataFrame, toNull}
-import uk.gov.ons.stepdefs.Helpers
+import uk.gov.ons.registers.stepdefs._
 import uk.gov.ons.registers.support.AssertionHelpers._
-import uk.gov.ons.registers.utils.DataTableTransformation._
+import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, createDataFrame, toNull, _}
+import uk.gov.ons.stepdefs.Helpers
 
 class VAT_Steps extends ScalaDsl with EN {
   private def assertEqualityAndPrintResults(expected: RawDataTableList): Unit = {

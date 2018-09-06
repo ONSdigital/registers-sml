@@ -1,13 +1,13 @@
-package uk.gov.ons.registers.stepdefs
+package uk.gov.ons.registers.stepdefs.admin_data
 
 import cucumber.api.scala.{EN, ScalaDsl}
-import org.apache.spark.sql.types._
 import org.apache.spark.sql.functions.{col, regexp_replace, split}
-import uk.gov.ons.registers.utils.DataTableTransformation._
+import org.apache.spark.sql.types._
 import uk.gov.ons.registers.methods.PAYE
+import uk.gov.ons.registers.stepdefs._
 import uk.gov.ons.registers.support.AssertionHelpers._
+import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, _}
 import uk.gov.ons.stepdefs.Helpers
-import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, toNull}
 
 class PAYE_Steps extends ScalaDsl with EN {
 
