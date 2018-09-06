@@ -13,7 +13,7 @@ pipeline {
         skipDefaultCheckout()
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30'))
         timeout(time: 15, unit: 'MINUTES')
-        timestamps()
+        //timestamps()
     }
     environment {
         BUILD_ENV = "CI"
