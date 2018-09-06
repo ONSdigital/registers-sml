@@ -12,6 +12,7 @@ package object stepdefs {
 
   var BIDF: DataFrame = _
   var payeDF: DataFrame = _
+  var VatDF: DataFrame = _
   var appConfs: AppParams = _
 
   var methodResult: Option[Exception] = _

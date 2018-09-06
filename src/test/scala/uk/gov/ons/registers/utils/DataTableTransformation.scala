@@ -40,6 +40,9 @@ object DataTableTransformation {
   def castWithPayeUnitMandatoryFields: DataFrame => DataFrame =
     CommonFrameAndPropertiesFieldsCasting.checkPayeforMandatoryFields
 
+  def castWithVatUnitMandatoryFields: DataFrame => DataFrame =
+    CommonFrameAndPropertiesFieldsCasting.checkVatforMandatoryFields
+
   def emptyDataFrame: DataFrame = {
     val nonsensicalSchema =
       StructType(
