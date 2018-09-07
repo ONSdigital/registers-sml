@@ -29,9 +29,9 @@ object SelectionTypeSampling {
       case Initial.prnSampling => Some(PrnSampling)
       case Initial.census => Some(CensusSampling)
       case Initial.universal => None
-      case _ =>
+      case e: String =>
         Patch.log(level = "warn",
-          msg = s"Failed to parse field [${StratificationPropertiesFields.selectionType}] in strata [${selectionStrata.cell_no}]")
+          msg = s"Failed to parse [$e] in field [${StratificationPropertiesFields.selectionType}] in strata [${selectionStrata.cell_no}]")
         None
     }
 }

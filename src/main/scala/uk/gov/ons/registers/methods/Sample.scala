@@ -4,7 +4,7 @@ import javax.inject.Singleton
 
 import org.apache.spark.sql.{Column, DataFrame, SparkSession}
 
-import uk.gov.ons.registers.TransformDataFrames.{transformToDataFrame, validateAndParseInputs}
+import uk.gov.ons.registers.TransformDataFrames.{fromArrayDataFrame, validateAndParseInputs}
 import uk.gov.ons.registers.model.CommonFrameAndPropertiesFieldsCasting.checkStratifiedFrameForMandatoryFields
 import uk.gov.ons.registers.model.SelectionTypes.Initial
 import uk.gov.ons.registers.model.selectionstrata.SelectionStrata
@@ -30,7 +30,7 @@ class Sample(implicit activeSession: SparkSession) {
           sampleMethod.sampling(stratifiedFrameDF, selectionStrata)
         }
       }
-    transformToDataFrame(arrayOfDatasets = arrayOfSamples)
+    fromArrayDataFrame(arrayOfDatasets = arrayOfSamples)
   }
 }
 

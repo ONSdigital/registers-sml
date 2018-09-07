@@ -57,4 +57,9 @@ behave
 devtools::test()
 ```
 
+#### Run tagged tests
+The registers cucumber files are annotated with tags. To run a specific grouped test use tag identifiers;
 
+```shell
+mvn -Dcucumber.options="--tags @HappyPath" clean test
+```

@@ -51,7 +51,7 @@ object TransformDataFrames {
       onSuccess = (inputDataFrame, propertiesDataset) => inputDataFrame -> propertiesDataset)
   }
 
-  def transformToDataFrame(arrayOfDatasets: Array[Dataset[Row]])(implicit sparkSession: SparkSession): Dataset[Row] = {
+  def fromArrayDataFrame(arrayOfDatasets: Array[Dataset[Row]])(implicit sparkSession: SparkSession): Dataset[Row] = {
     import sparkSession.{createDataFrame, sparkContext}
 
     val emptyDF = createDataFrame(sparkContext.emptyRDD[Row], arrayOfDatasets.head.schema)
