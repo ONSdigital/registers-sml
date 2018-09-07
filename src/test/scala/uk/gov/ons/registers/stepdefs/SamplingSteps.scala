@@ -1,9 +1,15 @@
 package uk.gov.ons.registers.stepdefs
 
+import scala.collection.JavaConverters.asScalaBufferConverter
+
+import org.apache.spark.sql.types.{StringType, StructField, StructType}
+import org.apache.spark.sql.{DataFrame, Row}
+
 import uk.gov.ons.registers.methods.Sample
 import uk.gov.ons.registers.support.AssertionHelpers.{aFailureIsGeneratedBy, assertDataFrameEquality, displayData}
 import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, castWithStratifiedUnitMandatoryFields, createDataFrame}
 import uk.gov.ons.stepdefs.Helpers
+import uk.gov.ons.stepdefs.Helpers.sparkSession
 
 import cucumber.api.scala.{EN, ScalaDsl}
 

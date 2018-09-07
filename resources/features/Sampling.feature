@@ -7,8 +7,9 @@ Feature: Creating a Sample
     returned. The selections for each strata are output collectively in a single DataFrame with the strata ID (cell
     number) appended to each record based on which strata it belongs to.
 
-    Scenario Outline: Stratified Frame file cannot be found in given Frame directory and an exception is thrown
-        Given a Stratified Frame with an invalid required field:
+    Scenario Outline: An exception is throw when a Frame file with an invalid field type is given as the input argument
+        # TODO - info for bad field
+        Given a Stratified Frame with an invalid unit field:
             | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | paye_empees | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         | cell_no |
             | 1100000001 | 9906000015 | &EAGBBROWN                    |              | 1 HAWRIDGE HILL COTTAGES | THE VALE       | HAWRIDGE    | CHESHAM BUCKINGHAMSHIRE |          | HP5 3NU  | 1           | 45112 | 1           | 1         | 73           | 73           | 0            | 0             | 0            | 0.109636832 | invalid |
             | 1100000002 | 9906000045 | BUEADLIING SOLUTIONS LTD      |              | 1 HAZELWOOD LANE         | ABBOTS LANGLEY |             |                         |          | WD5 0HA  | 3           | 45190 | 1           | 0         | 100          | 100          | 0            | 0             | 0            | 0.63848639  | 5813    |
@@ -27,7 +28,7 @@ Feature: Creating a Sample
         | language |
         | Scala    |
 
-    Scenario Outline: Stratification Properties file cannot be found in given directory and an exception is thrown
+    Scenario Outline: An exception is throw when an Stratification Properties file with an invalid field type is given as the input argument
         Given a Stratified Frame:
             | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | paye_empees | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         | cell_no |
             | 1100000001 | 9906000015 | &EAGBBROWN                    |              | 1 HAWRIDGE HILL COTTAGES | THE VALE       | HAWRIDGE    | CHESHAM BUCKINGHAMSHIRE |          | HP5 3NU  | 1           | 45112 | 1           | 1         | 73           | 73           | 0            | 0             | 0            | 0.109636832 | 5816    |
@@ -162,7 +163,7 @@ Feature: Creating a Sample
 #        | language | input_path                                 | strat_properties_path                                   | output_path                                         |
 #        | Scala    | ./resources/inputs/sampling/frame_data.csv | ./resources/inputs/sampling/invalid_prn_start_point.csv | ./resources/outputs/sampling/sample_data/in_bounds  |
 
-    Scenario Outline: A Strata with a Sample Size that exceeds the Stratified Frame population #with an error stating target Sample Size is greater than strata size is logged
+    Scenario Outline: A Strata with a Sample Size that exceeds the Stratified Frame population is replace with sample size #with an error stating target Sample Size is greater than strata size is logged
         Given a Stratified Frame:
             | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | paye_empees | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         | cell_no |
             | 1100000001 | 9906000015 | &EAGBBROWN                    |              | 1 HAWRIDGE HILL COTTAGES | THE VALE       | HAWRIDGE    | CHESHAM BUCKINGHAMSHIRE |          | HP5 3NU  | 1           | 45112 | 1           | 1         | 73           | 73           | 0            | 0             | 0            | 0.109636832 | 5816    |

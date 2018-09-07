@@ -2,6 +2,8 @@ package uk.gov.ons.registers
 
 import scala.util.Try
 
+import uk.gov.ons.registers.helpers.TrySupport
+
 sealed trait Validation[+A, +E]
 case class Success[A](valid: A) extends Validation[Nothing, A]
 case class Failure[E](head: E, tail: List[E] = Nil) extends Validation[E, Nothing]
@@ -25,11 +27,8 @@ object Validation {
     case (_, Failure(h, t)) => onFailure(h +: t)
   }
 
-  def toValidation[A](aTry: Try[A]): Validation[ErrorMessage, A] =
-    aTry match {
-      case util.Success(v) => Success(v)
-      case util.Failure(e) => Failure(e.getMessage)
-    }
+  def fromTry[A, E](aTry: Try[A], onFailure: Throwable => E): Validation[E, A] =
+    TrySupport.fold(aTry)(err => Failure(onFailure(err)), onSuccess = Success(_))
 
   def fold[A, B, E](v: Validation[E, A])(onFailure: List[E] => B, onSuccess: A => B): B =
     v match{

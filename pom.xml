@@ -198,21 +198,21 @@
         </dependency>
 
         <!--REGISTER'S DEPS-->
-        <dependency>
-            <groupId>org.scalatest</groupId>
-            <artifactId>scalatest-freespec_2.11</artifactId>
-            <version>3.0.0-SNAP13</version>
-        </dependency>
-        <dependency>
-            <groupId>org.scalatest</groupId>
-            <artifactId>scalatest-matchers_2.11</artifactId>
-            <version>3.0.0-SNAP13</version>
-        </dependency>
-        <dependency>
-            <groupId>org.scalamock</groupId>
-            <artifactId>scalamock_2.11</artifactId>
-            <version>4.1.0</version>
-            <scope>test</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.scalatest</groupId>-->
+            <!--<artifactId>scalatest-freespec_2.11</artifactId>-->
+            <!--<version>3.0.0-SNAP13</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.scalatest</groupId>-->
+            <!--<artifactId>scalatest-matchers_2.11</artifactId>-->
+            <!--<version>3.0.0-SNAP13</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.scalamock</groupId>-->
+            <!--<artifactId>scalamock_2.11</artifactId>-->
+            <!--<version>4.1.0</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
     </dependencies>
 </project>

@@ -4,8 +4,8 @@ Feature: Create a Stratified Frame
     set of numerical range filters (e.g. payeEmployee, sic07) are imposed on the Frame. A produced stratified cell is
     then allocated a cell number (as per strata) which is appended to each of its rows.
 
-    Scenario Outline: An exception is throw when an invalid Frame file with an invalid field type is given as the input argument
-        Given a Frame with an invalid required field:
+    Scenario Outline: An exception is throw when an Frame file with an invalid field type is given as the input argument
+        Given a Frame with an invalid unit field:
             | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | paye_empees | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         |
             | 1100000001 | 9906000015 | &EAGBBROWN                    |              | 1 HAWRIDGE HILL COTTAGES | THE VALE       | HAWRIDGE    | CHESHAM BUCKINGHAMSHIRE |          | HP5 3NU  | 1           | 45112 | invalid     | 1         | 73           | 73           | 0            | 0             | 0            | 0.109636832 |
             | 1100000002 | 9906000045 | BUEADLIING SOLUTIONS LTD      |              | 1 HAZELWOOD LANE         | ABBOTS LANGLEY |             |                         |          | WD5 0HA  | 3           | 45190 | 1567        | 0         | 100          | 100          | 0            | 0             | 0            | 0.63848639  |
@@ -29,7 +29,7 @@ Feature: Create a Stratified Frame
         | language |
         | Scala    |
 
-    Scenario Outline: An exception is throw when an invalid Stratification Properties file with an invalid field type is given as the input argument
+    Scenario Outline: An exception is throw when an Stratification Properties file with an invalid field type is given as the input argument
         Given a Frame:
             | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | paye_empees | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         |
             | 1100000001 | 9906000015 | &EAGBBROWN                    |              | 1 HAWRIDGE HILL COTTAGES | THE VALE       | HAWRIDGE    | CHESHAM BUCKINGHAMSHIRE |          | HP5 3NU  | 1           | 45112 | 1           | 1         | 73           | 73           | 0            | 0             | 0            | 0.109636832 |
