@@ -11,7 +11,7 @@ object ParamValidation {
 
   private def logWithErrorMsg[A](strataNumber: Int)(msg: A): Option[Nothing] = {
     val logErrorMsg = s"Could not process strata ($strataNumber): $msg"
-    LogPatch.log(level = "warn", msg = logErrorMsg)
+    Patch.log(level = "warn", msg = logErrorMsg)
     None
   }
 

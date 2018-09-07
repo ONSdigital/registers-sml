@@ -5,7 +5,7 @@ import java.nio.file.Path
 
 import org.apache.spark.sql.DataFrame
 
-import uk.gov.ons.registers.TestLogPatch
+import uk.gov.ons.registers.Patch
 import uk.gov.ons.registers.helpers.CSVProcessor.CSV
 import uk.gov.ons.registers.stepdefs.{methodResult, outputDataDF}
 import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, createDataFrame}
@@ -25,7 +25,7 @@ object AssertionHelpers{
       None
     } catch {
       case ex: Throwable =>
-        TestLogPatch.log(msg = s"Found expected error: ${ex.getMessage}")
+        Patch.log(msg = s"Found expected error: ${ex.getMessage}")
         Some(new Exception(ex.getMessage))
     }
 

@@ -22,7 +22,7 @@ private[registers] object SparkSessionManager {
       }
       finally
         if (activeSession.sparkContext.appName == SparkAppName) {
-          LogPatch.log(msg = s"Stopping active session [${activeSession.sparkContext.appName}] started on " +
+          Patch.log(msg = s"Stopping active session [${activeSession.sparkContext.appName}] started on " +
             s"[${activeSession.sparkContext.startTime}] in thread.")
           activeSession.close
         }
