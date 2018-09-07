@@ -100,7 +100,7 @@ pipeline {
             post {
                 success {
                     colourText("info","Generating reports for tests")
-                    // junit '**/target/*-reports/*.xml'
+                    junit '**/target/*-reports/*.xml'
                 }
                 failure {
                     colourText("warn","Failed to retrieve reports.")
