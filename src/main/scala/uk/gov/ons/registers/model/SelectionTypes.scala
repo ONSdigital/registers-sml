@@ -15,13 +15,6 @@ object SelectionTypes {
     val universal = "U"
   }
 
-  @deprecated
-  private object Description {
-    val census = "Census"
-    val prnSampling = "Sample"
-    val universal = "Admin"
-  }
-
   def fromString(str: String): Try[SelectionTypes] =
     Try(fromInitial(initialStr = str))
 

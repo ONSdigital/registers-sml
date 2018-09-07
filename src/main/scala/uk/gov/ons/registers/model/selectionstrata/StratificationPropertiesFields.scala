@@ -1,4 +1,4 @@
-package uk.gov.ons.registers.model.stratification
+package uk.gov.ons.registers.model.selectionstrata
 
 object StratificationPropertiesFields {
   val inqueryCode = "inqcode"
@@ -6,7 +6,7 @@ object StratificationPropertiesFields {
   val cellDescription = "cell_desc"
   val selectionType = "seltype"
   val lowerClassSIC07 = "lower_class"
-  val upperClassSIC07 = "upperClassSIC07"
+  val upperClassSIC07 = "upper_class"
   val lowerSizePayeEmployee = "lower_size"
   val upperSizePayeEmployee = "upper_size"
   val prnStartPoint = "prn_start"

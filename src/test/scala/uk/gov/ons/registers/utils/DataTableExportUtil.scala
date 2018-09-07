@@ -1,4 +1,4 @@
-package uk.gov.ons.registers.support
+package uk.gov.ons.registers.utils
 
 import java.io.{BufferedWriter, File, FileWriter}
 import java.nio.file.Path
@@ -6,12 +6,14 @@ import java.nio.file.Path
 import scala.collection.JavaConverters.collectionAsScalaIterableConverter
 
 import uk.gov.ons.registers.helpers.CSVProcessor.DefaultFileDelimiter
+import uk.gov.ons.registers.support.TestFileEnvSetup
 
 import cucumber.api.DataTable
 
-
+@deprecated
 object DataTableExportUtil {
   // Loan
+  @deprecated
   private def withWriter(file: File)(f: BufferedWriter => Unit): Unit = {
     val fileWriter = new FileWriter(file)
     try {
@@ -22,6 +24,7 @@ object DataTableExportUtil {
     finally fileWriter.close()
   }
 
+  @deprecated
   def saveTableAsCsv(dataTable: DataTable, prefix: String): Path = {
     val aListOfTableRows = dataTable.asLists(classOf[String])
     val testTempPath = TestFileEnvSetup.createTempFile(prefix)

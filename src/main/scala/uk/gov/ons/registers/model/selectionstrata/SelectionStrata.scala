@@ -1,4 +1,4 @@
-package uk.gov.ons.registers.model.stratification
+package uk.gov.ons.registers.model.selectionstrata
 
 import uk.gov.ons.api.java.methods.registers.annotation.Description
 

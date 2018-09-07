@@ -1,26 +1,21 @@
 package uk.gov.ons.registers.methods
 
-import java.nio.file.Path
+import javax.inject.Singleton
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-import uk.gov.ons.registers.TransformFilesAndDataFrames.exportDfAsCsvOrError
-import uk.gov.ons.registers.methods.impl.StratificationImpl
-import uk.gov.ons.registers.model.stratification.SelectionStrata
-import uk.gov.ons.registers.{SparkSessionManager, TransformFilesAndDataFrames}
+import uk.gov.ons.registers.TransformDataFrames.{transformToDataFrame, validateAndParseInputs}
+import uk.gov.ons.registers.model.CommonFrameAndPropertiesFieldsCasting.checkUnitForMandatoryFields
+import uk.gov.ons.registers.model.selectionstrata.SelectionStrata
 
-class Stratification(inputPath: Path)(implicit activeSession: SparkSession) {
+@Singleton
+class Stratification(implicit activeSession: SparkSession) {
+  import uk.gov.ons.registers.methods.impl.StratificationImpl._
 
-  import StratificationImpl._
-
-  import activeSession.implicits._
-
-  def stratify(stratificationPropsPath: Path, outputPath: Path): DataFrame = {
+  def stratify(inputDf: DataFrame, stratificationPropsDf: DataFrame): DataFrame = {
     val (frameDF, stratificationPropsDS) =
-      TransformFilesAndDataFrames.validateAndConstructInputs[SelectionStrata](
-        properties = inputPath, dataFile = stratificationPropsPath)
-    TransformFilesAndDataFrames.validateOutputDirectory(outputPath)
-
+      validateAndParseInputs(propertiesDf = stratificationPropsDf, unitDf = inputDf,
+        validateFields = checkUnitForMandatoryFields)
     /**
       * NOTE - the driver is solely aware of the type T in Dataset[T] and cannot be inferred by worker nodes.
       *        Collect forces the transformation to be returned to the node allowing the proceeding step to incur
@@ -31,15 +26,12 @@ class Stratification(inputPath: Path)(implicit activeSession: SparkSession) {
         payeEmployeesLowerRange = selectionStrata.lower_size, payeEmployeesUpperRange = selectionStrata.upper_size,
         cellNo = selectionStrata.cell_no)
     }
-    val collectStrataFramesDF = TransformFilesAndDataFrames.transformToDataFrame(arrayOfDatasets = arrayOfStratifiedFrames)
-    val strataFramesDF = frameDF.postStratification1(strataAllocatedDataFrame = collectStrataFramesDF)
-    exportDfAsCsvOrError(dataFrame = strataFramesDF, path = outputPath)
-    SparkSessionManager.stopSession()
-    strataFramesDF
+    val collectStrataFramesDF = transformToDataFrame(arrayOfDatasets = arrayOfStratifiedFrames)
+    frameDF.postStratification1(strataAllocatedDataFrame = collectStrataFramesDF)
   }
 }
 
 object Stratification {
-  def stratification(inputPath: Path)(implicit sparkSession: SparkSession): Stratification =
-    new Stratification(inputPath)(sparkSession)
+  def stratification(implicit sparkSession: SparkSession): Stratification =
+    new Stratification
 }
