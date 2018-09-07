@@ -4,7 +4,14 @@
 def projectName = 'registers-sml'
 def distDir = 'build/dist/'
 def server = Artifactory.server 'art-p-01'
-def buildInfo = Artifactory.newBuildInfo()
+// def buildInfo = Artifactory.newBuildInfo()
+def rtMaven = Artifactory.newMavenBuild()
+rtMaven.deployer server: server, releaseRepo: 'LR_Registers-Releases', snapshotRepo: 'LR_Registers-Snapshots'
+
+
+rtMaven.resolver server: server, releaseRepo: 'ons-repo', snapshotRepo: 'ons-repo'
+
+rtMaven.tool = 'Maven-3.3.9'
 
 pipeline {
     agent any
@@ -13,7 +20,7 @@ pipeline {
         skipDefaultCheckout()
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30'))
         timeout(time: 15, unit: 'MINUTES')
-        //timestamps()
+        timestamps()
     }
     environment {
         BUILD_ENV = "CI"
@@ -63,7 +70,7 @@ pipeline {
                 parallel (
                         "Java and Scala": {
                             colourText("info","Running Maven tests for Java wrapper and Scala")
-                           // sh "mvn clean test"
+                            sh "mvn clean test"
                         }
                         // "Python": {
                         //     colourText("info","Using behave to run Python tests.")
@@ -106,20 +113,20 @@ pipeline {
                 STAGE = "Package"
             }
             steps {
-                sh """
-                    mvn package -Dmaven.test.skip=true
-                    mkdir ${WORKSPACE}/$MODULE_NAME
-                    cp -v ${WORKSPACE}/target/sml-1.0-SNAPSHOT-jar-with-dependencies.jar ${WORKSPACE}/$MODULE_NAME
-                """
+                script {
+                    def buildInfo = rtMaven.run pom: '${WORKSPACE}/pom.xml', goals: 'clean install'      
+                }
             }
         }
-        stage("Store") {
+        stage("Push to Artifactory") {
             agent any
+            environment{
+                STAGE = "Push to Artifactory"
+            }
             steps {
                 script {
-                    STAGE = "Store"
+                    Artifactory.newMavenBuild()
                 }
-                archiveToHDFS()
             }
         }
 
@@ -168,15 +175,15 @@ pipeline {
         }
         success {
             colourText("success", "All stages complete. Build was successful.")
-            // sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST"
+            sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST"
         }
         unstable {
             colourText("warn", "Something went wrong, build finished with result ${currentBuild.result}. This may be caused by failed tests, code violation or in some cases unexpected interrupt.")
-            // sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST", "${STAGE}"
+            sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST", "${STAGE}"
         }
         failure {
-            colourText("warn","Process failed at: ${STAGE_NAME}")
-            // sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST", "${STAGE}"
+            colourText("warn","Process failed at: ${STAGE}")
+            sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST", "${STAGE}"
         }
     }
 }
