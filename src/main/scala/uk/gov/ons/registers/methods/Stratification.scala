@@ -4,7 +4,7 @@ import javax.inject.Singleton
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-import uk.gov.ons.registers.TransformDataFrames.{transformToDataFrame, validateAndParseInputs}
+import uk.gov.ons.registers.TransformDataFrames.{fromArrayDataFrame, validateAndParseInputs}
 import uk.gov.ons.registers.model.CommonFrameAndPropertiesFieldsCasting.checkUnitForMandatoryFields
 import uk.gov.ons.registers.model.selectionstrata.SelectionStrata
 
@@ -26,7 +26,7 @@ class Stratification(implicit activeSession: SparkSession) {
         payeEmployeesLowerRange = selectionStrata.lower_size, payeEmployeesUpperRange = selectionStrata.upper_size,
         cellNo = selectionStrata.cell_no)
     }
-    val collectStrataFramesDF = transformToDataFrame(arrayOfDatasets = arrayOfStratifiedFrames)
+    val collectStrataFramesDF = fromArrayDataFrame(arrayOfDatasets = arrayOfStratifiedFrames)
     frameDF.postStratification1(strataAllocatedDataFrame = collectStrataFramesDF)
   }
 }

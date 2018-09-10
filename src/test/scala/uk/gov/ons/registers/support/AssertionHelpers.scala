@@ -1,12 +1,8 @@
 package uk.gov.ons.registers.support
 
-import java.io.File
-import java.nio.file.Path
-
 import org.apache.spark.sql.DataFrame
 
 import uk.gov.ons.registers.Patch
-import uk.gov.ons.registers.helpers.CSVProcessor.CSV
 import uk.gov.ons.registers.stepdefs.{methodResult, outputDataDF}
 import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, createDataFrame}
 
@@ -38,14 +34,5 @@ object AssertionHelpers{
     expectedDF.show()
     println(s"Scala $printLabel Output")
     outputDataDF.show()
-  }
-
-  @deprecated
-  def assertAndReturnCsvOfSampleCollection(outputPath: Path): File = {
-    val sampleOutputDir = outputPath.toFile
-    assert(sampleOutputDir.exists && sampleOutputDir.isDirectory, message = s"output path [$outputPath] does not exist and/ or is not a directory")
-    val listOfCsvOutputFiles = sampleOutputDir.listFiles.filter(_.getName.endsWith(s".$CSV"))
-    assert(listOfCsvOutputFiles.nonEmpty, message = s"found no files with extension [.$CSV] in [$outputPath] directory")
-    listOfCsvOutputFiles.head
   }
 }
