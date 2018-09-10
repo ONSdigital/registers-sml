@@ -1,7 +1,8 @@
 Feature: VAT Calculation
-    works out vat
+    The VAT Calculation method will take information from the BI data, VAT Refs and PAYE refs tables using the PAYE method
+    to calculate paye_employees and paye_jobs and then calculating various turnovers.
 
-    Scenario Outline: Happy Path
+    Scenario Outline: Happy Path - We have valid input data and will calculate the correct result
         Given the BI data input:
            |        BusinessName|      PayeRefs|                      VatRefs|       ern|          id|
            |      INDUSTRIES LTD|       [1151L]|               [123123123000]|2000000011|100002826247|
