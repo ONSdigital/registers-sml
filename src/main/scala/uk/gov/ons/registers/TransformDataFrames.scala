@@ -1,24 +1,22 @@
 package uk.gov.ons.registers
 
-import java.io.FileNotFoundException
-import java.nio.file.Path
-
 import scala.reflect.runtime.universe.TypeTag
 import scala.util.Try
 
+import org.apache.spark.sql._
 import org.apache.spark.sql.catalyst.ScalaReflection
 import org.apache.spark.sql.types.{DataTypes, StructType}
-import org.apache.spark.sql._
 
 import uk.gov.ons.api.java.methods.registers.annotation.Unused
-import uk.gov.ons.registers.helpers.CSVProcessor.{DefaultFileDelimiter, readCsvFileAsDataFrame, readCsvFileAsDataset, readFileAsSQLDataContainerElseException}
 import uk.gov.ons.registers.helpers.EitherSupport.fromEithers
-import uk.gov.ons.registers.helpers.{CSVProcessor, TrySupport}
+import uk.gov.ons.registers.helpers.TrySupport
 import uk.gov.ons.registers.model.selectionstrata.PrnNumericalProperty.{precision, scale}
 import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields._
 import uk.gov.ons.registers.model.selectionstrata.{SelectionStrata, StratificatonPropertyFieldsCasting}
 
 object TransformDataFrames {
+  val DefaultFileDelimiter = ","
+
   private def schemaOf[A: TypeTag]: StructType =
     ScalaReflection
       .schemaFor[A]
@@ -70,35 +68,4 @@ object TransformDataFrames {
         .as[T]
       )
     )
-
-  @deprecated
-  private def readInputDataAsDF(dataInputPath: Path)(implicit sparkSession: SparkSession): Either[Throwable, DataFrame] =
-    readFileAsSQLDataContainerElseException[DataFrame](
-      readFromFileFunc = readCsvFileAsDataFrame, filePathStr = dataInputPath)
-
-  @deprecated
-  private def readPropertiesAsDs[T : Encoder : TypeTag](propertiesPath: Path)
-     (implicit sparkSession: SparkSession): Either[Throwable, Dataset[T]] =
-    readFileAsSQLDataContainerElseException[Dataset[T]](
-      readFromFileFunc = readCsvFileAsDataset[T], filePathStr = propertiesPath)
-
-  @deprecated
-  def validateAndConstructInputs[T : Encoder : TypeTag](properties: Path, dataFile: Path)
-     (implicit sparkSession: SparkSession): (DataFrame, Dataset[T]) = {
-    val dataInputDfOrError = readInputDataAsDF(properties)
-    val propertiesDsOrError = readPropertiesAsDs[T](dataFile)
-    fromEithers(dataInputDfOrError, propertiesDsOrError)(
-      onFailure = errs => throw new Exception(errs.map(_.getMessage).mkString(DefaultFileDelimiter)),
-      onSuccess = (inputDataFrame, propertiesDataset) => inputDataFrame -> propertiesDataset)
-  }
-
-  @deprecated
-  def validateOutputDirectory(outputPath: Path): Unit =
-    if (!outputPath.toFile.isDirectory) throw new FileNotFoundException(s"Cannot find output directory [$outputPath]")
-
-  // Throws error as a temporary solution until reporting is introduced
-  @deprecated
-  def exportDfAsCsvOrError(dataFrame: DataFrame, path: Path, headerOption: Boolean = true): Unit =
-    TrySupport.toEither( Try(CSVProcessor.export(dataFrame, path, headerOption)) )
-      .fold(err => throw new Exception(s"Failed to export to CSV with error: ${err.getMessage}"), identity)
 }
