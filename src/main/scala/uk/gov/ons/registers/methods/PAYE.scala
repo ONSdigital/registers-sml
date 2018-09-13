@@ -55,7 +55,7 @@ class PAYE(implicit activeSession: SparkSession) {
 
   def getGroupedByPayeJobs(BIDF: DataFrame, payeDF: DataFrame, quarter: String,luTableName: String = "LEGAL_UNITS", payeDataTableName: String = "PAYE_DATA")(implicit spark: SparkSession): DataFrame ={
     val flatUnitDf = BIDF.withColumn("payeref", explode_outer(BIDF.apply("PayeRefs")))
-    val idDF = (payeDF.join(flatUnitDf, "payeref")).selectExpr("ern", "cast(dec_jobs as int) dec_jobs").groupBy("ern").agg(sum("dec_jobs") as jobs)
+    val idDF = (payeDF.join(flatUnitDf, "payeref")).selectExpr("ern", s"cast($quarter as int) $quarter").groupBy("ern").agg(sum(quarter) as jobs)
     idDF
   }
 
