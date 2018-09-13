@@ -19,14 +19,14 @@ class PAYE_Steps extends ScalaDsl with EN {
   private def applyMethod(): Unit = {
   outputDataDF = PAYE.Paye(sparkSession = Helpers.sparkSession)
     .calculate(BIDF, payeDF, appConfs)
+    //outputDataDF.show()
   }
 
   Given("""^a BI data input with field that does not exist:$"""){ anInvalidFrameTableDF: RawDataTableList =>
     BIDF = createDataFrame(anInvalidFrameTableDF)
       .withColumn("PayeRefs", regexp_replace(col("PayeRefs"), "[\\[\\]]+", ""))
       .withColumn("VatRefs", regexp_replace(col("VatRefs"), "[\\[\\]]+", ""))
-
-    BIDF = BIDF.withColumn(colName = "PayeRefs", split(col("PayeRefs"), ", ").cast(ArrayType(StringType)))
+    BIDF = BIDF.withColumn(colName = "PayeRefs", split(col("PayeRefs"), ", ").cast(IntegerType))
       .withColumn(colName = "VatRefs", split(col("VatRefs"), ", ").cast(ArrayType(StringType)))
   }
 
@@ -46,6 +46,7 @@ class PAYE_Steps extends ScalaDsl with EN {
   }
 
   Then("""^a PAYE results table is produced:"""){ theExpectedResult: RawDataTableList =>
+    //createDataFrame(theExpectedResult).show
     assertEqualityAndPrintResults(expected = theExpectedResult)
   }
 

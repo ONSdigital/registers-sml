@@ -15,6 +15,7 @@ class VAT_Steps extends ScalaDsl with EN {
   private def applyMethod(): Unit = {
     outputDataDF = VAT.Vat(sparkSession = Helpers.sparkSession)
       .calculate(BIDF, payeDF, VatDF, appConfs)
+    //outputDataDF.show
   }
 
   And("""^the VAT refs input"""){ inputTable: RawDataTableList =>
@@ -37,6 +38,7 @@ class VAT_Steps extends ScalaDsl with EN {
   }
 
   Then("""^a VAT results table is produced:"""){ theExpectedResult: RawDataTableList =>
+    //createDataFrame(theExpectedResult).show
     assertEqualityAndPrintResults(expected = theExpectedResult)
   }
 

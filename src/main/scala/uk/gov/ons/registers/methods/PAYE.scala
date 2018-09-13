@@ -2,7 +2,9 @@ package uk.gov.ons.registers.methods
 
 import global.AppParams
 import org.apache.spark.sql.functions.explode_outer
+import org.apache.spark.sql.functions.sum
 import org.apache.spark.sql.{DataFrame, SparkSession}
+
 
 class PAYE(implicit activeSession: SparkSession) {
 
@@ -10,29 +12,54 @@ class PAYE(implicit activeSession: SparkSession) {
   val employees = "paye_empees"
 
   def calculate(BIDF: DataFrame, payeDF: DataFrame, appConfs: AppParams): DataFrame = {
-    val calculatedPayeDF = getGroupedByPayeRefs(BIDF, payeDF, "dec_jobs")
+    val calculatedPayeEmployeesDF = getGroupedByPayeEmployees(BIDF, payeDF)
+    val calculatedPayeJobsDF = getGroupedByPayeJobs(BIDF, payeDF, "dec_jobs")
+    val calculatedPayeDF = calculatedPayeEmployeesDF.join(calculatedPayeJobsDF, "ern")
     //calculatedPayeDF.show
+
     calculatedPayeDF
   }
 
-  def getGroupedByPayeRefs(BIDF: DataFrame, payeDF: DataFrame, quarter: String, luTableName: String = "LEGAL_UNITS", payeDataTableName: String = "PAYE_DATA")(implicit activeSession: SparkSession) ={
+  def getGroupedByPayeEmployees(BIDF: DataFrame, payeDF: DataFrame, luTableName: String = "LEGAL_UNITS", payeDataTableName: String = "PAYE_DATA")(implicit spark: SparkSession): DataFrame ={
     val flatUnitDf = BIDF.withColumn("payeref", explode_outer(BIDF.apply("PayeRefs")))
 
+    val idDF = (payeDF.join(flatUnitDf, "payeref"))
+      .selectExpr("ern", "id", "cast(mar_jobs as int) mar_jobs", "cast(june_jobs as int) june_jobs", "cast(sept_jobs as int) sept_jobs", "cast(dec_jobs as int) dec_jobs")
+      .groupBy("id").agg(sum("mar_jobs") as "mar_jobs", sum("june_jobs") as "june_jobs", sum("sept_jobs") as "sept_jobs", sum("dec_jobs") as "dec_jobs")
+
+    idDF.createOrReplaceTempView(payeDataTableName)
     flatUnitDf.createOrReplaceTempView(luTableName)
-    payeDF.createOrReplaceTempView(payeDataTableName)
 
-    implicit val spark: SparkSession = SparkSession.builder().master("local[4]").appName("enterprise assembler").getOrCreate()
-    val flatPayeDataSql = generateCalculateAvgSQL(luTableName, payeDataTableName)
+    val flatPayeDataSumSql = generateCalculateSumSQL(luTableName, payeDataTableName)
+    val flatPayeDataCountSql = generateCalculateCountSQL(luTableName, payeDataTableName)
 
-    val sql = s"""
-              SELECT SUM(AVG_CALCULATED.quarter_avg) AS $employees, CAST(SUM(AVG_CALCULATED.$quarter) AS int) AS $jobs, AVG_CALCULATED.ern
-              FROM ($flatPayeDataSql) as AVG_CALCULATED
-              GROUP BY AVG_CALCULATED.ern
+    val sqlSum =  s"""
+              SELECT (SUM(AVG_CALCULATED.quarter_sum)) AS sums, AVG_CALCULATED.id, AVG_CALCULATED.ern
+              FROM ($flatPayeDataSumSql) as AVG_CALCULATED
+              GROUP BY AVG_CALCULATED.ern, AVG_CALCULATED.id
             """.stripMargin
-    spark.sql(sql)
+    val sqlCount = s"""
+              SELECT (SUM(AVG_CALCULATED.quarter_count)) AS counts, AVG_CALCULATED.id
+              FROM ($flatPayeDataCountSql) as AVG_CALCULATED
+              GROUP BY AVG_CALCULATED.id
+            """.stripMargin
+    val Sum = spark.sql(sqlSum)
+    val Count = spark.sql(sqlCount)
+    val aggDF = Sum.join(Count, "id")
+
+    val ungroupedDF = aggDF.withColumn(employees, aggDF.col("sums") / aggDF.col("counts"))//.selectExpr("ern", s"cast($employees as int) $employees")
+    val groupedDF = ungroupedDF.groupBy("ern").agg(sum(employees) as employees).selectExpr(s"cast($employees as int) $employees", "ern")
+
+    groupedDF
   }
 
-  def generateCalculateAvgSQL(luTablename: String = "LEGAL_UNITS", payeDataTableName: String = "PAYE_DATA") =
+  def getGroupedByPayeJobs(BIDF: DataFrame, payeDF: DataFrame, quarter: String,luTableName: String = "LEGAL_UNITS", payeDataTableName: String = "PAYE_DATA")(implicit spark: SparkSession): DataFrame ={
+    val flatUnitDf = BIDF.withColumn("payeref", explode_outer(BIDF.apply("PayeRefs")))
+    val idDF = (payeDF.join(flatUnitDf, "payeref")).selectExpr("ern", "cast(dec_jobs as int) dec_jobs").groupBy("ern").agg(sum("dec_jobs") as jobs)
+    idDF
+  }
+
+  def generateCalculateSumSQL(luTablename: String = "LEGAL_UNITS", payeDataTableName: String = "PAYE_DATA") =
     s"""
       SELECT $luTablename.*, $payeDataTableName.mar_jobs, $payeDataTableName.june_jobs, $payeDataTableName.sept_jobs, $payeDataTableName.dec_jobs,
                 CAST(
@@ -58,32 +85,45 @@ class PAYE(implicit activeSession: SparkSession) {
                      ELSE $payeDataTableName.dec_jobs
                  END)
 
-                ) / (
-                (CASE
-                    WHEN $payeDataTableName.mar_jobs IS NULL
-                    THEN 0
-                    ELSE 1
-                 END +
-                 CASE
-                    WHEN $payeDataTableName.june_jobs IS NULL
-                    THEN 0
-                    ELSE 1
-                 END +
-                 CASE
-                    WHEN $payeDataTableName.sept_jobs IS NULL
-                    THEN 0
-                    ELSE 1
-                 END +
-                 CASE
-                   WHEN $payeDataTableName.dec_jobs IS NULL
-                   THEN 0
-                   ELSE 1
-                 END)
-                ) AS int) as quarter_avg
+                ) AS int) as quarter_sum
 
                 FROM $luTablename
-                LEFT JOIN $payeDataTableName ON $luTablename.payeref=$payeDataTableName.payeref
+                LEFT JOIN $payeDataTableName ON $luTablename.id=$payeDataTableName.id
         """.stripMargin
+
+  def generateCalculateCountSQL(luTablename: String = "LEGAL_UNITS", payeDataTableName: String = "PAYE_DATA") =
+    s"""
+      SELECT $luTablename.*, $payeDataTableName.mar_jobs, $payeDataTableName.june_jobs, $payeDataTableName.sept_jobs, $payeDataTableName.dec_jobs,
+                CAST(
+               (
+                 (CASE
+                     WHEN $payeDataTableName.mar_jobs IS NULL
+                     THEN 0
+                     ELSE 1
+                  END +
+                  CASE
+                     WHEN $payeDataTableName.june_jobs IS NULL
+                     THEN 0
+                     ELSE 1
+                  END +
+                  CASE
+                     WHEN $payeDataTableName.sept_jobs IS NULL
+                     THEN 0
+                     ELSE 1
+                  END +
+                  CASE
+                    WHEN $payeDataTableName.dec_jobs IS NULL
+                    THEN 0
+                    ELSE 1
+                  END)
+
+
+                ) AS int) as quarter_count
+
+                FROM $luTablename
+                LEFT JOIN $payeDataTableName ON $luTablename.id=$payeDataTableName.id
+        """.stripMargin
+
 
   //    /**
   //      * calculates paye data (non-null data quarters count, total employee count, average) for 1 paye ref

@@ -44,11 +44,11 @@ Feature: VAT Calculation
         When VAT is calculated
         Then a VAT results table is produced:
            |       ern|paye_empees|paye_jobs|cntd_turnover|app_turnover|std_turnover|grp_turnover|ent_turnover|
-           |1100000004|          4|        8|         null|         444|         260|        1000|         704|
            |2000000011|          2|        4|         null|        null|         390|        null|         390|
            |9900000009|          3|        5|           85|        null|        null|        null|          85|
-           |1100000003|         19|       20|          585|        null|        null|        null|         585|
+           |1100000004|          5|        8|         null|         444|         260|        1000|         704|
            |2200000002|          5|        5|         null|         555|        null|        1000|         555|
+           |1100000003|         17|       20|          585|        null|        null|        null|         585|
 
     @JVM
     Examples:
