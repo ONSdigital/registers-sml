@@ -24,47 +24,20 @@ object StratificationImpl {
         .withColumn(StratificationPropertiesFields.cellNumber, lit(cellNo))
 
     /**
-      * USAGE: Stratify a Frame
-      *
-      * Included with the strata are units that contain a null in the `paye_empees` field - labelled with -2
-      *
-      * @param cellNo - to denote the strata to which it is allocated
-      * @return Frame - A DataSet that has strata(s) composed from filtering units by sic07 and Paye Employment range
-      */
-    @deprecated("Migrate to postWithPayeEmployeeNullDenotation()", "feature/support-paye-emp-nulls - 14 Sept 2018")
-    def stratify2(sic07LowerClass: Int, sic07UpperClass: Int, payeEmployeesLowerRange: Long,
-                  payeEmployeesUpperRange: Long, cellNo: Int): Dataset[Row] = {
-      val strata = frameDf
-        .filter(frameDf(sic07) >= sic07LowerClass && frameDf(sic07) <= sic07UpperClass)
-        .filter(frameDf(payeEmployees) >= payeEmployeesLowerRange &&
-          frameDf(payeEmployees) <= payeEmployeesUpperRange)
-        .withColumn(StratificationPropertiesFields.cellNumber, lit(cellNo))
-
-      val nullPayeEmployeeUnits = frameDf
-        .except(strata)
-        .filter(frameDf(sic07) >= sic07LowerClass && frameDf(sic07) <= sic07UpperClass)
-        .where(frameDf(payeEmployees).isNull) // ????
-        .withColumn(StratificationPropertiesFields.cellNumber, lit(Codes.PayeEmployeeNullCode))
-        .orderBy(prn)
-
-      strata
-        .union(nullPayeEmployeeUnits)
-    }
-
-    /**
-      * USAGE: Stratify a Frame
-      *
-      * Extracts strata and filters units that contain a null in the `paye_empees` field (labelled with -2)
-      * Then combines both
+      * USAGE: Extracting strata and filtering for units that contain a null in the `paye_empees` - then labelling with -2
+      *         [PATCH]
       *
       * @param strata -  A DataSet that has strata(s) composed from filtering units by sic07 and Paye Employment range
-      * @return
+      * @return {DataFrame} - a combined dataframe of the strata followed by any units with payeEmployee as null
       */
-    def postWithPayeEmployeeNullDenotation(strata: DataFrame, sic07LowerClass: Int, sic07UpperClass: Int): Dataset[Row] = {
+    def postPayeEmployeeNullDenotation1(strata: DataFrame, sic07LowerClass: Int, sic07UpperClass: Int): Dataset[Row] = {
+      val rawUnits = strata
+        .drop(StratificationPropertiesFields.cellNumber)
+
       val nullPayeEmployeeUnits = frameDf
-        .except(strata)
+        .except(rawUnits)
         .filter(frameDf(sic07) >= sic07LowerClass && frameDf(sic07) <= sic07UpperClass)
-        .where(frameDf(payeEmployees).isNull) // ????
+        .where(frameDf(payeEmployees).isNull)
         .withColumn(StratificationPropertiesFields.cellNumber, lit(Codes.PayeEmployeeNullCode))
         .orderBy(prn)
 

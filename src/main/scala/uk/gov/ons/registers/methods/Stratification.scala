@@ -25,7 +25,7 @@ class Stratification(implicit activeSession: SparkSession) {
       val strata = frameDF.stratify1(sic07LowerClass = selectionStrata.lower_class, sic07UpperClass = selectionStrata.upper_class,
         payeEmployeesLowerRange = selectionStrata.lower_size, payeEmployeesUpperRange = selectionStrata.upper_size,
         cellNo = selectionStrata.cell_no)
-      strata.postWithPayeEmployeeNullDenotation(strata = strata, sic07LowerClass = selectionStrata.lower_class,
+      frameDF.postPayeEmployeeNullDenotation1(strata = strata, sic07LowerClass = selectionStrata.lower_class,
         sic07UpperClass = selectionStrata.upper_class)
     }
     val collectStrataFramesDF = fromArrayDataFrame(arrayOfDatasets = arrayOfStratifiedFrames)

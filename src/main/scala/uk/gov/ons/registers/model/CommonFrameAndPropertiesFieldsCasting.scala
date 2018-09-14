@@ -16,8 +16,7 @@ object CommonFrameAndPropertiesFieldsCasting {
       .withColumn(colName = sic07, unitDF.col(sic07).cast(IntegerType))
       .withColumn(colName = prn, unitDF.col(prn).cast(DataTypes.createDecimalType(precision, scale)))
 
-    if (castedUnitDf.filter(castedUnitDf(payeEmployees).isNull || castedUnitDf(sic07).isNull ||
-      castedUnitDf(prn).isNull).count > NullableValuesAllowed)
+    if (castedUnitDf.filter(castedUnitDf(sic07).isNull || castedUnitDf(prn).isNull).count > NullableValuesAllowed)
       throw new IllegalArgumentException(s"Check common mandatory fields [$payeEmployees, $sic07, $prn] are of expected type")
     else castedUnitDf
   }

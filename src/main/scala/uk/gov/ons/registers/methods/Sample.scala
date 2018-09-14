@@ -26,9 +26,8 @@ class Sample(implicit activeSession: SparkSession) {
     val arrayOfSamples: Array[DataFrame] = stratificationPropsDS
       .filter(checkSelType(Initial.census) || checkSelType(Initial.prnSampling)).collect
       .flatMap{ selectionStrata: SelectionStrata =>
-        SelectionTypeSampling.getMethod(selectionStrata).flatMap{ sampleMethod =>
-          sampleMethod.sampling(stratifiedFrameDF, selectionStrata)
-        }
+        SelectionTypeSampling.getMethod(selectionStrata).flatMap(sampleMethod =>
+          sampleMethod.sampling(stratifiedFrameDF, selectionStrata))
       }
     fromArrayDataFrame(arrayOfDatasets = arrayOfSamples)
   }
