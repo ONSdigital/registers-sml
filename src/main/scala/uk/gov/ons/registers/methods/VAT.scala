@@ -9,10 +9,7 @@ class VAT(implicit activeSession: SparkSession ){
 
   def calculate(BIDF: DataFrame, payeDF: DataFrame, VatDF: DataFrame, appConfs:AppParams) = {
 
-    val calculatedPayeDF = PAYE.Paye.calculate(BIDF, payeDF, appConfs)
-
-    val calculatedWithVatAndPaye = joinWithVatAndPayeData(BIDF, VatDF, calculatedPayeDF)
-
+    val calculatedWithVatAndPaye = joinWithVatAndPayeData(BIDF, VatDF, payeDF)
     val calculatedTurnovers = calculateTurnovers(calculatedWithVatAndPaye)
 
     aggregateDF(calculatedTurnovers)

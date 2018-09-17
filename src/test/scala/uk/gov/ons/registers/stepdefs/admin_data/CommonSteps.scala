@@ -9,7 +9,7 @@ import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, cre
 
 class CommonSteps extends ScalaDsl with EN{
 
-  Given("""^the BI data input:$"""){ inputTable: RawDataTableList =>
+  Given("""^the BI data input"""){ inputTable: RawDataTableList =>
     BIDF = createDataFrame(inputTable)
       .withColumn("PayeRefs", regexp_replace(col("PayeRefs"), "[\\[\\]]+", ""))
       .withColumn("VatRefs", regexp_replace(col("VatRefs"), "[\\[\\]]+", ""))
@@ -22,7 +22,7 @@ class CommonSteps extends ScalaDsl with EN{
     payeDF = toNull(createDataFrame(inputTable))
   }
 
-  Then("""an exception in Scala is thrown for .+ due to a mismatch field type upon trying to (?:Calculate PAYE|Calculate VAT)$"""){ () =>
+  Then("""an exception in Scala is thrown for .+ upon trying to (?:Calculate PAYE|Calculate VAT)$"""){ () =>
     assertThrown()
   }
 }

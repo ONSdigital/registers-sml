@@ -22,10 +22,11 @@ class PAYE(implicit activeSession: SparkSession) {
 
   def getGroupedByPayeEmployees(BIDF: DataFrame, payeDF: DataFrame, luTableName: String = "LEGAL_UNITS", payeDataTableName: String = "PAYE_DATA")(implicit spark: SparkSession): DataFrame ={
     val flatUnitDf = BIDF.withColumn("payeref", explode_outer(BIDF.apply("PayeRefs")))
-
-    val idDF = (payeDF.join(flatUnitDf, "payeref"))
-      .selectExpr("ern", "id", "cast(mar_jobs as int) mar_jobs", "cast(june_jobs as int) june_jobs", "cast(sept_jobs as int) sept_jobs", "cast(dec_jobs as int) dec_jobs")
+    val idDF1 = (flatUnitDf.join(payeDF, "payeref"))
+    val idDF = idDF1.selectExpr("ern", "id", "cast(mar_jobs as int) mar_jobs", "cast(june_jobs as int) june_jobs", "cast(sept_jobs as int) sept_jobs", "cast(dec_jobs as int) dec_jobs")
       .groupBy("id").agg(sum("mar_jobs") as "mar_jobs", sum("june_jobs") as "june_jobs", sum("sept_jobs") as "sept_jobs", sum("dec_jobs") as "dec_jobs")
+
+    missingPayeRefsThrow(flatUnitDf,idDF1)
 
     idDF.createOrReplaceTempView(payeDataTableName)
     flatUnitDf.createOrReplaceTempView(luTableName)
@@ -124,7 +125,12 @@ class PAYE(implicit activeSession: SparkSession) {
                 LEFT JOIN $payeDataTableName ON $luTablename.id=$payeDataTableName.id
         """.stripMargin
 
-
+def missingPayeRefsThrow(BIDF: DataFrame, PayeDF: DataFrame): Unit = {
+  val BList = BIDF.select("payeref").collect.toList
+  val PList = PayeDF.select("payeref").collect.toList
+  val diff = (BList.diff(BList.intersect(PList))).mkString(" ")
+  assert(BList.forall(PList.contains), s"Expected exception to be thrown as the PayeRef(s) $diff don't exist in the Paye input")
+}
   //    /**
   //      * calculates paye data (non-null data quarters count, total employee count, average) for 1 paye ref
   //      * */

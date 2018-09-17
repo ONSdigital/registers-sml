@@ -22,16 +22,8 @@ class PAYE_Steps extends ScalaDsl with EN {
     //outputDataDF.show()
   }
 
-  Given("""^a BI data input with field that does not exist:$"""){ anInvalidFrameTableDF: RawDataTableList =>
-    BIDF = createDataFrame(anInvalidFrameTableDF)
-      .withColumn("PayeRefs", regexp_replace(col("PayeRefs"), "[\\[\\]]+", ""))
-      .withColumn("VatRefs", regexp_replace(col("VatRefs"), "[\\[\\]]+", ""))
-    BIDF = BIDF.withColumn(colName = "PayeRefs", split(col("PayeRefs"), ", ").cast(IntegerType))
-      .withColumn(colName = "VatRefs", split(col("VatRefs"), ", ").cast(ArrayType(StringType)))
-  }
-
-  And("""^a PAYE refs input with invalid field"""){ anInvalidFrameTableDF: RawDataTableList =>
-    payeDF = createDataFrame(anInvalidFrameTableDF)
+  And("""^a PAYE refs input with"""){ anInvalidFrameTableDF: RawDataTableList =>
+    payeDF = toNull(createDataFrame(anInvalidFrameTableDF))
   }
 
   When("""^the PAYE method is applied$"""){ () =>
