@@ -2,6 +2,8 @@ Feature: VAT Calculation
     The VAT Calculation method will take information from the BI data, VAT Refs and PAYE refs tables using the PAYE method
     to calculate paye_employees and paye_jobs and then calculating various turnovers.
 
+
+#    @HappyPath
 #    Scenario Outline: Happy Path - With Hard Paye input - We have valid input data and will calculate the correct result
 #        Given the BI data input:
 #           |        BusinessName|      PayeRefs|                      VatRefs|       ern|          id|
@@ -13,11 +15,9 @@ Feature: VAT Calculation
 #           |         IBM LTD - 3|[5555L, 3333L]|               [999888777000]|1100000004|100000508724|
 #           |             MBI LTD|       [9876L]|               [555666777003]|2200000002|100000601835|
 #           |   NEW ENTERPRISE LU|       [1999Z]|               [919100010000]|9900000009|999000508999|
-#
 #        And the VAT refs input:
 #           |    vatref    | turnover | record_type |
 #           | 555666777003 |   260    |     3       |
-#
 #           | 999888777000 |   260    |     0       |
 #           | 555666777002 |   340    |     3       |
 #           | 555666777000 |  1000    |     1       |
@@ -25,7 +25,6 @@ Feature: VAT Calculation
 #           | 111222333001 |   590    |     3       |
 #           | 111222333000 |   585    |     1       |
 #           | 123123123000 |   390    |     0       |
-#
 #        And the PAYE input:
 #           |       ern|paye_empees|paye_jobs|
 #           |2200000002|          5|        5|
@@ -33,7 +32,6 @@ Feature: VAT Calculation
 #           |9900000009|          3|        5|
 #           |2000000011|          2|        4|
 #           |1100000004|          5|        8|
-#
 #        When VAT is calculated
 #        Then a VAT results table is produced:
 #           |       ern|paye_empees|paye_jobs|cntd_turnover|app_turnover|std_turnover|grp_turnover|ent_turnover|
@@ -48,6 +46,8 @@ Feature: VAT Calculation
 #    | language |
 #    | Scala    |
 #
+#
+#    @HappyPath
 #    Scenario Outline: Happy Path - group turnover
 #         Given the BI data input:
 #           |        BusinessName|      PayeRefs|                      VatRefs|       ern|          id|
@@ -57,27 +57,23 @@ Feature: VAT Calculation
 #           |      INDUSTRIES LTD|       [1151L]|                  [123456787]|       123|839793712872|
 #           |      INDUSTRIES LTD|       [1151L]|                  [123456787]|       123|839793712872|
 #           |      INDUSTRIES LTD|       [1151L]|                  [123456787]|       123|839793712872|
-#
-#
 #        And the VAT refs input:
 #           | vatref  |turnover|record_type|
-#           |123456787|      90|	      3|
-#           |123456787|	     85|	      1|
-#           |999888777|	     90|       	  0|
-#           |987654321|	     85|          1|
+#           |123456787|      90|	         3|
+#           |123456787|	    85|	         1|
+#           |999888777|      90|       	 0|
+#           |987654321|	    85|          1|
 #           |333444555|      40|          3|
-#           |333444555|	     20|	      1|
-#           |333444555|	     80|          1|
+#           |333444555|	    20|	         1|
+#           |333444555|      80|          1|
 #        And the PAYE input:
 #           |ern|paye_empees|paye_jobs|
 #           |234|         10|       12|
 #           |345|          9|       13|
 #           |576|          4|        5|
 #           |123|          2|        1|
-#
 #        When Group Turnover is calculated:
 #        Then a Group Turnover results table is produced:
-#
 #           |ern|grp_turnover|
 #           |234|          85|
 #           |345|          85|
@@ -89,7 +85,7 @@ Feature: VAT Calculation
 #    | Scala    |
 #
 #
-#
+#     @HappyPath
 #     Scenario Outline: Happy Path - apportioned vat
 #         Given the BI data input:
 #           |        BusinessName|      PayeRefs|                      VatRefs|       ern|          id|
@@ -99,8 +95,6 @@ Feature: VAT Calculation
 #           |      INDUSTRIES LTD|       [1151L]|                  [123456787]|       123|839793712872|
 #           |      INDUSTRIES LTD|       [1151L]|                  [123456787]|       123|839793712872|
 #           |      INDUSTRIES LTD|       [1151L]|                  [123456787]|       123|839793712872|
-#
-#
 #        And the VAT refs input:
 #           | vatref  |turnover|record_type|
 #           |123456787|      90|	      3|
@@ -116,10 +110,8 @@ Feature: VAT Calculation
 #           |345|          9|       13|
 #           |576|          4|        5|
 #           |123|          2|        1|
-#
 #        When Apportioned Turnover is calculated:
-#        Then a Apportioned Turnover results table is produced:
-#
+#        Then an Apportioned Turnover results table is produced:
 #           |ern|app_turnover|
 #           |234|          85|
 #           |345|          85|
@@ -131,7 +123,7 @@ Feature: VAT Calculation
 #    | Scala    |
 #
 #
-#
+#    @HappyPath
 #    Scenario Outline: Happy Path - From when vat method was calling paye method - We have valid input data and will calculate the correct result
 #        Given the BI data input:
 #           |        BusinessName|      PayeRefs|                      VatRefs|       ern|          id|
@@ -185,6 +177,8 @@ Feature: VAT Calculation
 #    | language |
 #    | Scala    |
 
+
+    @SadPath
     Scenario Outline: Sad Path - VAT refs input has invalid field
         Given the BI data input:
            |        BusinessName|      PayeRefs|                      VatRefs|       ern|          id|

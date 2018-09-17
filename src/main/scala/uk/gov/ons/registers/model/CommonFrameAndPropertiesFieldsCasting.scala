@@ -56,4 +56,17 @@ object CommonFrameAndPropertiesFieldsCasting {
       throw new IllegalArgumentException(s"Check mandatory fields [$employees, $jobs, $contained, $apportioned, $standard, $group_turnover, $ent] are of expected type")
     else castedVatDF
   }
+
+  def checkGroupVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
+    val castedVatDF = VatDF
+      .withColumn(colName = group_turnover, VatDF.col(group_turnover).cast(LongType))
+    castedVatDF
+  }
+  def checkAppVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
+    val castedVatDF = VatDF
+      .withColumn(colName = apportioned, VatDF.col(apportioned).cast(LongType))
+    if (castedVatDF.filter(castedVatDF(ent).isNull).count() > NullableValuesAllowed)
+      throw new IllegalArgumentException(s"Check mandatory field [$apportioned] is of expected type")
+    else castedVatDF
+  }
 }

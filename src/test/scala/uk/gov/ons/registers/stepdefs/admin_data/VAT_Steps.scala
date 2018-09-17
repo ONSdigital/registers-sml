@@ -10,10 +10,6 @@ import uk.gov.ons.registers.model.CommonFrameDataFields._
 
 
 class VAT_Steps extends ScalaDsl with EN {
-  private def assertEqualityAndPrintResults(expected: RawDataTableList): Unit = {
-    val output = assertDataFrameEquality(expected)(castExepctedMandatoryFields = castWithVatUnitMandatoryFields)
-    displayData(expectedDF = output, printLabel = "VAT")
-  }
   private def applyMethod(): Unit = {
     outputDataDF = VAT.Vat(sparkSession = Helpers.sparkSession)
       .calculate(BIDF, payeDF, VatDF, appConfs)
@@ -39,6 +35,8 @@ class VAT_Steps extends ScalaDsl with EN {
   When("""^Group Turnover is calculated:"""){ () =>
     applyMethod()
     outputDataDF = outputDataDF.na.fill(value = "").select(ern, group_turnover)
+
+
   }
 
   When("""^Apportioned Turnover is calculated::"""){ () =>
@@ -52,11 +50,16 @@ class VAT_Steps extends ScalaDsl with EN {
     }
   }
 
-  Then("""^a (?:VAT|Group Turnover|Apportioned Turnover) results table is produced:"""){ theExpectedResult: RawDataTableList =>
+  Then("""^a VAT results table is produced:"""){ theExpectedResult: RawDataTableList =>
     //createDataFrame(theExpectedResult).show
-    assertEqualityAndPrintResults(expected = theExpectedResult)
-  }
+    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithVatUnitMandatoryFields)
+    displayData(expectedDF = output, printLabel = "VAT")  }
 
+  Then("""^an Apportioned Turnover results table is produced:"""){ theExpectedResult: RawDataTableList =>
+    //createDataFrame(theExpectedResult).show
+    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithGroupVatUnitMandatoryFields)
+    displayData(expectedDF = output, printLabel = "VAT")
+  }
 
 
 }
