@@ -1,6 +1,8 @@
 package uk.gov.ons.registers.stepdefs.admin_data
 
 import cucumber.api.scala.{EN, ScalaDsl}
+import org.apache.spark.sql.functions.{col, regexp_replace, split}
+import org.apache.spark.sql.types.{ArrayType, StringType}
 import uk.gov.ons.registers.methods.PAYE
 import uk.gov.ons.registers.stepdefs._
 import uk.gov.ons.registers.support.AssertionHelpers._
@@ -15,7 +17,18 @@ class PAYE_Steps extends ScalaDsl with EN {
     //outputDataDF.show()
   }
 
-  And("""^a PAYE refs input with"""){ anInvalidFrameTableDF: RawDataTableList =>
+  Given("""^the Legal unit input:"""){ inputTable: RawDataTableList =>
+    BIDF = createDataFrame(inputTable)
+      .withColumn("PayeRefs", regexp_replace(col("PayeRefs"), "[\\[\\]]+", ""))
+
+    BIDF = BIDF.withColumn(colName = "PayeRefs", split(col("PayeRefs"), ", ").cast(ArrayType(StringType)))
+  }
+
+  And("""^the PAYE refs input"""){ inputTable: RawDataTableList =>
+    payeDF = toNull(createDataFrame(inputTable))
+  }
+
+  And("""^a PAYE refs input"""){ anInvalidFrameTableDF: RawDataTableList =>
     payeDF = toNull(createDataFrame(anInvalidFrameTableDF))
   }
 
@@ -36,5 +49,8 @@ class PAYE_Steps extends ScalaDsl with EN {
     displayData(expectedDF = output, printLabel = "PAYE")
   }
 
+  Then("""an exception in Scala is thrown for .+ upon trying to Calculate PAYE$"""){ () =>
+    assertThrown()
+  }
 }
 

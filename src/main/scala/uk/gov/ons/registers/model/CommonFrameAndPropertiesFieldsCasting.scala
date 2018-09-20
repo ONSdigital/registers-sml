@@ -44,8 +44,8 @@ object CommonFrameAndPropertiesFieldsCasting {
 
   def checkVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
     val castedVatDF = VatDF
-      .withColumn(colName = employees, VatDF.col(employees).cast(LongType))
-      .withColumn(colName = jobs, VatDF.col(jobs).cast(IntegerType))
+      .withColumn(colName = employees, VatDF.col(employees))
+      .withColumn(colName = jobs, VatDF.col(jobs))
       .withColumn(colName = contained, VatDF.col(contained).cast(LongType))
       .withColumn(colName = apportioned, VatDF.col(apportioned).cast(LongType))
       .withColumn(colName = standard, VatDF.col(standard).cast(LongType))
@@ -65,8 +65,6 @@ object CommonFrameAndPropertiesFieldsCasting {
   def checkAppVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
     val castedVatDF = VatDF
       .withColumn(colName = apportioned, VatDF.col(apportioned).cast(LongType))
-    if (castedVatDF.filter(castedVatDF(ent).isNull).count() > NullableValuesAllowed)
-      throw new IllegalArgumentException(s"Check mandatory field [$apportioned] is of expected type")
-    else castedVatDF
+    castedVatDF
   }
 }
