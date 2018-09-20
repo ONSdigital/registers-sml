@@ -58,7 +58,7 @@ class VAT_Steps extends ScalaDsl with EN {
     }
   }
 
-  Then("""^a VAT results table is produced:"""){ theExpectedResult: RawDataTableList =>
+  Then("""^a combination of the PAYE and VAT results tables is produced:"""){ theExpectedResult: RawDataTableList =>
     val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithVatUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "VAT")  }
 

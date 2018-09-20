@@ -1,6 +1,5 @@
 Feature: VAT Calculation
-    The VAT Calculation method will take information from the BI data, VAT Refs and PAYE refs tables using the PAYE method
-    to calculate paye_employees and paye_jobs and then calculating various turnovers.
+    The VAT Calculation method will take information from the BI data, VAT Refs and PAYE refs tables calculating various turnovers.
 
 
     @HappyPath
@@ -34,7 +33,7 @@ Feature: VAT Calculation
            |2000000011|          2|        4|
            |1100000004|          4|        8|
         When VAT is calculated
-        Then a VAT results table is produced:
+        Then a combination of the PAYE and VAT results tables is produced:
            |       ern|paye_empees|paye_jobs|cntd_turnover|app_turnover|std_turnover|grp_turnover|ent_turnover|
            |2000000011|          2|        4|         null|        null|         390|        null|         390|
            |2200000002|          5|        5|         null|         555|        null|        1000|         555|
@@ -179,7 +178,7 @@ Feature: VAT Calculation
 #           |  9876L|       6|        5|        4|       5|
 #
 #        When VAT is calculated
-#        Then a VAT results table is produced:
+#        Then a combination of the PAYE and VAT results tables is produced:
 #           |       ern|paye_empees|paye_jobs|cntd_turnover|app_turnover|std_turnover|grp_turnover|ent_turnover|
 #           |2000000011|          2|        4|         null|        null|         390|        null|         390|
 #           |9900000009|          3|        5|           85|        null|        null|        null|          85|
