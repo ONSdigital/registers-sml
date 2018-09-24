@@ -23,7 +23,8 @@
 
     <groupId>uk.gov.ons</groupId>
     <artifactId>sml</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <!--<version>1.0-SNAPSHOT</version>-->
+    <version>1.0</version>
     <packaging>jar</packaging>
     <name>A SML Example App</name>
     <description>An example of a distributed Polyglot method for Spark Work</description>
@@ -67,6 +68,11 @@
 
     <properties>
         <cucumber.version>2.0.1</cucumber.version>
+
+        <!--BINTRAY CREDS-->
+        <bintray.org>ons</bintray.org>
+        <bintray.repo>ONS-Registers</bintray.repo>
+        <bintray.package>${artifactId}</bintray.package>
     </properties>
 
     <build>
@@ -215,4 +221,11 @@
             <!--<scope>test</scope>-->
         <!--</dependency>-->
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray-ons-ONS-Registers</id>
+            <url>https://api.bintray.com/maven/${bintray.org}/${bintray.repo}/${bintray.package}/;publish=1</url>
+        </repository>
+    </distributionManagement>
 </project>
