@@ -67,4 +67,14 @@ object CommonFrameAndPropertiesFieldsCasting {
       .withColumn(colName = apportioned, VatDF.col(apportioned).cast(LongType))
     castedVatDF
   }
+  def checkCntVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
+    val castedVatDF = VatDF
+      .withColumn(colName = contained, VatDF.col(contained).cast(LongType))
+    castedVatDF
+  }
+  def checkStdVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
+    val castedVatDF = VatDF
+      .withColumn(colName = standard, VatDF.col(standard).cast(LongType))
+    castedVatDF
+  }
 }

@@ -42,14 +42,24 @@ class VAT_Steps extends ScalaDsl with EN {
     outputDataDF = outputDataDF.na.fill(value = "")
   }
 
-  When("""^Group Turnover is calculated"""){ () =>
+  When("""^Contained Turnover is calculated"""){ () =>
     applyMethod()
-    outputDataDF = outputDataDF.na.fill(value = "").select(ern, group_turnover)
+    outputDataDF = outputDataDF.na.fill(value = "").select(ern, contained)
+  }
+
+  When("""^Standard Turnover is calculated"""){ () =>
+    applyMethod()
+    outputDataDF = outputDataDF.na.fill(value = "").select(ern, standard)
   }
 
   When("""^Apportioned Turnover is calculated"""){ () =>
     applyMethod()
     outputDataDF = outputDataDF.na.fill(value = "").select(ern, apportioned)
+  }
+
+  When("""^Group Turnover is calculated"""){ () =>
+    applyMethod()
+    outputDataDF = outputDataDF.na.fill(value = "").select(ern, group_turnover)
   }
 
   When("""the VAT method is attempted$"""){ () =>
@@ -62,13 +72,22 @@ class VAT_Steps extends ScalaDsl with EN {
     val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithVatUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "VAT")  }
 
-  Then("""^a Group Turnover results table is produced:"""){ theExpectedResult: RawDataTableList =>
-    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithGroupVatUnitMandatoryFields)
+  Then("""^a Contained Turnover results table is produced:"""){ theExpectedResult: RawDataTableList =>
+    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithCntVatUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "VAT")
   }
 
-  Then("""^an Apportioned Turnover results table is produced:"""){ theExpectedResult: RawDataTableList =>
+  Then("""^a Standard Turnover results table is produced:"""){ theExpectedResult: RawDataTableList =>
+    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithStdVatUnitMandatoryFields)
+    displayData(expectedDF = output, printLabel = "VAT")
+  }
+   Then("""^an Apportioned Turnover results table is produced:"""){ theExpectedResult: RawDataTableList =>
     val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithAppVatUnitMandatoryFields)
+    displayData(expectedDF = output, printLabel = "VAT")
+  }
+
+  Then("""^a Group Turnover results table is produced:"""){ theExpectedResult: RawDataTableList =>
+    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithGroupVatUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "VAT")
   }
 
