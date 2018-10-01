@@ -1,6 +1,5 @@
 package uk.gov.ons.registers.methods
 
-import global.AppParams
 import org.apache.spark.sql.functions.explode_outer
 import org.apache.spark.sql.functions.sum
 import org.apache.spark.sql.{DataFrame, SparkSession}
