@@ -31,7 +31,7 @@ trait VatCalculator{
        CAST((
          CASE
            WHEN no_ents_in_group > 1
-           THEN grp_turnover * ($employees / group_empl_total)
+           THEN Round(grp_turnover * ($employees / group_empl_total), 0)
            ELSE NULL
          END
        )  AS long)as $apportioned,

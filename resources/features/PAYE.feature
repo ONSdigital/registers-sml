@@ -1,7 +1,7 @@
 Feature: PAYE Calculation
     The PAYE Calculation method will take information from the BI data and PAYE refs tables to calculate paye_employees and paye_jobs
 
-    paye_employees takes sum of the average number of jobs per quarter across an id for each ern, so for each id sum the jobs for all the quaters and divide by the number of non-null quaters then sum for each erm
+    paye_employees takes sum of the average number of jobs per quarter across an id for each ern, so for each id sum the jobs for all the quaters and divide by the number of non-null quaters then sum for each ern
 
     paye_jobs takes the sum of the last quater of each payeref for each ern, so find the values of the last quater of each payeref per ern and sum them
 

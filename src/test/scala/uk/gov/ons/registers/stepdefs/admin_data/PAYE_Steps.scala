@@ -12,7 +12,7 @@ import uk.gov.ons.stepdefs.Helpers
 class PAYE_Steps extends ScalaDsl with EN with PayeCalculator {
 
   private def applyMethod(): Unit = {
-  implicit val sparkSession = Helpers.sparkSession
+    implicit val sparkSession = Helpers.sparkSession
     outputDataDF = calculatePAYE(BIDF, payeDF)
     //outputDataDF.show()
   }
