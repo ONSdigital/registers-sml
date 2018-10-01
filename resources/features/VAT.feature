@@ -2,7 +2,7 @@ Feature: VAT Calculation
     The VAT Calculation method will take information from the BI data, VAT Refs and PAYE refs tables calculating various turnovers.
 
 
-#Fails because of rounding
+##Fails because of rounding
 # @HappyPath
 #    Scenario Outline: Happy Path - We have valid input data and will calculate the correct result
 #        Given the Legal unit input with vat:
@@ -64,7 +64,7 @@ Feature: VAT Calculation
 #    Examples:
 #    | language |
 #    | Scala    |
-#
+
 #    @HappyPath
 #    Scenario Outline: Happy Path - For one ern (does not work for ern with a group vat)
 #        Given the Legal unit input with vat:
@@ -108,7 +108,7 @@ Feature: VAT Calculation
 #    Examples:
 #    | language |
 #    | Scala    |
-
+#
 #    @HappyPath
 #    Scenario Outline: Happy Path - With Hard Paye input - We have input data and will calculate the correct result
 #        Given the Legal unit input with vat:
@@ -218,7 +218,7 @@ Feature: VAT Calculation
     | Scala    |
 
 
-#     Fails due to rounding
+#    # Fails due to rounding
 #     @HappyPath
 #     Scenario Outline: Happy Path - apportioned turnover
 #        Given the Legal unit input with vat:
