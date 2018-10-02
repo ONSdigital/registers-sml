@@ -23,7 +23,7 @@ object DataTableTransformation {
   private def toDataFrame(aListOfLines: List[List[String]]): DataFrame = {
     val rows = aListOfLines.drop(HeaderIndex).map(Row.fromSeq)
     val rdd = sparkSession.sparkContext.makeRDD(rows)
-    val fieldTypes = aListOfLines.head.map(StructField(_, dataType = StringType, nullable = false))
+    val fieldTypes = aListOfLines.head.map(StructField(_, dataType = StringType, nullable = true))
     sparkSession.createDataFrame(rdd, StructType(fieldTypes))
   }
 
@@ -34,6 +34,24 @@ object DataTableTransformation {
   def castWithStratifiedUnitMandatoryFields: DataFrame => DataFrame =
     CommonFrameAndPropertiesFieldsCasting.checkStratifiedFrameForMandatoryFields
 
+  def castWithPayeUnitMandatoryFields: DataFrame => DataFrame =
+    CommonFrameAndPropertiesFieldsCasting.checkPayeforMandatoryFields
+
+  def castWithVatUnitMandatoryFields: DataFrame => DataFrame =
+    CommonFrameAndPropertiesFieldsCasting.checkVatforMandatoryFields
+
+  def castWithGroupVatUnitMandatoryFields: DataFrame => DataFrame =
+    CommonFrameAndPropertiesFieldsCasting.checkGroupVatforMandatoryFields
+
+  def castWithAppVatUnitMandatoryFields: DataFrame => DataFrame =
+    CommonFrameAndPropertiesFieldsCasting.checkAppVatforMandatoryFields
+
+  def castWithCntVatUnitMandatoryFields: DataFrame => DataFrame =
+    CommonFrameAndPropertiesFieldsCasting.checkCntVatforMandatoryFields
+
+  def castWithStdVatUnitMandatoryFields: DataFrame => DataFrame =
+    CommonFrameAndPropertiesFieldsCasting.checkStdVatforMandatoryFields
+
   def emptyDataFrame: DataFrame = {
     val nonsensicalSchema =
       StructType(
@@ -43,4 +61,20 @@ object DataTableTransformation {
       )
     sparkSession.createDataFrame(rowRDD = sparkSession.sparkContext.emptyRDD[Row], schema = nonsensicalSchema)
   }
+
+  def toNull(df: DataFrame): DataFrame = {
+    val sqlCtx = df.sqlContext
+    val schema = df.schema
+    val rdd = df.rdd.map(
+      row =>
+        row.toSeq.map {
+          case "" => null
+          case "null" => null
+          case otherwise => otherwise
+        })
+      .map(Row.fromSeq)
+
+    sqlCtx.createDataFrame(rdd, schema)
+  }
+
 }
