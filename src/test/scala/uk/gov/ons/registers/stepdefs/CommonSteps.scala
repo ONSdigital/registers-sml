@@ -1,8 +1,7 @@
 package uk.gov.ons.registers.stepdefs
 
 import uk.gov.ons.registers.support.AssertionHelpers.assertThrown
-import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, createDataFrame}
-
+import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, createDataFrame, toNull}
 import cucumber.api.scala.{EN, ScalaDsl}
 
 class CommonSteps extends ScalaDsl with EN {
