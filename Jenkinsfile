@@ -1,208 +1,169 @@
 #!groovy
-@Library('jenkins-pipeline-shared') _
 
-def projectName = 'registers-sml'
-def distDir = 'build/dist/'
-def server = Artifactory.server 'art-p-01'
-// def buildInfo = Artifactory.newBuildInfo()
-def rtMaven = Artifactory.newMavenBuild()
-rtMaven.deployer server: server, releaseRepo: 'LR_Registers-Releases', snapshotRepo: 'LR_Registers-Snapshots'
-
-
-rtMaven.resolver server: server, releaseRepo: 'ons-repo', snapshotRepo: 'ons-repo'
-
-rtMaven.tool = 'Maven-3.3.9'
+// Global scope required for multi-stage persistence
+def artServer = Artifactory.server 'art-p-01'
+def buildInfo = Artifactory.newBuildInfo()
+def agentMavenVersion = 'maven_3.5.4'
 
 pipeline {
-    agent any
-    // agent {node{label 'master'}}
+    libraries {
+        lib('jenkins-pipeline-shared')
+    }
+    environment {
+        SVC_NAME = "registers-sml"
+        ORG = "SBR"
+        LANG = "en_US.UTF-8"
+    }
     options {
         skipDefaultCheckout()
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30'))
-        timeout(time: 15, unit: 'MINUTES')
-        timestamps()
+        timeout(time: 1, unit: 'HOURS')
+        ansiColor('xterm')
     }
-    environment {
-        BUILD_ENV = "CI"
-        STAGE = "Unknown"
-        ARTIFACTORY_CREDS = credentials("sbr-artifactory-user")
-        ARTIFACTORY_HOST_NAME = "art-p-01"
-        MASTER = "master"
-        SBR_METHODS_ARTIFACTORY_PYPI_REPO = "sbr-methods-pypi"
-
-        ENV = "${params.ENV_NAME}"
-        PROD1_NODE = "cdhdn-p01-01"
-        SSH_KEYNAME = "sbr-${params.ENV}-ci-ssh-key"
-        MODULE_NAME = 'registers-sml'
-    }
-    parameters {
-        choice(choices: 'dev\ntest\nbeta', description: 'Into what environment wants to deploy oozie config e.g. dev, test or beta?', name: 'ENV_NAME')
-    }
+    agent { label 'download.jenkins.slave' }
     stages {
-        stage('Init') {
-            agent any
-            environment{
-                STAGE = "Init"
-            }
+        stage('Checkout') {
+            agent { label 'download.jenkins.slave' }
             steps {
-                deleteDir()
-                // sh 'git clean -fxd'
                 checkout scm
-                stash name: 'app'
-                colourText("info", "Checking out ${projectName} in stage ${STAGE_NAME}")
+                script {
+                    buildInfo.name = "${SVC_NAME}"
+                    buildInfo.number = "${BUILD_NUMBER}"
+                    buildInfo.env.collect()
+                }
+                colourText("info", "BuildInfo: ${buildInfo.name}-${buildInfo.number}")
+                stash name: 'Checkout'
             }
         }
+
         stage('Build') {
-            environment{
-                STAGE = "Build"
-            }
+            agent { label "build.${agentMavenVersion}" }
             steps {
-                colourText("info", "Building ${env.BUILD_ID} on ${env.JENKINS_URL} from branch ${env.BRANCH_NAME}")
-                readFile('/usr/share/maven/conf/settings.xml')
-            }
-        }
-        stage('Static Analysis') {
-            agent any
-            environment{
-                STAGE = "Static Analysis"
-            }
-            steps {
-                parallel (
-                        "Java and Scala": {
-                            colourText("info","Running Maven tests for Java wrapper and Scala")
-                            sh "mvn clean test"
-                        }
-                        // "Python": {
-                        //     colourText("info","Using behave to run Python tests.")
-                        //     sh """
-                        //         pip install virtualenv -i http://${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW}@${ARTIFACTORY_HOST_NAME}/artifactory/api/pypi/yr-python/simple --trusted-host ${ARTIFACTORY_HOST_NAME} -t "$WORKSPACE/.local"
-                        //         mkdir venv
-                        //         python ${WORKSPACE}/.local/virtualenv.py --distribute -p /usr/bin/python2.7 ${WORKSPACE}/venv
-                        //         source venv/bin/activate
-
-                        //         pip install behave -i http://${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW}@${ARTIFACTORY_HOST_NAME}/artifactory/api/pypi/yr-python/simple --trusted-host ${ARTIFACTORY_HOST_NAME}
-                        //         pip install pypandoc -i http://${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW}@${ARTIFACTORY_HOST_NAME}/artifactory/api/pypi/yr-python/simple --trusted-host ${ARTIFACTORY_HOST_NAME}
-                        //         pip install pyspark -i http://${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW}@${ARTIFACTORY_HOST_NAME}/artifactory/api/pypi/yr-python/simple --trusted-host ${ARTIFACTORY_HOST_NAME}
-
-                        //         chmod -R 777 ${WORKSPACE}/venv
-                        //         behave --verbose
-                        //     """
-                        //     // installPythonModule("behave")
-                        //     // installPythonModule("pypandoc")
-                        //     // installPythonModule("pyspark")
-                        // },
-                        // "R": {
-                        //     colourText("info","Using devtools to run R tests.")
-                        //     // sh "devtools::test_dir($WORKSPACE/R)"
-                        // }
-                )
+                unstash name: 'Checkout'
+                sh "mvn compile"
             }
             post {
                 success {
-                    colourText("info","Generating reports for tests")
-                    junit '**/target/*-reports/*.xml'
+                    colourText("info", "Stage: ${env.STAGE_NAME} successful!")
                 }
                 failure {
-                    colourText("warn","Failed to retrieve reports.")
-                }
-            }
-        }
-        stage('Package') {
-            agent any
-            environment{
-                STAGE = "Package"
-            }
-            steps {
-                script {
-                    def buildInfo = rtMaven.run pom: '${WORKSPACE}/pom.xml', goals: 'clean install'      
-                }
-            }
-        }
-        stage("Push to Artifactory") {
-            agent any
-            environment{
-                STAGE = "Push to Artifactory"
-            }
-            steps {
-                script {
-                    Artifactory.newMavenBuild()
+                    colourText("warn", "Stage: ${env.STAGE_NAME} failed!")
                 }
             }
         }
 
-        // stage('PyPackage'){
-        //     agent any
-        //     when {
-        //         branch MASTER
-        //     }
-        //     steps {
-        //         script {
-        //             colourText("info","Python Package Stage")
-        //             colourText("info", "Update Versions before packaging")
-        //             sh 'cd python && python setup.py sdist'
-        //         }
-        //     }
-        // }
-        // stage ('PyDeploy '){
-        //     agent any
-        //     when {
-        //         branch MASTER
-        //     }
-        //     steps {
-        //         script {
-        //             println('Final Deploy Stage')
-        //             sh """
-        //                 curl -u ${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW} -T python/dist/* "http://${ARTIFACTORY_HOST_NAME}/artifactory/${SBR_METHODS_ARTIFACTORY_PYPI_REPO}/"
-        //             """
-        //         }
-        //     }
-        //     post {
-        //         success {
-        //             colourText("success", "Successfully push to pypi art repository!")
-        //         }
-        //         failure {
-        //             colourText("warn","Failed to archive")
-        //         }
-        //     }
-        // }
-    }
-    post {
-        always {
-            script {
-                colourText("info", 'Post steps initiated')
-                deleteDir()
+        stage('Validate') {
+            failFast true
+            parallel {
+                stage('Test: Unit') {
+                    agent { label "build.${agentMavenVersion}" }
+                    steps {
+                        unstash name: 'Checkout'
+                        sh 'mvn test'
+                    }
+                    post {
+                        always {
+                            junit '**/target/surefire-reports/*.xml'
+                            cobertura autoUpdateHealth: false,
+                                    autoUpdateStability: false,
+                                    coberturaReportFile: 'target/**/coverage-report/cobertura.xml',
+                                    conditionalCoverageTargets: '70, 0, 0',
+                                    failUnhealthy: false,
+                                    failUnstable: false,
+                                    lineCoverageTargets: '80, 0, 0',
+                                    maxNumberOfBuilds: 0,
+                                    methodCoverageTargets: '80, 0, 0',
+                                    onlyStable: false,
+                                    zoomCoverageChart: false
+                            cucumber '**/target/*.json'
+                        }
+                        success {
+                            colourText("info", "Stage: ${env.STAGE_NAME} successful!")
+                        }
+                        failure {
+                            colourText("warn", "Stage: ${env.STAGE_NAME} failed!")
+                        }
+                    }
+                }
+                stage('Style') {
+                    agent { label "build.${agentMavenVersion}" }
+                    steps {
+                        unstash name: 'Checkout'
+                        colourText("info", "Running style tests")
+                        sh 'mvn scalastyle:check'
+                    }
+                    post {
+                        always {
+                            checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: 'target/scalastyle-result.xml', unHealthy: ''
+                        }
+                    }
+                }
+            }
+            post {
+                success {
+                    colourText("info", "Stage: ${env.STAGE_NAME} successful!")
+                }
+                failure {
+                    colourText("warn", "Stage: ${env.STAGE_NAME} failed!")
+                }
             }
         }
+
+        stage('Publish') {
+            agent { label "build.${agentMavenVersion}" }
+            when {
+                branch "master"
+                // evaluate the when condition before entering this stage's agent, if any
+                beforeAgent true
+            }
+            steps {
+                colourText("info", "Building ${env.BUILD_ID} on ${env.JENKINS_URL} from branch ${env.BRANCH_NAME}")
+                unstash name: 'Checkout'
+                sh 'mvn package'
+                script {
+                    def uploadSpec = """{
+                        "files": [
+                            {
+                                "pattern": "target/*.jar",
+                                "target": "LR_Registers-Snapshots/uk/gov/ons/${buildInfo.name}/${buildInfo.number}/"
+                            }
+                        ]
+                    }"""
+                    artServer.upload spec: uploadSpec, buildInfo: buildInfo
+                }
+            }
+            post {
+                success {
+                    colourText("info", "Stage: ${env.STAGE_NAME} successful!")
+                }
+                failure {
+                    colourText("warn", "Stage: ${env.STAGE_NAME} failed!")
+                }
+            }
+        }
+    }
+
+    post {
         success {
             colourText("success", "All stages complete. Build was successful.")
-            sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST"
+            slackSend(
+                    color: "good",
+                    message: "${env.JOB_NAME} success: ${env.RUN_DISPLAY_URL}"
+            )
         }
         unstable {
-            colourText("warn", "Something went wrong, build finished with result ${currentBuild.result}. This may be caused by failed tests, code violation or in some cases unexpected interrupt.")
-            sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST", "${STAGE}"
+            colourText("warn", "Something went wrong, build finished with result ${currentResult}. This may be caused by failed tests, code violation or in some cases unexpected interrupt.")
+            slackSend(
+                    color: "warning",
+                    message: "${env.JOB_NAME} unstable: ${env.RUN_DISPLAY_URL}"
+            )
         }
         failure {
-            colourText("warn","Process failed at: ${STAGE}")
-            sendNotifications currentBuild.result, "\$SBR_EMAIL_LIST", "${STAGE}"
+            colourText("warn","Process failed at: ${env.NODE_STAGE}")
+            slackSend(
+                    color: "danger",
+                    message: "${env.JOB_NAME} failed at ${env.STAGE_NAME}: ${env.RUN_DISPLAY_URL}"
+            )
         }
-    }
-}
-
-def installPythonModule(String module){
-    sh """pip install ${module} -i http://${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW}@${ARTIFACTORY_HOST_NAME}/artifactory/api/pypi/yr-python/simple --trusted-host ${ARTIFACTORY_HOST_NAME}"""
-}
-
-def archiveToHDFS(){
-    echo "archiving jar to [$ENV] environment"
-    sshagent(credentials: ["sbr-$ENV-ci-ssh-key"]){
-        sh """
-            ssh sbr-$ENV-ci@$PROD1_NODE mkdir -p $MODULE_NAME/
-            echo "Successfully created new directory [$MODULE_NAME/]"
-            scp -r $WORKSPACE/$MODULE_NAME/* sbr-$ENV-ci@$PROD1_NODE:$MODULE_NAME/
-            echo "Successfully moved artifact [JAR] and scripts to $MODULE_NAME/"
-            ssh sbr-$ENV-ci@$PROD1_NODE hdfs dfs -put -f $MODULE_NAME/ hdfs://prod1/user/sbr-$ENV-ci/lib/
-            echo "Successfully copied jar file to HDFS"
-
-        """
     }
 }
