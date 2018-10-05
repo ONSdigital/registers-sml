@@ -76,12 +76,7 @@ trait VatCalculator{
     val aggregated = step3.drop(col(apportioned)).join(app_aggregated,Seq("vat_group","ern"),"leftouter")
     val withAggregatedApp = "WITHAPPAGGR"
     aggregated.createOrReplaceTempView(withAggregatedApp)
-    /**
-      * /**
-      * * ern, entref, name, trading_style, address1, address2, address3, address4, address5, postcode, sic07, legal_status
-      *   paye_empees, paye_jobs, app_turnover, ent_turnover, cntd_turnover, std_turnover, grp_turnover
-      * * */
-      * */
+
     val sql2 = s"SELECT vat_group, ern,$employees, $jobs, $contained, $standard, $apportioned, $group_turnover FROM $withAggregatedApp GROUP BY vat_group, ern, $employees, $jobs, $contained, $standard, $group_turnover, $apportioned "
     val turnovers = spark.sql(sql2)
     val t3 = "TURNOVER"
