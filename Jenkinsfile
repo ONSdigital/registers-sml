@@ -64,18 +64,6 @@ pipeline {
                     post {
                         always {
                             junit '**/target/surefire-reports/*.xml'
-                            cobertura autoUpdateHealth: false,
-                                    autoUpdateStability: false,
-                                    coberturaReportFile: 'target/**/coverage-report/cobertura.xml',
-                                    conditionalCoverageTargets: '70, 0, 0',
-                                    failUnhealthy: false,
-                                    failUnstable: false,
-                                    lineCoverageTargets: '80, 0, 0',
-                                    maxNumberOfBuilds: 0,
-                                    methodCoverageTargets: '80, 0, 0',
-                                    onlyStable: false,
-                                    zoomCoverageChart: false
-                            cucumber '**/target/*.json'
                         }
                         success {
                             colourText("info", "Stage: ${env.STAGE_NAME} successful!")
