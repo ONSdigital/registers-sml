@@ -1,8 +1,9 @@
 package uk.gov.ons.registers.methods
 
+import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.catalyst.expressions.GenericRowWithSchema
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import uk.gov.ons.spark.sql._
 
 trait Imputor {
@@ -34,7 +35,7 @@ trait Imputor {
 
     val withTphDF: DataFrame = df.join(tphDF,Seq("sic07"), "left_outer")
 
-    withTphDF.rdd.map(row => {
+    val imputedDS:RDD[Row] = withTphDF.rdd.map(row => {
 
       val (trn,emps) = imputeEmployees(row.getOption[String]("turnover"),row.getOption[String]("paye_empees"), row.getOption[String]("tph"))
 
@@ -45,7 +46,7 @@ trait Imputor {
          emps
 
     ),imputedSchema)})
-
+    spark.createDataFrame(imputedDS,imputedSchema)
   }
 
 }
