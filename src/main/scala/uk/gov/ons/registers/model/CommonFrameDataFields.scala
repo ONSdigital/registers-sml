@@ -26,4 +26,5 @@ object CommonFrameDataFields {
   val standard = "std_turnover"
   val group_turnover = "grp_turnover"
   val ent = "ent_turnover"
+  val employment = "employment"
 }

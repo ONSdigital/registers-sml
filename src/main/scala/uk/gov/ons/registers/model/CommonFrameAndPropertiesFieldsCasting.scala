@@ -31,7 +31,7 @@ object CommonFrameAndPropertiesFieldsCasting {
     else castedStratifiedDF
   }
 
-  def checkPayeforMandatoryFields(PayeDF: DataFrame): DataFrame = {
+  def checkPayeForMandatoryFields(PayeDF: DataFrame): DataFrame = {
     val castedPayeDF = PayeDF
       .withColumn(colName = employees, PayeDF.col(employees).cast(LongType))
       .withColumn(colName = jobs, PayeDF.col(jobs).cast(IntegerType))
@@ -41,7 +41,7 @@ object CommonFrameAndPropertiesFieldsCasting {
     else castedPayeDF
   }
 
-  def checkVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
+  def checkVatForMandatoryFields(VatDF: DataFrame): DataFrame = {
     val castedVatDF = VatDF
       .withColumn(colName = employees, VatDF.col(employees))
       .withColumn(colName = jobs, VatDF.col(jobs))
@@ -56,24 +56,29 @@ object CommonFrameAndPropertiesFieldsCasting {
     else castedVatDF
   }
 
-  def checkGroupVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
+  def checkGroupVatForMandatoryFields(VatDF: DataFrame): DataFrame = {
     val castedVatDF = VatDF
       .withColumn(colName = group_turnover, VatDF.col(group_turnover).cast(LongType))
     castedVatDF
   }
-  def checkAppVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
+  def checkAppVatForMandatoryFields(VatDF: DataFrame): DataFrame = {
     val castedVatDF = VatDF
       .withColumn(colName = apportioned, VatDF.col(apportioned).cast(LongType))
     castedVatDF
   }
-  def checkCntVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
+  def checkCntVatForMandatoryFields(VatDF: DataFrame): DataFrame = {
     val castedVatDF = VatDF
       .withColumn(colName = contained, VatDF.col(contained).cast(LongType))
     castedVatDF
   }
-  def checkStdVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
+  def checkStdVatForMandatoryFields(VatDF: DataFrame): DataFrame = {
     val castedVatDF = VatDF
       .withColumn(colName = standard, VatDF.col(standard).cast(LongType))
     castedVatDF
+  }
+  def checkEmploymentForMandatoryFields(EmpDF: DataFrame): DataFrame = {
+    val castedEmpDF = EmpDF
+      .withColumn(colName = employment, EmpDF.col(employment).cast(LongType))
+    castedEmpDF
   }
 }

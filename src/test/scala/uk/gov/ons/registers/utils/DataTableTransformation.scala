@@ -35,22 +35,25 @@ object DataTableTransformation {
     CommonFrameAndPropertiesFieldsCasting.checkStratifiedFrameForMandatoryFields
 
   def castWithPayeUnitMandatoryFields: DataFrame => DataFrame =
-    CommonFrameAndPropertiesFieldsCasting.checkPayeforMandatoryFields
+    CommonFrameAndPropertiesFieldsCasting.checkPayeForMandatoryFields
 
   def castWithVatUnitMandatoryFields: DataFrame => DataFrame =
-    CommonFrameAndPropertiesFieldsCasting.checkVatforMandatoryFields
+    CommonFrameAndPropertiesFieldsCasting.checkVatForMandatoryFields
 
   def castWithGroupVatUnitMandatoryFields: DataFrame => DataFrame =
-    CommonFrameAndPropertiesFieldsCasting.checkGroupVatforMandatoryFields
+    CommonFrameAndPropertiesFieldsCasting.checkGroupVatForMandatoryFields
 
   def castWithAppVatUnitMandatoryFields: DataFrame => DataFrame =
-    CommonFrameAndPropertiesFieldsCasting.checkAppVatforMandatoryFields
+    CommonFrameAndPropertiesFieldsCasting.checkAppVatForMandatoryFields
 
   def castWithCntVatUnitMandatoryFields: DataFrame => DataFrame =
-    CommonFrameAndPropertiesFieldsCasting.checkCntVatforMandatoryFields
+    CommonFrameAndPropertiesFieldsCasting.checkCntVatForMandatoryFields
 
   def castWithStdVatUnitMandatoryFields: DataFrame => DataFrame =
-    CommonFrameAndPropertiesFieldsCasting.checkStdVatforMandatoryFields
+    CommonFrameAndPropertiesFieldsCasting.checkStdVatForMandatoryFields
+
+  def castWithEmploymentUnitMandatoryFields: DataFrame => DataFrame =
+    CommonFrameAndPropertiesFieldsCasting.checkEmploymentForMandatoryFields
 
   def emptyDataFrame: DataFrame = {
     val nonsensicalSchema =
