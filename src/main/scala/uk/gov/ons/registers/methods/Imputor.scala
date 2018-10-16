@@ -19,7 +19,7 @@ trait Imputor {
         case (None,Some(emps),Some(tph)) => (null,(emps.toInt / tph.toInt).toString)
         case (Some(trn),Some(emps),Some(tph)) => ((trn.toInt / tph.toInt).toString,(emps.toInt / tph.toInt).toString)
         case (None,None,_) => (null,null)
-        case (_,_,None) => throw new IllegalArgumentException("tph is null")
+        case (_,_,None) => throw new IllegalArgumentException("tph is null, retruning turple (imputed turnover = null, imputed employees = null)")
     }}catch{
         case iae: IllegalArgumentException => (null,null)
       }
