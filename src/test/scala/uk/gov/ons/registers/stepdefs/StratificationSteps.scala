@@ -20,6 +20,10 @@ class StratificationSteps extends ScalaDsl with EN {
     frameDF = createDataFrame(anInvalidFrameTableDf)
   }
 
+  Given("""a Frame where some units have PayeEmployee field as null:$"""){ aFrameTableWithNull: RawDataTableList =>
+    frameDF = createDataFrame(aFrameTableWithNull)
+  }
+
   When("""a Scala Stratified Frame is created from a Frame$"""){ () =>
     stratifyTestFrame()
     outputDataDF = outputDataDF.na.fill(value = "")
@@ -33,6 +37,12 @@ class StratificationSteps extends ScalaDsl with EN {
 
   Then("""a Stratified Frame is returned with the strata assigned the Strata number from the Stratification Strata.*?:$"""){ theExpectedResult: RawDataTableList =>
     val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithUnitMandatoryFields)
+    displayData(expectedDF = output, printLabel = "Stratification")
+  }
+
+  Then("""a Stratified Frame is returned with units assigned a Strata number, where the unit has a null PayeEmployee value the unit is allocated a Strata number of -2:$"""){
+    theExpectedResultWithNull: RawDataTableList =>
+    val output = assertDataFrameEquality(theExpectedResultWithNull)(castExepctedMandatoryFields = castWithUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "Stratification")
   }
 }
