@@ -31,6 +31,9 @@ trait Imputor {
     .add(StructField("imp_turnover", StringType,true))
     .add(StructField("imp_empees", StringType,true))
 
+  /**
+    *
+    * */
   def imputeTurnoverAndEmpees(df:DataFrame, tphDF:DataFrame)(implicit spark: SparkSession):DataFrame = {
 
     val withTphDF: DataFrame = df.join(tphDF,Seq("sic07"), "left_outer")
