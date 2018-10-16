@@ -15,13 +15,13 @@ trait Imputor {
 
       try{
         inputs match{
-        case (Some(trn),None,Some(tph)) => ((trn.toInt / tph.toInt).toString,null)
-        case (None,Some(emps),Some(tph)) => (null,(emps.toInt / tph.toInt).toString)
-        case (Some(trn),Some(emps),Some(tph)) => ((trn.toInt / tph.toInt).toString,(emps.toInt / tph.toInt).toString)
-        case (None,None,_) => (null,null)
-        case (_,_,None) => throw new IllegalArgumentException("tph is null, returning tuple (imputed turnover = null, imputed employees = null)")
+        case (Some(trn),None,Some(tph)) => ((trn.toInt / tph.toInt).toString,null) //turnover != null, paye employees = null
+        case (None,Some(emps),Some(tph)) => (null,(emps.toInt / tph.toInt).toString)//paye employees!= null, turnover  = null
+        case (Some(trn),Some(emps),Some(tph)) => ((trn.toInt / tph.toInt).toString,(emps.toInt / tph.toInt).toString)//turnover != null, paye employees != null
+        case (None,None,_) => (null,null) ////turnover = null, paye employees = null
+        case (_,_,None) => throw new IllegalArgumentException("tph is null, returning tuple (imputed turnover = null, imputed employees = null)") // abnormal case: tph = null
     }}catch{
-        case iae: IllegalArgumentException => (null,null)
+        case iae: IllegalArgumentException => (null,null) //error thrown for logging. Return imputed employees and imputed turnover set to nulls
       }
 
   }
