@@ -16,7 +16,7 @@ object ParamValidation {
   }
 
   private def validatePrnStartPoint(strataNumber: Int, startingPrn: BigDecimal): Validation[ErrorMessage, BigDecimal] = {
-    val max = BigDecimal(1L)
+    val max = BigDecimal(1)
     if (startingPrn > LowerBoundPrnValue && startingPrn < max) Success(valid = startingPrn)
     else Failure(s"Error: Prn start point [$startingPrn] must be a decimal no smaller than $LowerBoundPrnValue and greater than $max")
   }

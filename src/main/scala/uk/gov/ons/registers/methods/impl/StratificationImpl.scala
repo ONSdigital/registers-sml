@@ -10,7 +10,7 @@ import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields
 object StratificationImpl {
   implicit class StratificationMethodsImpl(frameDf: DataFrame) {
     /**
-      * USAGE: Stratified a Frame
+      * USAGE: Stratify a Frame
       *
       * @param cellNo - to denote the strata to which it is allocated
       * @return Frame - A DataSet that has strata(s) composed from filtering units by sic07 and Paye Employment range
@@ -22,6 +22,28 @@ object StratificationImpl {
         .filter(frameDf(payeEmployees) >= payeEmployeesLowerRange &&
           frameDf(payeEmployees) <= payeEmployeesUpperRange)
         .withColumn(StratificationPropertiesFields.cellNumber, lit(cellNo))
+
+    /**
+      * USAGE: Extracting strata and filtering for units that contain a null in the `paye_empees` - then labelling with -2
+      *         [PATCH]
+      *
+      * @param strata -  A DataSet that has strata(s) composed from filtering units by sic07 and Paye Employment range
+      * @return {DataFrame} - a combined dataframe of the strata followed by any units with payeEmployee as null
+      */
+    def postPayeEmployeeNullDenotation1(strata: DataFrame, sic07LowerClass: Int, sic07UpperClass: Int): Dataset[Row] = {
+      val rawUnits = strata
+        .drop(StratificationPropertiesFields.cellNumber)
+
+      val nullPayeEmployeeUnits = frameDf
+        .except(rawUnits)
+        .filter(frameDf(sic07) >= sic07LowerClass && frameDf(sic07) <= sic07UpperClass)
+        .where(frameDf(payeEmployees).isNull)
+        .withColumn(StratificationPropertiesFields.cellNumber, lit(Codes.PayeEmployeeNullCode))
+        .orderBy(prn)
+
+      strata
+        .union(nullPayeEmployeeUnits)
+    }
 
     /**
       * USAGE: A post step of Stratification, where any unallocated unit is flagged with the error code (-1)
