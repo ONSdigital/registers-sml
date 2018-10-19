@@ -24,9 +24,9 @@ trait Stratification {
       */
     val arrayOfStratifiedFrames = stratificationPropsDS.collect.map{ selectionStrata: SelectionStrata =>
       val strata = frameDF.stratify1(sic07LowerClass = selectionStrata.lower_class, sic07UpperClass = selectionStrata.upper_class,
-        payeEmployeesLowerRange = selectionStrata.lower_size, payeEmployeesUpperRange = selectionStrata.upper_size,
+        boundsLowerRange = selectionStrata.lower_size, boundsUpperRange = selectionStrata.upper_size,
         cellNo = selectionStrata.cell_no, bounds)
-      frameDF.postPayeEmployeeNullDenotation1(strata = strata, sic07LowerClass = selectionStrata.lower_class,
+      frameDF.postBoundsNullDenotation1(strata = strata, sic07LowerClass = selectionStrata.lower_class,
         sic07UpperClass = selectionStrata.upper_class, bounds)
     }
     val collectStrataFramesDF = fromArrayDataFrame(arrayOfDatasets = arrayOfStratifiedFrames)

@@ -48,7 +48,7 @@ Feature: Create a Stratified Frame
 
  ##   not actually a reporting unit, just the employees and paye_empees swapped
     @HappyPath
-    Scenario Outline: Reporting Unit - Apply sic07 and payeEmployee range filters on a Frame with the remaining unallocated units returned with -1 allocated to them
+    Scenario Outline: Reporting Unit - Apply sic07 and employees range filters on a Frame with the remaining unallocated units returned with -1 allocated to them
         Given a Frame:
             | ern        | entref     | name                          | tradingstyle | address1                 | address2       | address3    | address4                | address5 | postcode | legalstatus | sic07 | employment  | paye_jobs | ent_turnover | std_turnover | grp_turnover | cntd_turnover | app_turnover | prn         |
             | 1100000001 | 9906000015 | &EAGBBROWN                    |              | 1 HAWRIDGE HILL COTTAGES | THE VALE       | HAWRIDGE    | CHESHAM BUCKINGHAMSHIRE |          | HP5 3NU  | 1           | 45112 | 39          | 1         | 73           | 73           | 0            | 0             | 0            | 0.109636832 |
