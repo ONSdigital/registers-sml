@@ -4,7 +4,7 @@ import javax.inject.Singleton
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-import uk.gov.ons.registers.TransformDataFrames.{fromArrayDataFrame, validateAndParseInputs}
+import uk.gov.ons.registers.TransformDataFrames.{fromArrayDataFrame, validateAndParseInputsStrata}
 import uk.gov.ons.registers.model.CommonFrameAndPropertiesFieldsCasting.checkUnitForMandatoryFields
 import uk.gov.ons.registers.model.selectionstrata.SelectionStrata
 import uk.gov.ons.registers.methods.impl.StratificationImpl._
@@ -15,7 +15,7 @@ trait Stratification {
   def stratify(inputDf: DataFrame, stratificationPropsDf: DataFrame, unitSpecDF: DataFrame)(implicit activeSession: SparkSession): DataFrame = {
     val bounds = unitSpecDF.head().getString(1)
     val (frameDF, stratificationPropsDS) =
-      validateAndParseInputs(propertiesDf = stratificationPropsDf, unitDf = inputDf, bounds,
+      validateAndParseInputsStrata(propertiesDf = stratificationPropsDf, unitDf = inputDf, bounds,
         validateFields = checkUnitForMandatoryFields)
     /**
       * NOTE - the driver is solely aware of the type T in Dataset[T] and cannot be inferred by worker nodes.

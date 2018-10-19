@@ -40,7 +40,16 @@ object TransformDataFrames {
     dataFrame.filter(_.getAs[Int](cellNumber) == thisCellNumber)
 
   // TODO - Throws error as a temporary solution until reporting is introduced and log error
-  def validateAndParseInputs(propertiesDf: DataFrame, unitDf: DataFrame, bounds: String, validateFields: (DataFrame, String) => DataFrame)
+  def validateAndParseInputs(propertiesDf: DataFrame, unitDf: DataFrame, validateFields: DataFrame => DataFrame)
+    (implicit sparkSession: SparkSession): (DataFrame, Dataset[SelectionStrata]) = {
+    val dataInputDfOrError = TrySupport.toEither(Try(validateFields(unitDf)))
+    val propertiesDsOrError = asInstanceOfStratifiedProperties(propertiesDf)
+    fromEithers(dataInputDfOrError, propertiesDsOrError)(
+      onFailure = errs => throw new Exception(errs.map(_.getMessage).mkString(DefaultFileDelimiter)),
+      onSuccess = (inputDataFrame, propertiesDataset) => inputDataFrame -> propertiesDataset)
+  }
+
+  def validateAndParseInputsStrata(propertiesDf: DataFrame, unitDf: DataFrame, bounds: String, validateFields: (DataFrame, String) => DataFrame)
     (implicit sparkSession: SparkSession): (DataFrame, Dataset[SelectionStrata]) = {
     val dataInputDfOrError = TrySupport.toEither(Try(validateFields(unitDf, bounds)))
     val propertiesDsOrError = asInstanceOfStratifiedProperties(propertiesDf)
