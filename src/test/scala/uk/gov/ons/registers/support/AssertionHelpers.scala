@@ -2,11 +2,14 @@ package uk.gov.ons.registers.support
 
 import org.apache.spark.sql.DataFrame
 
+import org.apache.spark.sql.types.IntegerType
+
 import uk.gov.ons.registers.Patch
+import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields.cellNumber
 import uk.gov.ons.registers.stepdefs.{methodResult, outputDataDF}
 import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, createDataFrame}
 
-object AssertionHelpers{
+object AssertionHelpers {
   def assertDataFrameEquality(expected: RawDataTableList)(castExepctedMandatoryFields: DataFrame => DataFrame): DataFrame = {
     val expectedOutputDF = createDataFrame(expected)
     val castedExpectedOutputDF = castExepctedMandatoryFields(expectedOutputDF)
@@ -15,6 +18,17 @@ object AssertionHelpers{
       s"[${outputDataDF.collect.toList}] was not equal to expected output dataframe [${castedExpectedOutputDF.collect.toList}]")
     castedExpectedOutputDF
   }
+
+  //To pass the bounds variable
+  def assertDataFrameStringEquality(expected: RawDataTableList, bounds: String)(castExepctedMandatoryFields: (DataFrame, String) => DataFrame): DataFrame = {
+    val expectedOutputDF = createDataFrame(expected)
+    val castedExpectedOutputDF = castExepctedMandatoryFields(expectedOutputDF.withColumn(colName = cellNumber, expectedOutputDF.col(cellNumber).cast(IntegerType)), bounds)
+
+    assert(outputDataDF.collect sameElements castedExpectedOutputDF.collect, s"the output dataframe " +
+      s"[${outputDataDF.collect.toList}] was not equal to expected output dataframe [${castedExpectedOutputDF.collect.toList}]")
+    castedExpectedOutputDF
+  }
+
   def aFailureIsGeneratedBy[T](expression: => T): Option[Exception] =
     try {
       expression
