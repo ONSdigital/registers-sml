@@ -14,6 +14,7 @@ trait Stratification {
 
   def stratify(inputDf: DataFrame, stratificationPropsDf: DataFrame, unitSpecDF: DataFrame)(implicit activeSession: SparkSession): DataFrame = {
     val bounds = unitSpecDF.head().getString(1)
+
     val (frameDF, stratificationPropsDS) =
       validateAndParseInputsStrata(propertiesDf = stratificationPropsDf, unitDf = inputDf, bounds,
         validateFields = checkUnitForMandatoryFields)
