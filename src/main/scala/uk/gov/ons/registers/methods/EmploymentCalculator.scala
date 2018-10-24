@@ -6,7 +6,7 @@ import uk.gov.ons.registers.model.CommonFrameDataFields._
 trait EmploymentCalculator {
 
   val imputed = "imp_empees"
-  val work_prop = "work_prop"
+  val work_prop = "working_prop"
 
   def calculateEmployment(empDF: DataFrame)(implicit activeSession: SparkSession): DataFrame = {
 
@@ -19,8 +19,7 @@ trait EmploymentCalculator {
     filEmpDF.createOrReplaceTempView(empTableName)
 
     val flatEmpDataSql = generateCalculateEmpSql(empTableName)
-    val df = spark.sql(flatEmpDataSql).select(ern, employment)
-    df
+    spark.sql(flatEmpDataSql).select(ern, employment)
   }
 
   def generateCalculateEmpSql(empTableName: String = "EMPLOYMENT") =

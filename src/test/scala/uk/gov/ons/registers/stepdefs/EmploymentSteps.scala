@@ -15,7 +15,7 @@ class EmploymentSteps extends ScalaDsl with EN with EmploymentCalculator {
     //outputDataDF.show()
   }
 
-  Given("""^some employees stuff amongst other stuff:$"""){ inputTable: RawDataTableList =>
+  Given("""^an employees and working proprietors input:$"""){ inputTable: RawDataTableList =>
     empDF = toNull(createDataFrame(inputTable))
   }
 
@@ -24,10 +24,20 @@ class EmploymentSteps extends ScalaDsl with EN with EmploymentCalculator {
     outputDataDF = outputDataDF.na.fill(value = "")
   }
 
-  Then("""this Employment table is is produced$"""){ theExpectedResult: RawDataTableList =>
+  When("""^the employment calculation is attempted$"""){ () =>
+    methodResult = aFailureIsGeneratedBy {
+      applyMethod()
+    }
+  }
+
+  Then("""^this Employment table is is produced$"""){ theExpectedResult: RawDataTableList =>
     //createDataFrame(theExpectedResult).show
     val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithEmploymentUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "Employment")
+  }
+
+  Then("""^an exception in Scala is thrown for Frame due to a mismatch field type upon trying to Calculate employment$"""){ () =>
+    assertThrown()
   }
 }
 
