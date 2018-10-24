@@ -93,10 +93,15 @@ trait PayeCalculator {
     s"CASE WHEN $tableName.$date IS NULL THEN 0 ELSE 1 END"
 
   def missingPayeRefsThrow(BIDF: DataFrame, PayeDF: DataFrame): Unit = {
-    val BList = BIDF.select(payeRefs).collect.toList
-    val PList = PayeDF.select(payeRefs).collect.toList
-    val diff = (BList.diff(BList.intersect(PList))).mkString(" ")
-    assert(BList.forall(PList.contains), s"Expected exception to be thrown as the PayeRef(s) $diff don't exist in the Paye input")
+    import uk.gov.ons.spark.sql._
+    BIDF.cache()
+    PayeDF.cache()
+    val BList = BIDF.filter(_.isNull("bi_paye_ref"))
+    val PList = PayeDF.select(payeRefs)
+    val diff = BList.join(PList, Seq(payeRefs), "left_anti")
+    assert(diff.count()==0, s"Expected exception to be thrown as the PayeRef(s) $diff don't exist in the Paye input")
+    BIDF.unpersist()
+    PayeDF.unpersist()
   }
 
 }
