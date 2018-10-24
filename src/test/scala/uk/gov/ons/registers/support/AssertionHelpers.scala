@@ -19,7 +19,6 @@ object AssertionHelpers {
     castedExpectedOutputDF
   }
 
-  //To pass the bounds variable
   def assertDataFrameStringEquality(expected: RawDataTableList, bounds: String)(castExepctedMandatoryFields: (DataFrame, String) => DataFrame): DataFrame = {
     val expectedOutputDF = createDataFrame(expected)
     val castedExpectedOutputDF = castExepctedMandatoryFields(expectedOutputDF.withColumn(colName = cellNumber, expectedOutputDF.col(cellNumber).cast(IntegerType)), bounds)

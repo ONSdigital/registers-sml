@@ -4,12 +4,11 @@ import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.{DataFrame, Dataset, Row}
 
 import uk.gov.ons.registers.Codes
-import uk.gov.ons.registers.methods.Stratification
 import uk.gov.ons.registers.model.CommonFrameDataFields.{prn, sic07}
 import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields
 
 object StratificationImpl {
-  implicit class StratificationMethodsImpl(frameDf: DataFrame) extends Stratification {
+  implicit class StratificationMethodsImpl(frameDf: DataFrame) {
     /**
       * USAGE: Stratify a Frame
       *

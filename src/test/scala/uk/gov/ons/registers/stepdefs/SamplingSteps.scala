@@ -1,7 +1,7 @@
 package uk.gov.ons.registers.stepdefs
 
 import uk.gov.ons.registers.methods.Sample
-import uk.gov.ons.registers.support.AssertionHelpers.{aFailureIsGeneratedBy, assertDataFrameEquality, displayData}
+import uk.gov.ons.registers.support.AssertionHelpers.{aFailureIsGeneratedBy, assertDataFrameEquality, displayData, assertThrown}
 import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, castWithStratifiedUnitMandatoryFields, createDataFrame}
 import uk.gov.ons.stepdefs.Helpers
 
@@ -43,5 +43,9 @@ class SamplingSteps extends ScalaDsl with EN{
   Then("""a Sample containing the total population in the strata is returned:$"""){ theExpectedResult: RawDataTableList =>
     // TODO test log
     assertEqualityAndPrintResults(expected = theExpectedResult)
+  }
+
+  Then("""^a report is returned with the invalid .+ strata logged$"""){ theExpectedResult: RawDataTableList =>
+    // TODO test log
   }
 }
