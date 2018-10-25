@@ -44,8 +44,4 @@ class SamplingSteps extends ScalaDsl with EN{
     // TODO test log
     assertEqualityAndPrintResults(expected = theExpectedResult)
   }
-
-  Then("""^a report is returned with the invalid .+ strata logged$"""){ theExpectedResult: RawDataTableList =>
-    // TODO test log
-  }
 }
