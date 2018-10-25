@@ -2,11 +2,10 @@ package uk.gov.ons.registers.utils
 
 import scala.collection.JavaConverters.asScalaBufferConverter
 
-import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
-import org.apache.spark.sql.{DataFrame, Row}
+import org.apache.spark.sql.types.{StringType, StructField, StructType}
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 
 import uk.gov.ons.registers.model.CommonFrameAndPropertiesFieldsCasting
-import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields.cellNumber
 import uk.gov.ons.stepdefs.Helpers.sparkSession
 
 object DataTableTransformation {
@@ -27,9 +26,8 @@ object DataTableTransformation {
     sparkSession.createDataFrame(rdd, StructType(fieldTypes))
   }
 
-  def castWithUnitMandatoryFields: DataFrame => DataFrame =
-    (CommonFrameAndPropertiesFieldsCasting.checkUnitForMandatoryFields _).andThen(df =>
-    df.withColumn(colName = cellNumber, df.col(cellNumber).cast(IntegerType)))
+  def castWithUnitMandatoryFields(implicit sparkSession: SparkSession): (DataFrame, String) => DataFrame =
+    CommonFrameAndPropertiesFieldsCasting.checkUnitForMandatoryFields
 
   def castWithStratifiedUnitMandatoryFields: DataFrame => DataFrame =
     CommonFrameAndPropertiesFieldsCasting.checkStratifiedFrameForMandatoryFields
