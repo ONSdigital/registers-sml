@@ -7,8 +7,8 @@ object StratificationPropertiesFields {
   val selectionType = "seltype"
   val lowerClassSIC07 = "lower_class"
   val upperClassSIC07 = "upper_class"
-  val lowerSizePayeEmployee = "lower_size"
-  val upperSizePayeEmployee = "upper_size"
+  val lowerSizeBounds = "lower_size"
+  val upperSizeBounds = "upper_size"
   val prnStartPoint = "prn_start"
   val sampleSize = "no_reqd"
 }

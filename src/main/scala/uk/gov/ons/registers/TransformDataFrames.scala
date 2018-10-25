@@ -49,6 +49,15 @@ object TransformDataFrames {
       onSuccess = (inputDataFrame, propertiesDataset) => inputDataFrame -> propertiesDataset)
   }
 
+  def validateAndParseInputsStrata(propertiesDf: DataFrame, unitDf: DataFrame, bounds: String, validateFields: (DataFrame, String) => DataFrame)
+    (implicit sparkSession: SparkSession): (DataFrame, Dataset[SelectionStrata]) = {
+    val dataInputDfOrError = TrySupport.toEither(Try(validateFields(unitDf, bounds)))
+    val propertiesDsOrError = asInstanceOfStratifiedProperties(propertiesDf)
+    fromEithers(dataInputDfOrError, propertiesDsOrError)(
+      onFailure = errs => throw new Exception(errs.map(_.getMessage).mkString(DefaultFileDelimiter)),
+      onSuccess = (inputDataFrame, propertiesDataset) => inputDataFrame -> propertiesDataset)
+  }
+
   def fromArrayDataFrame(arrayOfDatasets: Array[Dataset[Row]])(implicit sparkSession: SparkSession): Dataset[Row] = {
     import sparkSession.{createDataFrame, sparkContext}
 
