@@ -76,4 +76,9 @@ object CommonFrameAndPropertiesFieldsCasting {
       .withColumn(colName = standard, VatDF.col(standard).cast(LongType))
     castedVatDF
   }
+  def checkImputedforMandatoryFields(ImputedDF: DataFrame): DataFrame = {
+    val castedImputedDF = ImputedDF
+    //do the columns
+    castedImputedDF
+  }
 }

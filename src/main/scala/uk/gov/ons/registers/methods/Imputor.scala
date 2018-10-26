@@ -6,6 +6,8 @@ import org.apache.spark.sql.types.{StringType, StructField, StructType}
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import uk.gov.ons.spark.sql._
 
+import uk.gov.ons.registers.model.CommonFrameDataFields._
+
 trait Imputor {
 /**
   * returns tuple representing imp_empees, imp_turnover
@@ -27,28 +29,27 @@ trait Imputor {
   }
 
   val imputedSchema = new StructType()
-    .add(StructField("ern", StringType,false))
-    .add(StructField("imp_turnover", StringType,true))
-    .add(StructField("imp_empees", StringType,true))
+    .add(StructField(ern, StringType,false))
+    .add(StructField(imp_turnover, StringType,true))
+    .add(StructField(imp_empees, StringType,true))
 
   /**
     *
     * */
   def imputeTurnoverAndEmpees(df:DataFrame, tphDF:DataFrame)(implicit spark: SparkSession):DataFrame = {
 
-    val withTphDF: DataFrame = df.join(tphDF,Seq("sic07"), "left_outer")
-
+    val withTphDF: DataFrame = df.join(tphDF,Seq(sic07), "left_outer")
+    withTphDF.show()
     val imputedDS:RDD[Row] = withTphDF.rdd.map(row => {
 
-      val (trn,emps) = imputeEmployees(row.getOption[String]("turnover"),row.getOption[String]("paye_empees"), row.getOption[String]("tph"))
-
+      val (trn, emps) = imputeEmployees(row.getOption[String](turnover),row.getOption[String](payeEmployees), row.getOption[String](tph))
       new GenericRowWithSchema(Array(
 
-         row.getAs[String]("ern"),
-         trn,
-         emps
+        row.getAs[String](ern),
+        trn,
+        emps
 
-    ),imputedSchema)})
+      ),imputedSchema)})
     spark.createDataFrame(imputedDS,imputedSchema)
   }
 

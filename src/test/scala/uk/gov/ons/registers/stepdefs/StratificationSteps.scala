@@ -36,13 +36,13 @@ class StratificationSteps extends ScalaDsl with EN {
   }
 
   Then("""a Stratified Frame is returned with the strata assigned the Strata number from the Stratification Strata.*?:$"""){ theExpectedResult: RawDataTableList =>
-    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithUnitMandatoryFields)
+    val output = assertDataFrameEquality(theExpectedResult)(castExpectedMandatoryFields = castWithUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "Stratification")
   }
 
   Then("""a Stratified Frame is returned with units assigned a Strata number, where the unit has a null PayeEmployee value the unit is allocated a Strata number of -2:$"""){
     theExpectedResultWithNull: RawDataTableList =>
-    val output = assertDataFrameEquality(theExpectedResultWithNull)(castExepctedMandatoryFields = castWithUnitMandatoryFields)
+    val output = assertDataFrameEquality(theExpectedResultWithNull)(castExpectedMandatoryFields = castWithUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "Stratification")
   }
 }

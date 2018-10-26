@@ -15,7 +15,7 @@ import cucumber.api.scala.{EN, ScalaDsl}
 
 class SamplingSteps extends ScalaDsl with EN{
   private def assertEqualityAndPrintResults(expected: RawDataTableList): Unit = {
-    val output = assertDataFrameEquality(expected)(castExepctedMandatoryFields = castWithStratifiedUnitMandatoryFields)
+    val output = assertDataFrameEquality(expected)(castExpectedMandatoryFields = castWithStratifiedUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "Sampling")
   }
 
