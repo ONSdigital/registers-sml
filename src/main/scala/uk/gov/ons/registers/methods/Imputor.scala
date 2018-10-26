@@ -8,7 +8,7 @@ import uk.gov.ons.spark.sql._
 
 import uk.gov.ons.registers.model.CommonFrameDataFields._
 
-trait Imputor {
+trait Imputor extends Serializable{
 /**
   * returns tuple representing imp_empees, imp_turnover
   * */
@@ -39,7 +39,7 @@ trait Imputor {
   def imputeTurnoverAndEmpees(df:DataFrame, tphDF:DataFrame)(implicit spark: SparkSession):DataFrame = {
 
     val withTphDF: DataFrame = df.join(tphDF,Seq(sic07), "left_outer")
-    withTphDF.show()
+    //withTphDF.show()
     val imputedDS:RDD[Row] = withTphDF.rdd.map(row => {
 
       val (trn, emps) = imputeEmployees(row.getOption[String](turnover),row.getOption[String](payeEmployees), row.getOption[String](tph))

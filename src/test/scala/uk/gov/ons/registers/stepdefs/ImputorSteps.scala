@@ -1,18 +1,19 @@
 package uk.gov.ons.registers.stepdefs
 
 import cucumber.api.scala.{EN, ScalaDsl}
-
 import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, createDataFrame}
 import uk.gov.ons.stepdefs.Helpers
 import uk.gov.ons.registers.methods.Imputor
 import uk.gov.ons.registers.support.AssertionHelpers._
 import uk.gov.ons.registers.utils.DataTableTransformation._
 
-class ImputorSteps extends ScalaDsl with EN with Imputor {
+class ImputorSteps extends ScalaDsl with EN{
+
+  val imputor = new Imputor(){}
 
   private def applyMethod() = {
     implicit val sparkSession = Helpers.sparkSession
-    outputDataDF = imputeTurnoverAndEmpees(frameDF, frameAndDF)
+    outputDataDF = imputor.imputeTurnoverAndEmpees(frameDF, frameAndDF)
     outputDataDF.show()
   }
 
