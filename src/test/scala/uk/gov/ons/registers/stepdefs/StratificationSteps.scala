@@ -1,11 +1,12 @@
 package uk.gov.ons.registers.stepdefs
 
-import uk.gov.ons.registers.methods.Stratification
-import uk.gov.ons.registers.support.AssertionHelpers.{aFailureIsGeneratedBy, assertDataFrameEquality, assertDataFrameStringEquality, displayData}
-import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, castWithUnitMandatoryFields, createDataFrame, toNull}
-import uk.gov.ons.stepdefs.Helpers
-
 import cucumber.api.scala.{EN, ScalaDsl}
+import uk.gov.ons.registers.methods.Stratification
+import uk.gov.ons.registers.model.CommonFrameDataFields.prn
+import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields.cellNumber
+import uk.gov.ons.registers.support.AssertionHelpers.{aFailureIsGeneratedBy, assertDataFrameStringEquality, displayData}
+import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, castWithUnitMandatoryFields, createDataFrame}
+import uk.gov.ons.stepdefs.Helpers
 
 class StratificationSteps extends ScalaDsl with EN with Stratification {
 
@@ -13,7 +14,7 @@ class StratificationSteps extends ScalaDsl with EN with Stratification {
 
   private def stratifyTestFrame(): Unit = {
     implicit val sparkSession = Helpers.sparkSession
-    outputDataDF = stratify(frameDF, stratificationPropsDF, unitSpecDF)
+    outputDataDF = stratify(frameDF, stratificationPropsDF, unitSpecDF).orderBy(cellNumber, prn)
   }
 
   Given("""a Frame:$"""){ aTranformedFrameTableDf: RawDataTableList =>
