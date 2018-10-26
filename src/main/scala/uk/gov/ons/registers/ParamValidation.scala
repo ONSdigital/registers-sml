@@ -1,8 +1,5 @@
 package uk.gov.ons.registers
 
-import org.apache.spark.sql.DataFrame
-
-import uk.gov.ons.registers.TransformDataFrames.filterByCellNumber
 import uk.gov.ons.registers.Validation.ErrorMessage
 
 object ParamValidation {
@@ -29,9 +26,11 @@ object ParamValidation {
     } else if (sampleSize > MinimumSampleSize && sampleSize <= maxSize) Success(valid = sampleSize)
     else Failure(s"Error: Sample size [$sampleSize] must be a natural number greater than $MinimumSampleSize and less than $maxSize")
 
-  def validate(inputDF: DataFrame, strataNumber: Int, startingPrn: BigDecimal, sampleSize: Int): Option[Int] =
+  def validate(counts: List[CellNumberCount], strataNumber: Int, startingPrn: BigDecimal, sampleSize: Int): Option[Int] =
     Validation.toOption(
       validatePrnStartPoint(strataNumber, startingPrn),
-      validateSampleSize(strataNumber, filterByCellNumber(inputDF)(strataNumber).count.toInt, sampleSize)
+      validateSampleSize(strataNumber, counts.flatMap(CellNumberCount.unapply).find(_._1 == strataNumber).get._2.toInt , sampleSize)
     )(onFailure = logWithErrorMsg(strataNumber) _, onSuccess = (_, sampleSize) => Some(sampleSize))
+
+
 }
