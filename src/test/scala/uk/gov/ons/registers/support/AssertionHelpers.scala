@@ -4,11 +4,11 @@ import org.apache.spark.sql.DataFrame
 
 import uk.gov.ons.registers.Patch
 import uk.gov.ons.registers.stepdefs.{methodResult, outputDataDF}
-import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, createDataFrame, toNull}
+import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, createDataFrame, nullToNull}
 
 object AssertionHelpers{
   def assertDataFrameEquality(expected: RawDataTableList)(castExpectedMandatoryFields: DataFrame => DataFrame): DataFrame = {
-    val expectedOutputDF = toNull(createDataFrame(expected))
+    val expectedOutputDF = nullToNull(createDataFrame(expected))
     val castedExpectedOutputDF = castExpectedMandatoryFields(expectedOutputDF)
     assert(outputDataDF.collect sameElements castedExpectedOutputDF.collect, s"the output dataframe " +
       s"[${outputDataDF.collect.toList}] was not equal to expected output dataframe [${castedExpectedOutputDF.collect.toList}]")
