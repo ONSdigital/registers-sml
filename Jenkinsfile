@@ -105,7 +105,7 @@ pipeline {
                 beforeAgent true
             }
             steps {
-                colourText("info", "Building ${env.BUILD_ID} on ${env.JENKINS_URL} from branch ${env.BRANCH_NAME}")
+                colourText("info", "Building snapshot ${env.BUILD_ID} on ${env.JENKINS_URL} from branch ${env.BRANCH_NAME}")
                 unstash name: 'Checkout'
                 sh 'mvn package'
                 script {
@@ -113,7 +113,7 @@ pipeline {
                         "files": [
                             {
                                 "pattern": "target/*.jar",
-                                "target": "LR_Registers-Snapshots/uk/gov/ons/${buildInfo.name}/${buildInfo.number}/"
+                                "target": "LR_Registers-Maven-Snapshot/uk/gov/ons/${buildInfo.name}/${buildInfo.number}/"
                             }
                         ]
                     }"""
