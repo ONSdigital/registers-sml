@@ -14,26 +14,36 @@ class ImputorSteps extends ScalaDsl with EN{
   private def applyMethod() = {
     implicit val sparkSession = Helpers.sparkSession
     outputDataDF = imputor.imputeTurnoverAndEmpees(frameDF, frameAndDF)
-    outputDataDF.show()
+  //  outputDataDF.show()
+//    outputDataDF.printSchema()
   }
 
-  Given("""an employees and turnover input:$"""){ inputDF: RawDataTableList =>
-    frameDF = createDataFrame(inputDF)
+  Given("""an employees """){ inputDF: RawDataTableList =>
+    frameDF = toNull(createDataFrame(inputDF))
   }
 
-  And("""TPH input:$"""){ inputDF: RawDataTableList =>
-    frameAndDF = createDataFrame(inputDF)
+  And(""".+ TPH input:$"""){ inputDF: RawDataTableList =>
+    frameAndDF = toNull(createDataFrame(inputDF))
   }
 
   When("""the Imputor is run$""") { () =>
     applyMethod()
-    outputDataDF = outputDataDF.na.fill(value = "")
   }
 
+  When("""the Imputor is attempted$"""){ () =>
+    methodResult = aFailureIsGeneratedBy {
+      applyMethod()
+    }
+  }
 
-  Then("""the results are:$"""){ theExpectedDF: RawDataTableList =>
-    createDataFrame(theExpectedDF).show()
+  Then("""the Imputed results table is produced:$"""){ theExpectedDF: RawDataTableList =>
+//    createDataFrame(theExpectedDF).show()
+//    createDataFrame(theExpectedDF).printSchema()
     val output = assertDataFrameEquality(theExpectedDF)(castExpectedMandatoryFields = castWithImputedUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "Imputed")
+  }
+
+  Then("""an exception in Scala is thrown for Frame due to a mismatch field type upon trying to Impute$"""){ () =>
+    assertThrown()
   }
 }

@@ -1,22 +1,73 @@
 # new feature
 # Tags: optional
-    
-Feature: Imputed turnover is the employees multiplied by the TPH (as INT)
-         Imputed employes is turnover dibided by the TPH (as INT)
-    
-Scenario Outline: A scenario
-    Given an employees and turnover input:
-    | ern     | sic07   | turnover | paye_empees |
-    | 1000001 | 2005    |       12 |          10 |
-    And TPH input:
-    | sic07   | TPH |
-    | 2005    | 0.5 |
-    When the Imputor is run
-    Then the results are:
-    | ern     | sic07   | turnover | paye_empees | imp_turnover | imp_empees |
-    | 1000001 | 2005    |       12 |          10 |           24 |         20 |
 
-    @JVM
-    Examples:
-    | language |
-    | Scala    |
+Feature: Imputed turnover is the employees multiplied by the TPH (as INT)
+         Imputed employes is turnover divided by the TPH (as INT)
+
+    @HappyPath
+    Scenario Outline: Happy Path - An Imputed results table is calculated
+        Given an employees and turnover input:
+        | ern     | sic07 | turnover | paye_empees |
+        | 1000001 |  2005 |       12 |          10 |
+        | 1000002 |  2005 |     null |          10 |
+        | 1000003 |  2005 |       12 |        null |
+        | 1000004 |  2006 |       12 |        null |
+        And a TPH input:
+        | sic07 |  TPH |
+        |  2005 |    2 |
+        |  2006 | null |
+        When the Imputor is run
+        Then the Imputed results table is produced:
+        | ern     | imp_turnover | imp_empees |
+        | 1000001 |            6 |          5 |
+        | 1000002 |         null |          5 |
+        | 1000003 |            6 |       null |
+        | 1000004 |         null |       null |
+
+        @JVM
+        Examples:
+        | language |
+        | Scala    |
+
+    @SadPath
+    Scenario Outline: Sad Path - An Imputed results table is calculated
+        Given an employees and invalid turnover input:
+        | ern     | sic07 | turnover | INVALID |
+        | 1000001 |  2005 |       12 |      10 |
+        | 1000002 |  2005 |     null |      10 |
+        | 1000003 |  2005 |       12 |    null |
+        | 1000004 |  2006 |       12 |    null |
+        And a TPH input:
+        | sic07 |  TPH |
+        |  2005 |    2 |
+        |  2006 | null |
+        When the Imputor is attempted
+        Then an exception in <language> is thrown for Frame due to a mismatch field type upon trying to Impute
+
+        @JVM
+        Examples:
+        | language |
+        | Scala    |
+
+    @SadPath
+    Scenario Outline: Sad Path - An Imputed results table is calculated
+        Given an employees and turnover input:
+        | ern     | sic07 | turnover | paye_empees |
+        | 1000001 |  2005 |       12 |          10 |
+        | 1000002 |  2005 |     null |          10 |
+        | 1000003 |  2005 |       12 |        null |
+        | 1000004 |  2006 |       12 |        null |
+        And an invalid TPH input:
+        | sic07 |  invalid |
+        |  2005 |        2 |
+        |  2006 |     null |
+        When the Imputor is attempted
+        Then an exception in <language> is thrown for Frame due to a mismatch field type upon trying to Impute
+
+        @JVM
+        Examples:
+        | language |
+        | Scala    |
+
+
+
