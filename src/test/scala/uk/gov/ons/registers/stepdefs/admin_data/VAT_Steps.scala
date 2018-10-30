@@ -66,25 +66,25 @@ class VAT_Steps extends ScalaDsl with EN with VatCalculator {
   }
 
   Then("""^a combination of the PAYE and VAT results tables is produced:"""){ theExpectedResult: RawDataTableList =>
-    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithVatUnitMandatoryFields)
+    val output = assertDataFrameEquality(theExpectedResult)(castExpectedMandatoryFields = castWithVatUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "VAT")  }
 
   Then("""^a Contained Turnover results table is produced:"""){ theExpectedResult: RawDataTableList =>
-    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithCntVatUnitMandatoryFields)
+    val output = assertDataFrameEquality(theExpectedResult)(castExpectedMandatoryFields = castWithCntVatUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "VAT")
   }
 
   Then("""^a Standard Turnover results table is produced:"""){ theExpectedResult: RawDataTableList =>
-    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithStdVatUnitMandatoryFields)
+    val output = assertDataFrameEquality(theExpectedResult)(castExpectedMandatoryFields = castWithStdVatUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "VAT")
   }
    Then("""^an Apportioned Turnover results table is produced:"""){ theExpectedResult: RawDataTableList =>
-     val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithAppVatUnitMandatoryFields)
+     val output = assertDataFrameEquality(theExpectedResult)(castExpectedMandatoryFields = castWithAppVatUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "VAT")
   }
 
   Then("""^a Group Turnover results table is produced:"""){ theExpectedResult: RawDataTableList =>
-    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithGroupVatUnitMandatoryFields)
+    val output = assertDataFrameEquality(theExpectedResult)(castExpectedMandatoryFields = castWithGroupVatUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "VAT")
   }
 

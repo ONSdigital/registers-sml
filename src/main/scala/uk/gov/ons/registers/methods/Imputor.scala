@@ -6,13 +6,35 @@ import org.apache.spark.sql.types.{StringType, StructField, StructType}
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import uk.gov.ons.spark.sql._
 
-trait Imputor {
+import uk.gov.ons.registers.model.CommonFrameDataFields._
+
+trait Imputor extends Serializable{
+
+  /**
+    *
+    * */
+  def imputeTurnoverAndEmpees(df:DataFrame, tphDF:DataFrame)(implicit spark: SparkSession):DataFrame = {
+
+    val withTphDF: DataFrame = df.join(tphDF,Seq(sic07), "left_outer").select(ern, turnover, payeEmployees, tph)
+
+    val imputedDS:RDD[Row] = withTphDF.rdd.map(row => {
+
+      val (trn, emps) = imputeEmployees(row.getOption[String](turnover),row.getOption[String](payeEmployees), row.getOption[String](tph))
+      new GenericRowWithSchema(Array(
+
+        row.getAs[String](ern),
+        trn,
+        emps
+
+      ),imputedSchema)})
+    spark.createDataFrame(imputedDS,imputedSchema)
+  }
+
 /**
   * returns tuple representing imp_empees, imp_turnover
   * */
   def imputeEmployees(turnover:Option[String], payeEmployees:Option[String], tph:Option[String]):(String,String) = {
     val inputs = (turnover,payeEmployees,tph)
-
       try{
         inputs match{
         case (Some(trn),None,Some(tph)) => ((trn.toInt / tph.toInt).toString,null) //turnover != null, paye employees = null
@@ -27,29 +49,9 @@ trait Imputor {
   }
 
   val imputedSchema = new StructType()
-    .add(StructField("ern", StringType,false))
-    .add(StructField("imp_turnover", StringType,true))
-    .add(StructField("imp_empees", StringType,true))
+    .add(StructField(ern, StringType,false))
+    .add(StructField(imp_turnover, StringType,true))
+    .add(StructField(imp_empees, StringType,true))
 
-  /**
-    *
-    * */
-  def imputeTurnoverAndEmpees(df:DataFrame, tphDF:DataFrame)(implicit spark: SparkSession):DataFrame = {
-
-    val withTphDF: DataFrame = df.join(tphDF,Seq("sic07"), "left_outer")
-
-    val imputedDS:RDD[Row] = withTphDF.rdd.map(row => {
-
-      val (trn,emps) = imputeEmployees(row.getOption[String]("turnover"),row.getOption[String]("paye_empees"), row.getOption[String]("tph"))
-
-      new GenericRowWithSchema(Array(
-
-         row.getAs[String]("ern"),
-         trn,
-         emps
-
-    ),imputedSchema)})
-    spark.createDataFrame(imputedDS,imputedSchema)
-  }
 
 }

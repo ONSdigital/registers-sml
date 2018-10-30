@@ -25,8 +25,7 @@ object CommonFrameAndPropertiesFieldsCasting {
       .withColumn(colName = cellNumber, stratifiedDF.col(cellNumber).cast(IntegerType))
       .withColumn(colName = prn, stratifiedDF.col(prn).cast(DataTypes.createDecimalType(precision, scale)))
 
-    if (castedStratifiedDF.filter(castedStratifiedDF(cellNumber).isNull ||
-      castedStratifiedDF(prn).isNull).count > NullableValuesAllowed)
+    if (castedStratifiedDF.filter(castedStratifiedDF(cellNumber).isNull || castedStratifiedDF(prn).isNull).count > NullableValuesAllowed)
       throw new IllegalArgumentException(s"Check common mandatory fields [$cellNumber, $prn] are of expected type")
     else castedStratifiedDF
   }
@@ -75,5 +74,15 @@ object CommonFrameAndPropertiesFieldsCasting {
     val castedVatDF = VatDF
       .withColumn(colName = standard, VatDF.col(standard).cast(LongType))
     castedVatDF
+  }
+  def checkImputedforMandatoryFields(ImputedDF: DataFrame): DataFrame = {
+    val castedImputedDF = ImputedDF
+      .withColumn(colName = ern, ImputedDF.col(ern))
+      .withColumn(colName = imp_turnover, ImputedDF.col(imp_turnover))
+      .withColumn(colName = imp_empees, ImputedDF.col(imp_empees))
+    if (castedImputedDF.filter(castedImputedDF(ern).isNull).count() > NullableValuesAllowed)
+      throw new IllegalArgumentException(s"Check mandatory fields [$imp_turnover, $imp_empees] are of expected type")
+    else castedImputedDF
+
   }
 }

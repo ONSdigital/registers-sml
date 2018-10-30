@@ -1,8 +1,10 @@
 package uk.gov.ons.registers.stepdefs.admin_data
 
 import cucumber.api.scala.{EN, ScalaDsl}
+
 import org.apache.spark.sql.functions.{col, regexp_replace, split}
 import org.apache.spark.sql.types.{ArrayType, StringType}
+
 import uk.gov.ons.registers.methods.PayeCalculator
 import uk.gov.ons.registers.stepdefs._
 import uk.gov.ons.registers.support.AssertionHelpers._
@@ -43,7 +45,7 @@ class PAYE_Steps extends ScalaDsl with EN with PayeCalculator {
 
   Then("""^a PAYE results table is produced:"""){ theExpectedResult: RawDataTableList =>
     //createDataFrame(theExpectedResult).show
-    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithPayeUnitMandatoryFields)
+    val output = assertDataFrameEquality(theExpectedResult)(castExpectedMandatoryFields = castWithPayeUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "PAYE")
   }
 
