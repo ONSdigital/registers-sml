@@ -44,7 +44,6 @@ class StratificationSteps extends ScalaDsl with EN with Stratification {
 
   Then("""a Stratified Frame is returned"""){ theExpectedResult: RawDataTableList =>
     implicit val sparkSession = Helpers.sparkSession
-    bounds = unitSpecDF.head().getString(1)
     val output = assertDataFrameStringEquality(theExpectedResult, bounds)(castExepctedMandatoryFields = castWithUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "Stratification")
   }
