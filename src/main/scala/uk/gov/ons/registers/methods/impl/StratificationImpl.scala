@@ -4,7 +4,7 @@ import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.{DataFrame, Dataset, Row}
 
 import uk.gov.ons.registers.Codes
-import uk.gov.ons.registers.model.CommonFrameDataFields.{prn, sic07}
+import uk.gov.ons.registers.model.CommonFrameDataFields.{sic07}
 import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields
 
 object StratificationImpl {
@@ -39,7 +39,6 @@ object StratificationImpl {
         .filter(frameDf(sic07) >= sic07LowerClass && frameDf(sic07) <= sic07UpperClass)
         .where(frameDf(bounds).isNull)
         .withColumn(StratificationPropertiesFields.cellNumber, lit(Codes.BoundsNullCode))
-        .orderBy(prn)
 
       strata
         .union(nullBoundsUnits)
@@ -59,7 +58,6 @@ object StratificationImpl {
       val unallocated = frameDf
         .except(allocatedWithCellNumField)
         .withColumn(StratificationPropertiesFields.cellNumber, lit(Codes.ErrorCode))
-        .orderBy(prn)
 
       strataAllocatedDataFrame
         .union(unallocated)

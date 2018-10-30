@@ -23,8 +23,8 @@ object SampleImpl {
       val strata = filterByCellNumber(inputDataDF)(cellNo)
 
       val filtered = strata
-        .orderBy(prn)
         .filter(strata(prn) >= startPoint)
+        .orderBy(prn)
 
       val remainder = strata
         .except(filtered)
