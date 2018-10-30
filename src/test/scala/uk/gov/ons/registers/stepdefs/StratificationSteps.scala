@@ -10,11 +10,9 @@ import uk.gov.ons.stepdefs.Helpers
 
 class StratificationSteps extends ScalaDsl with EN with Stratification {
 
-  var bounds = ""
-
   private def stratifyTestFrame(): Unit = {
     implicit val sparkSession = Helpers.sparkSession
-    outputDataDF = stratify(frameDF, stratificationPropsDF, unitSpecDF).orderBy(cellNumber, prn)
+    outputDataDF = stratify(frameDF, stratificationPropsDF, bounds).orderBy(cellNumber, prn)
   }
 
   Given("""a Frame:$"""){ aTranformedFrameTableDf: RawDataTableList =>
@@ -30,7 +28,7 @@ class StratificationSteps extends ScalaDsl with EN with Stratification {
   }
 
   And("""a specification of unit and params:"""){ frame: RawDataTableList =>
-    unitSpecDF = createDataFrame(frame)
+    bounds = createDataFrame(frame).head().getString(1)
   }
 
   When("""a Scala Stratified Frame is created from a Frame$"""){ () =>
