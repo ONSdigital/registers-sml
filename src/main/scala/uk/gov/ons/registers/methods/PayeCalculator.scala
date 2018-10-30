@@ -100,7 +100,7 @@ trait PayeCalculator {
     import uk.gov.ons.spark.sql._
     BIDF.cache()
     PayeDF.cache()
-    val BList = BIDF.filter(_.isNull(payeRefs))
+    val BList = BIDF.filter(!_.isNull(payeRefs))
     val PList = PayeDF.select(payeRefs)
     val diff = BList.join(PList, Seq(payeRefs), "left_anti")
     val count = diff.count()
