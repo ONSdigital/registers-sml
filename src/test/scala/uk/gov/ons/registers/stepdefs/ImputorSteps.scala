@@ -14,8 +14,6 @@ class ImputorSteps extends ScalaDsl with EN{
   private def applyMethod() = {
     implicit val sparkSession = Helpers.sparkSession
     outputDataDF = imputor.imputeTurnoverAndEmpees(frameDF, frameAndDF)
-  //  outputDataDF.show()
-//    outputDataDF.printSchema()
   }
 
   Given("""an employees """){ inputDF: RawDataTableList =>
@@ -37,8 +35,6 @@ class ImputorSteps extends ScalaDsl with EN{
   }
 
   Then("""the Imputed results table is produced:$"""){ theExpectedDF: RawDataTableList =>
-//    createDataFrame(theExpectedDF).show()
-//    createDataFrame(theExpectedDF).printSchema()
     val output = assertDataFrameEquality(theExpectedDF)(castExpectedMandatoryFields = castWithImputedUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "Imputed")
   }
