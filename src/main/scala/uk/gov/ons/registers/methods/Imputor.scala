@@ -30,11 +30,13 @@ trait Imputor extends Serializable{
     spark.createDataFrame(imputedDS,imputedSchema)
   }
 
+
 /**
   * returns tuple representing imp_empees, imp_turnover
   * */
   def imputeEmployees(turnover:Option[String], payeEmployees:Option[String], tph:Option[String]):(String,String) = {
     val inputs = (turnover,payeEmployees,tph)
+
       try{
         inputs match{
         case (Some(trn),None,Some(tph)) => ((trn.toInt / tph.toInt).toString,null) //turnover != null, paye employees = null
@@ -52,6 +54,7 @@ trait Imputor extends Serializable{
     .add(StructField(ern, StringType,false))
     .add(StructField(imp_turnover, StringType,true))
     .add(StructField(imp_empees, StringType,true))
+
 
 
 }

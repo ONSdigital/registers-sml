@@ -24,7 +24,11 @@ trait PayeCalculator {
     val idDF = idDF1.selectExpr(ern, id, s"cast($mar_jobs as int) $mar_jobs", s"cast($june_jobs as int) $june_jobs", s"cast($sept_jobs as int) $sept_jobs", s"cast($dec_jobs as int) $dec_jobs")
       .groupBy(id).agg(sum(mar_jobs) as mar_jobs, sum(june_jobs) as june_jobs, sum(sept_jobs) as sept_jobs, sum(dec_jobs) as dec_jobs)
 
-    missingPayeRefsThrow(flatUnitDf,idDF1)
+    try{missingPayeRefsThrow(flatUnitDf,idDF1)}
+    catch {
+      case iae: IllegalArgumentException => print("IllegalArgumentException ignored. continuing...")
+      case e: Exception => throw e
+    }
 
     idDF.createOrReplaceTempView(payeDataTableName)
     flatUnitDf.createOrReplaceTempView(luTableName)
@@ -93,10 +97,16 @@ trait PayeCalculator {
     s"CASE WHEN $tableName.$date IS NULL THEN 0 ELSE 1 END"
 
   def missingPayeRefsThrow(BIDF: DataFrame, PayeDF: DataFrame): Unit = {
-    val BList = BIDF.select(payeRefs).collect.toList
-    val PList = PayeDF.select(payeRefs).collect.toList
-    val diff = (BList.diff(BList.intersect(PList))).mkString(" ")
-    assert(BList.forall(PList.contains), s"Expected exception to be thrown as the PayeRef(s) $diff don't exist in the Paye input")
+    import uk.gov.ons.spark.sql._
+    BIDF.cache()
+    PayeDF.cache()
+    val BList = BIDF.filter(_.isNull(payeRefs))
+    val PList = PayeDF.select(payeRefs)
+    val diff = BList.join(PList, Seq(payeRefs), "left_anti")
+    val count = diff.count()
+    assert(count==0, s"Expected exception to be thrown as the PayeRef(s) as $count payes refs don't exist in the Paye input")
+    BIDF.unpersist()
+    PayeDF.unpersist()
   }
 
 }
