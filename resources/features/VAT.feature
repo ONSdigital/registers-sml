@@ -4,7 +4,7 @@ Feature: VAT Calculation
  @HappyPath
     Scenario Outline: Happy Path - A combined Vat & Paye table is calculated
         Given the Legal unit input with vat:
-          |BusinessName|                  PayeRefs|                   VatRefs|       ern|            ubrn|
+          |  name      |                  payerefs|                   vatrefs|       ern|            ubrn|
           |  Business 1|                846SZ24053|              848723100000|1100000001|1000100001234567|
           | Business 2A|                    846T10|388206724000, 388206724001|1100000002|1000100002345678|
           | Business 2B|                 083NU5010|388206724002, 388206724003|1100000002|1000100003456789|
@@ -66,7 +66,7 @@ Feature: VAT Calculation
     @HappyPath
     Scenario Outline: Happy Path - Contained Turnover
        Given the Legal unit input with vat:
-          |BusinessName|                 PayeRefs|                   VatRefs|       ern|            ubrn|
+          |  name      |                 payerefs|                   vatrefs|       ern|            ubrn|
           |  Business 1|               846SZ24053|              848723100000|1100000001|1000100001234567|
           | Business 2A|                   846T10|388206724000, 388206724001|1100000002|1000100002345678|
           | Business 2B|                083NU5010|388206724002, 388206724003|1100000002|1000100003456789|
@@ -129,7 +129,7 @@ Feature: VAT Calculation
      @HappyPath
      Scenario Outline: Happy Path - apportioned turnover
         Given the Legal unit input with vat:
-           |BusinessName|                 PayeRefs|                   VatRefs|       ern|            ubrn|
+           |   name     |                 payerefs|                   vatrefs|       ern|            ubrn|
            |  Business 1|               846SZ24053|              848723100000|1100000001|1000100001234567|
            | Business 2A|                   846T10|388206724000, 388206724001|1100000002|1000100002345678|
            | Business 2B|                083NU5010|388206724002, 388206724003|1100000002|1000100003456789|
@@ -191,7 +191,7 @@ Feature: VAT Calculation
  @HappyPath
     Scenario Outline: Happy Path - Standard Turnover
        Given the Legal unit input with vat:
-          |BusinessName|                 PayeRefs|                   VatRefs|       ern|            ubrn|
+          |  name      |                 payerefs|                   vatrefs|       ern|            ubrn|
           |  Business 1|               846SZ24053|              848723100000|1100000001|1000100001234567|
           | Business 2A|                   846T10|388206724000, 388206724001|1100000002|1000100002345678|
           | Business 2B|                083NU5010|388206724002, 388206724003|1100000002|1000100003456789|
@@ -255,7 +255,7 @@ Feature: VAT Calculation
     @HappyPath
     Scenario Outline: Happy Path - group turnover
        Given the Legal unit input with vat:
-          |BusinessName|                 PayeRefs|                   VatRefs|       ern|            ubrn|
+          |  name      |                 payerefs|                   vatrefs|       ern|            ubrn|
           |  Business 1|               846SZ24053|              848723100000|1100000001|1000100001234567|
           | Business 2A|                   846T10|388206724000, 388206724001|1100000002|1000100002345678|
           | Business 2B|                083NU5010|388206724002, 388206724003|1100000002|1000100003456789|
@@ -317,7 +317,7 @@ Feature: VAT Calculation
     @SadPath
     Scenario Outline: Sad Path - VAT refs input has invalid field
         Given the Legal unit input with vat:
-          |BusinessName|                 PayeRefs|                   VatRefs|       ern|            ubrn|
+          |   name     |                 payerefs|                   vatrefs|       ern|            ubrn|
           |  Business 1|               846SZ24053|              848723100000|1100000001|1000100001234567|
           | Business 2A|                   846T10|388206724000, 388206724001|1100000002|1000100002345678|
           | Business 2B|                083NU5010|388206724002, 388206724003|1100000002|1000100003456789|
