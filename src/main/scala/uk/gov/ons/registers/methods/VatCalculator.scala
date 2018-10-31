@@ -149,7 +149,7 @@ trait VatCalculator{
                                                               )"""
 
   def joinWithVatAndPayeData(unitsDF:DataFrame, vatDF:DataFrame, payeCalculatedDF:DataFrame)(implicit spark: SparkSession ) = {
-    val flatUnitDf = unitsDF.withColumn("vatref", explode_outer(unitsDF.apply("VatRefs"))).withColumn("vat_group",col("vatref").substr(0,6))
+    val flatUnitDf = unitsDF.withColumn("vatref", explode_outer(unitsDF.apply("vatrefs"))).withColumn("vat_group",col("vatref").substr(0,6))
 
     val luTable = "LEGAL_UNITS"
     val vatTable = "VAT_DATA"
