@@ -18,7 +18,7 @@ object CommonFrameDataFields {
   val payeRefs = "payeref"
 
   //from legal units input
-  val PayeRefs = "PayeRefs"
+  val PayeRefs = "payerefs"
 
   val contained = "cntd_turnover"
   val apportioned = "app_turnover"
