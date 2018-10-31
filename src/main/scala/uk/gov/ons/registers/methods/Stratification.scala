@@ -12,8 +12,7 @@ import uk.gov.ons.registers.methods.impl.StratificationImpl._
 @Singleton
 trait Stratification {
 
-  def stratify(inputDf: DataFrame, stratificationPropsDf: DataFrame, unitSpecDF: DataFrame)(implicit activeSession: SparkSession): DataFrame = {
-    val bounds = unitSpecDF.head().getString(1)
+  def stratify(inputDf: DataFrame, stratificationPropsDf: DataFrame, bounds:String)(implicit activeSession: SparkSession): DataFrame = {
 
     val (frameDF, stratificationPropsDS) =
       validateAndParseInputsStrata(propertiesDf = stratificationPropsDf, unitDf = inputDf, bounds,

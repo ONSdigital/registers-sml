@@ -8,7 +8,7 @@ Feature: PAYE Calculation
     @HappyPath
     Scenario Outline: Happy Path - with nulls
         Given the Legal unit input:
-           |    PayeRefs|       ern|          id|
+           |    payerefs|       ern|        ubrn|
            |       1151L|2000000011|100002826247|
            |1152L, 1153L|1100000003|100000246017|
            |1155L, 1154L|1100000003|100000827984|
@@ -49,7 +49,7 @@ Feature: PAYE Calculation
     @SadPath
     Scenario Outline: Sad Path - Legal Unit input has invalid field
         Given the Legal unit input:
-            |      PayeRefs|       ern|     INVALID|
+            |    payerefs|       ern|     INVALID|
             |       1151L|2000000011|100002826247|
             |1152L, 1153L|1100000003|100000246017|
             |1155L, 1154L|1100000003|100000827984|
@@ -83,7 +83,7 @@ Feature: PAYE Calculation
     @SadPath
     Scenario Outline: Sad Path - PAYE Refs input has invalid field
         Given the Legal unit input:
-            |    PayeRefs|       ern|          id|
+            |    payerefs|       ern|        ubrn|
             |       1151L|2000000011|100002826247|
             |1152L, 1153L|1100000003|100000246017|
             |1155L, 1154L|1100000003|100000827984|

@@ -18,8 +18,8 @@ class VAT_Steps extends ScalaDsl with EN with VatCalculator {
 
   Given("""^the Legal unit input with vat:"""){ inputTable: RawDataTableList =>
     BIDF = createDataFrame(inputTable)
-        .withColumn(colName = "PayeRefs", split(col("PayeRefs"), ", ").cast(ArrayType(StringType)))
-        .withColumn(colName = "VatRefs", split(col("VatRefs"), ", ").cast(ArrayType(StringType)))
+        .withColumn(colName = "payerefs", split(col("payerefs"), ", ").cast(ArrayType(StringType)))
+        .withColumn(colName = "vatrefs", split(col("vatrefs"), ", ").cast(ArrayType(StringType)))
   }
 
   And("""^the PAYE input:"""){ inputTable: RawDataTableList =>

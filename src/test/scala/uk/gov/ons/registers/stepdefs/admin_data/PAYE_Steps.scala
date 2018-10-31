@@ -21,7 +21,7 @@ class PAYE_Steps extends ScalaDsl with EN with PayeCalculator {
 
   Given("""^the Legal unit input:"""){ inputTable: RawDataTableList =>
     BIDF = createDataFrame(inputTable)
-      .withColumn(colName = "PayeRefs", split(col("PayeRefs"), ", ").cast(ArrayType(StringType)))
+      .withColumn(colName = "payerefs", split(col("payerefs"), ", ").cast(ArrayType(StringType)))
   }
 
   And("""^the PAYE refs input"""){ inputTable: RawDataTableList =>
