@@ -9,6 +9,9 @@ package object stepdefs {
 
   var unitSpecDF: DataFrame = _
 
+  var bounds: String = _
+
+
   var outputDataDF: DataFrame = _
 
   var BIDF: DataFrame = _

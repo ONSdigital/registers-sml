@@ -37,14 +37,14 @@ trait PayeCalculator {
     val flatPayeDataCountSql = generateCalculateCountSQL(luTableName, payeDataTableName)
 
     val sqlSum =  s"""
-              SELECT (SUM(AVG_CALCULATED.quarter_sum)) AS sums, AVG_CALCULATED.id, AVG_CALCULATED.ern
+              SELECT (SUM(AVG_CALCULATED.quarter_sum)) AS sums, AVG_CALCULATED.$id, AVG_CALCULATED.ern
               FROM ($flatPayeDataSumSql) as AVG_CALCULATED
-              GROUP BY AVG_CALCULATED.ern, AVG_CALCULATED.id
+              GROUP BY AVG_CALCULATED.ern, AVG_CALCULATED.$id
             """.stripMargin
     val sqlCount = s"""
-              SELECT (SUM(AVG_CALCULATED.quarter_count)) AS counts, AVG_CALCULATED.id
+              SELECT (SUM(AVG_CALCULATED.quarter_count)) AS counts, AVG_CALCULATED.$id
               FROM ($flatPayeDataCountSql) as AVG_CALCULATED
-              GROUP BY AVG_CALCULATED.id
+              GROUP BY AVG_CALCULATED.$id
             """.stripMargin
     val Sum = spark.sql(sqlSum)
     val Count = spark.sql(sqlCount)
