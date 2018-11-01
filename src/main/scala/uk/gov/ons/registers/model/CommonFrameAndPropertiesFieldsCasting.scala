@@ -22,9 +22,6 @@ object CommonFrameAndPropertiesFieldsCasting {
 
   def checkStratifiedFrameForMandatoryFields(stratifiedDF: DataFrame): DataFrame = {
     val castedStratifiedDF = stratifiedDF
-      .withColumn(colName = cellNumber, stratifiedDF.col(cellNumber).cast(IntegerType))
-      .withColumn(colName = prn, stratifiedDF.col(prn).cast(DataTypes.createDecimalType(precision, scale)))
-
     if (castedStratifiedDF.filter(castedStratifiedDF(cellNumber).isNull ||
       castedStratifiedDF(prn).isNull).count > NullableValuesAllowed)
       throw new IllegalArgumentException(s"Check common mandatory fields [$cellNumber, $prn] are of expected type")
