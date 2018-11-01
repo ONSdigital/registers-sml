@@ -1,35 +1,45 @@
 package uk.gov.ons.registers.methods
 
 import javax.inject.Singleton
-
-import org.apache.spark.sql.{Column, DataFrame, SparkSession}
-
-import uk.gov.ons.registers.TransformDataFrames.{fromArrayDataFrame, validateAndParseInputs}
-import uk.gov.ons.registers.model.CommonFrameAndPropertiesFieldsCasting.checkStratifiedFrameForMandatoryFields
-import uk.gov.ons.registers.model.SelectionTypes.Initial
-import uk.gov.ons.registers.model.selectionstrata.SelectionStrata
-import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields.selectionType
+import org.apache.spark.sql._
 
 @Singleton
-class Sample(implicit activeSession: SparkSession) {
+class Sample(implicit spark: SparkSession) {
+
   def create(stratifiedFrameDf: DataFrame, stratificationPropsDf: DataFrame): DataFrame = {
-    val (stratifiedFrameDF, stratificationPropsDS) =
-      validateAndParseInputs(propertiesDf = stratificationPropsDf, unitDf = stratifiedFrameDf,
-        validateFields = checkStratifiedFrameForMandatoryFields)
-    def checkSelType(`type`: String): Column = stratificationPropsDS(selectionType) === `type`
-    /**
-      * NOTE - the driver is solely aware of the type T in Dataset[T] and cannot be inferred by worker nodes.
-      *        A transformation cannot be executed inside another transformation for another type.
-      *        Collect forces the transformation to be returned to the driver allowing the proceeding step to incur
-      *        as desired
-      */
-    val arrayOfSamples: Array[DataFrame] = stratificationPropsDS
-      .filter(checkSelType(Initial.census) || checkSelType(Initial.prnSampling)).collect
-      .flatMap{ selectionStrata: SelectionStrata =>
-        SelectionTypeSampling.getMethod(selectionStrata).flatMap(sampleMethod =>
-          sampleMethod.sampling(stratifiedFrameDF, selectionStrata))
-      }
-    fromArrayDataFrame(arrayOfDatasets = arrayOfSamples)
+    val records = "records"
+
+    stratifiedFrameDf.createOrReplaceTempView(records)
+    val propsList: Array[Row] = stratificationPropsDf.filter(stratificationPropsDf("seltype") === "P" || stratificationPropsDf("seltype") === "C").collect()//createOrReplaceTempView(props)
+    val emptyRecordDF = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], stratifiedFrameDf.schema)
+
+    def selectSampleSql(cellNum:String,seltype:String, resultsNum:String, prnStart:String) = {
+
+      val sampleSize = if(seltype=="P") s"LIMIT $resultsNum" else ""
+      val prnCondition = if(seltype=="P") s"(CAST(prn AS FLOAT) >= CAST('$prnStart' AS FLOAT))" else ""
+      val orderByPrn = if(seltype=="P") "ORDER BY prn" else ""
+
+      s"""
+         SELECT * from $records
+         WHERE cell_no='$cellNum' AND $prnCondition
+         $orderByPrn
+         $sampleSize
+
+       """.stripMargin
+
+
+    }
+
+    propsList.foldRight(emptyRecordDF){(propRow,agg) => {
+      val sampleDF = spark.sql(selectSampleSql(
+                                                propRow.getAs[String]("cell_no"),
+                                                propRow.getAs[String]("seltype"),
+                                                propRow.getAs[String]("no_reqd"),
+                                                propRow.getAs[String]("prn_start")
+                                                ))
+      agg.union(sampleDF)}}
+
+
   }
 }
 
