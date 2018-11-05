@@ -12,7 +12,6 @@ class EmploymentSteps extends ScalaDsl with EN with EmploymentCalculator {
   private def applyMethod(): Unit = {
     implicit val sparkSession = Helpers.sparkSession
     outputDataDF = calculateEmployment(empDF)
-    //outputDataDF.show()
   }
 
   Given("""^an employees and working proprietors input:$"""){ inputTable: RawDataTableList =>
@@ -31,7 +30,6 @@ class EmploymentSteps extends ScalaDsl with EN with EmploymentCalculator {
   }
 
   Then("""^this Employment table is is produced$"""){ theExpectedResult: RawDataTableList =>
-    //createDataFrame(theExpectedResult).show
     val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithEmploymentUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "Employment")
   }
