@@ -8,7 +8,7 @@ Feature: PAYE Calculation
     @HappyPath
     Scenario Outline: Happy Path - with nulls
         Given the Legal unit input:
-           |    PayeRefs|       ern|          id|
+           |    payerefs|       ern|        ubrn|
            |       1151L|2000000011|100002826247|
            |1152L, 1153L|1100000003|100000246017|
            |1155L, 1154L|1100000003|100000827984|
@@ -46,32 +46,10 @@ Feature: PAYE Calculation
     | language |
     | Scala    |
 
-
-    @SadPath
-    Scenario Outline: Sad Path - PAYE Refs input has missing PAYE units referenced in BI data input
-        Given the Legal unit input:
-             |      PayeRefs|       ern|          id|
-             |1152L, 1153L|1100000003|100000246017|
-             |1154L, 1155L|1100000003|100000827984|
-
-       And a PAYE refs input with missing PAYE unit:
-             | payeref|mar_jobs|june_jobs|sept_jobs|dec_jobs|
-             |   1152L|       5|        6|     null|       8|
-             |   1153L|       9|        1|        2|       3|
-             |   1154L|       4|     null|        6|       7|
-
-       When the PAYE method is attempted
-       Then an exception in <language> is thrown for results table due to missing PAYE unit upon trying to Calculate PAYE
-
-    @JVM
-    Examples:
-    | language |
-    | Scala    |
-
     @SadPath
     Scenario Outline: Sad Path - Legal Unit input has invalid field
         Given the Legal unit input:
-            |      PayeRefs|       ern|     INVALID|
+            |    payerefs|       ern|     INVALID|
             |       1151L|2000000011|100002826247|
             |1152L, 1153L|1100000003|100000246017|
             |1155L, 1154L|1100000003|100000827984|
@@ -105,7 +83,7 @@ Feature: PAYE Calculation
     @SadPath
     Scenario Outline: Sad Path - PAYE Refs input has invalid field
         Given the Legal unit input:
-            |    PayeRefs|       ern|          id|
+            |    payerefs|       ern|        ubrn|
             |       1151L|2000000011|100002826247|
             |1152L, 1153L|1100000003|100000246017|
             |1155L, 1154L|1100000003|100000827984|

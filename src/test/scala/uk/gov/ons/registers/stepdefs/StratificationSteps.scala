@@ -1,16 +1,19 @@
 package uk.gov.ons.registers.stepdefs
 
+import cucumber.api.scala.{EN, ScalaDsl}
 import uk.gov.ons.registers.methods.Stratification
-import uk.gov.ons.registers.support.AssertionHelpers.{aFailureIsGeneratedBy, assertDataFrameEquality, displayData}
+import uk.gov.ons.registers.model.CommonFrameDataFields.prn
+import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields.cellNumber
+import uk.gov.ons.registers.support.AssertionHelpers.{aFailureIsGeneratedBy, assertDataFrameStringEquality, displayData}
 import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, castWithUnitMandatoryFields, createDataFrame}
 import uk.gov.ons.stepdefs.Helpers
 
-import cucumber.api.scala.{EN, ScalaDsl}
+class StratificationSteps extends ScalaDsl with EN with Stratification {
 
-class StratificationSteps extends ScalaDsl with EN {
-  private def stratifyTestFrame(): Unit =
-    outputDataDF = Stratification.stratification(sparkSession = Helpers.sparkSession)
-      .stratify(frameDF, stratificationPropsDF)
+  private def stratifyTestFrame(): Unit = {
+    implicit val sparkSession = Helpers.sparkSession
+    outputDataDF = stratify(frameDF, stratificationPropsDF, bounds).orderBy(cellNumber, prn)
+  }
 
   Given("""a Frame:$"""){ aTranformedFrameTableDf: RawDataTableList =>
     frameDF = createDataFrame(aTranformedFrameTableDf)
@@ -24,6 +27,10 @@ class StratificationSteps extends ScalaDsl with EN {
     frameDF = createDataFrame(aFrameTableWithNull)
   }
 
+  And("""a specification of unit and params:"""){ frame: RawDataTableList =>
+    bounds = createDataFrame(frame).head().getString(1)
+  }
+
   When("""a Scala Stratified Frame is created from a Frame$"""){ () =>
     stratifyTestFrame()
     outputDataDF = outputDataDF.na.fill(value = "")
@@ -35,8 +42,9 @@ class StratificationSteps extends ScalaDsl with EN {
     }
   }
 
-  Then("""a Stratified Frame is returned with the strata assigned the Strata number from the Stratification Strata.*?:$"""){ theExpectedResult: RawDataTableList =>
-    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithUnitMandatoryFields)
+  Then("""a Stratified Frame is returned"""){ theExpectedResult: RawDataTableList =>
+    implicit val sparkSession = Helpers.sparkSession
+    val output = assertDataFrameStringEquality(theExpectedResult, bounds)(castExepctedMandatoryFields = castWithUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "Stratification")
   }
 

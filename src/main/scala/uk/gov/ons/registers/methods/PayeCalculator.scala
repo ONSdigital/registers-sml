@@ -3,6 +3,7 @@ package uk.gov.ons.registers.methods
 import org.apache.spark.sql.functions.{explode_outer, sum}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import uk.gov.ons.registers.model.CommonFrameDataFields._
+import org.apache.spark.sql.functions.col
 
 trait PayeCalculator {
 
@@ -20,11 +21,15 @@ trait PayeCalculator {
 
   def getGroupedByPayeEmployees(BIDF: DataFrame, payeDF: DataFrame, luTableName: String = "LEGAL_UNITS", payeDataTableName: String = "PAYE_DATA")(implicit spark: SparkSession): DataFrame ={
     val flatUnitDf = BIDF.withColumn(payeRefs, explode_outer(BIDF.apply(PayeRefs)))
-    val idDF1 = (flatUnitDf.join(payeDF, payeRefs))
+    val idDF1 = flatUnitDf.join(payeDF, payeRefs)
     val idDF = idDF1.selectExpr(ern, id, s"cast($mar_jobs as int) $mar_jobs", s"cast($june_jobs as int) $june_jobs", s"cast($sept_jobs as int) $sept_jobs", s"cast($dec_jobs as int) $dec_jobs")
       .groupBy(id).agg(sum(mar_jobs) as mar_jobs, sum(june_jobs) as june_jobs, sum(sept_jobs) as sept_jobs, sum(dec_jobs) as dec_jobs)
 
-    missingPayeRefsThrow(flatUnitDf,idDF1)
+    try{missingPayeRefsThrow(flatUnitDf,idDF1)}
+    catch {
+      case iae: IllegalArgumentException => print("IllegalArgumentException ignored. continuing...")
+      case e: Exception => throw e
+    }
 
     idDF.createOrReplaceTempView(payeDataTableName)
     flatUnitDf.createOrReplaceTempView(luTableName)
@@ -33,14 +38,14 @@ trait PayeCalculator {
     val flatPayeDataCountSql = generateCalculateCountSQL(luTableName, payeDataTableName)
 
     val sqlSum =  s"""
-              SELECT (SUM(AVG_CALCULATED.quarter_sum)) AS sums, AVG_CALCULATED.id, AVG_CALCULATED.ern
+              SELECT (SUM(AVG_CALCULATED.quarter_sum)) AS sums, AVG_CALCULATED.$id, AVG_CALCULATED.ern
               FROM ($flatPayeDataSumSql) as AVG_CALCULATED
-              GROUP BY AVG_CALCULATED.ern, AVG_CALCULATED.id
+              GROUP BY AVG_CALCULATED.ern, AVG_CALCULATED.$id
             """.stripMargin
     val sqlCount = s"""
-              SELECT (SUM(AVG_CALCULATED.quarter_count)) AS counts, AVG_CALCULATED.id
+              SELECT (SUM(AVG_CALCULATED.quarter_count)) AS counts, AVG_CALCULATED.$id
               FROM ($flatPayeDataCountSql) as AVG_CALCULATED
-              GROUP BY AVG_CALCULATED.id
+              GROUP BY AVG_CALCULATED.$id
             """.stripMargin
     val Sum = spark.sql(sqlSum)
     val Count = spark.sql(sqlCount)
@@ -93,10 +98,16 @@ trait PayeCalculator {
     s"CASE WHEN $tableName.$date IS NULL THEN 0 ELSE 1 END"
 
   def missingPayeRefsThrow(BIDF: DataFrame, PayeDF: DataFrame): Unit = {
-    val BList = BIDF.select(payeRefs).collect.toList
-    val PList = PayeDF.select(payeRefs).collect.toList
-    val diff = (BList.diff(BList.intersect(PList))).mkString(" ")
-    assert(BList.forall(PList.contains), s"Expected exception to be thrown as the PayeRef(s) $diff don't exist in the Paye input")
+    import uk.gov.ons.spark.sql._
+    BIDF.cache()
+    PayeDF.cache()
+    val BList = BIDF.filter(!_.isNull(payeRefs))
+    val PList = PayeDF.select(payeRefs)
+    val diff = BList.join(PList, Seq(payeRefs), "left_anti")
+    val count = diff.count()
+    assert(count==0, s"Expected exception to be thrown as the PayeRef(s) as $count payes refs don't exist in the Paye input")
+    BIDF.unpersist()
+    PayeDF.unpersist()
   }
 
 }

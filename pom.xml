@@ -3,7 +3,7 @@
 
     <groupId>uk.gov.ons</groupId>
     <artifactId>registers-sml</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.6</version>
     <packaging>jar</packaging>
     <name>Registers Statistical Method Library</name>
     <description>Library of statistics methods for Registers</description>
@@ -97,6 +97,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.20.1</version>
                 <configuration>
+                    <forkCount>3</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
                     <testSourceDirectory>/src/test/java/</testSourceDirectory>
                 </configuration>
             </plugin>
@@ -261,6 +264,14 @@
     </build>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.scalatest/scalatest -->
+        <dependency>
+            <groupId>org.scalatest</groupId>
+            <artifactId>scalatest_2.11</artifactId>
+            <version>3.0.5</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-yarn-client</artifactId>

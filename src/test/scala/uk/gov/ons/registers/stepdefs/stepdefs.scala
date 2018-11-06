@@ -7,6 +7,11 @@ package object stepdefs {
   var stratifiedFrameDF: DataFrame = _
   var stratificationPropsDF: DataFrame = _
 
+  var unitSpecDF: DataFrame = _
+
+  var bounds: String = _
+
+
   var outputDataDF: DataFrame = _
 
   var BIDF: DataFrame = _

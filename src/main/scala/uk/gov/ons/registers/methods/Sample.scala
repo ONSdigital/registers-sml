@@ -1,36 +1,81 @@
 package uk.gov.ons.registers.methods
 
 import javax.inject.Singleton
+import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
 
-import org.apache.spark.sql.{Column, DataFrame, SparkSession}
 
-import uk.gov.ons.registers.TransformDataFrames.{fromArrayDataFrame, validateAndParseInputs}
-import uk.gov.ons.registers.model.CommonFrameAndPropertiesFieldsCasting.checkStratifiedFrameForMandatoryFields
-import uk.gov.ons.registers.model.SelectionTypes.Initial
-import uk.gov.ons.registers.model.selectionstrata.SelectionStrata
-import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields.selectionType
+
 
 @Singleton
-class Sample(implicit activeSession: SparkSession) {
+class Sample(implicit spark: SparkSession) {
+
+
+  def validateProps(cellNum:String,prnStart:String) = {
+    val validateCellNumberError = if(!cellNum.matches("^\\d+$")) s"cell number in not a number: $cellNum" else ""
+    val validatePrnStart = if(!prnStart.matches("^0.\\d+$")) s"prnStart in not a valid prn: $prnStart" else ""
+    val errs = List(validateCellNumberError, validatePrnStart).filter(!_.trim.isEmpty)
+    if(errs.nonEmpty) {
+      val errMessage = errs.mkString("; ")
+      throw new IllegalArgumentException(s"Problem parsing inputs: $errMessage")
+    }
+  }
+
   def create(stratifiedFrameDf: DataFrame, stratificationPropsDf: DataFrame): DataFrame = {
-    val (stratifiedFrameDF, stratificationPropsDS) =
-      validateAndParseInputs(propertiesDf = stratificationPropsDf, unitDf = stratifiedFrameDf,
-        validateFields = checkStratifiedFrameForMandatoryFields)
-    def checkSelType(`type`: String): Column = stratificationPropsDS(selectionType) === `type`
-    /**
-      * NOTE - the driver is solely aware of the type T in Dataset[T] and cannot be inferred by worker nodes.
-      *        A transformation cannot be executed inside another transformation for another type.
-      *        Collect forces the transformation to be returned to the driver allowing the proceeding step to incur
-      *        as desired
-      */
-    val arrayOfSamples: Array[DataFrame] = stratificationPropsDS
-      .filter(checkSelType(Initial.census) || checkSelType(Initial.prnSampling)).collect
-      .flatMap{ selectionStrata: SelectionStrata =>
-        SelectionTypeSampling.getMethod(selectionStrata).flatMap { sampleMethod =>
-          sampleMethod.sampling(stratifiedFrameDF, selectionStrata)
-        }
-      }
-    fromArrayDataFrame(arrayOfDatasets = arrayOfSamples)
+    val records = "records"
+
+    stratifiedFrameDf.createOrReplaceTempView(records)
+    val propsList: Array[Row] = stratificationPropsDf.filter(stratificationPropsDf("seltype") === "P" || stratificationPropsDf("seltype") === "C").collect()//createOrReplaceTempView(props)
+    val emptyRecordDF = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], stratifiedFrameDf.schema)
+
+    def selectBasicSampleSql(cellNum:String,seltype:String, resultsNum:String, prnStart:String) = {
+
+      val sampleSize = if(seltype=="P") s"LIMIT $resultsNum" else ""
+      val prnCondition = if(seltype=="P") s" AND (CAST(prn AS FLOAT) >= CAST('$prnStart' AS FLOAT))" else ""
+      val orderByPrn = if(seltype=="P") "ORDER BY prn" else ""
+
+      s"""
+         SELECT * from $records
+         WHERE cell_no='$cellNum' $prnCondition
+         $orderByPrn
+         $sampleSize
+
+       """.stripMargin
+    }
+
+    def selectSampleSql(cellNum:String,seltype:String, resultsNum:String, prnStart:String, remainingSampleCount:Long) = {
+
+      val subQuery = selectBasicSampleSql(cellNum,seltype, resultsNum, prnStart)
+      val primaryRes = spark.sql(subQuery)
+      s"""
+         SELECT * FROM $records
+         where WHERE cell_no='$cellNum'
+         ORDER BY prn ASC
+         LIMIT ${remainingSampleCount.toString}
+       """.stripMargin
+    }
+
+    propsList.foldRight(emptyRecordDF){(propRow,agg) => {
+
+      val cellNu = propRow.getAs[String]("cell_no")
+      val seltype = propRow.getAs[String]("seltype")
+      val sampleSize = propRow.getAs[String]("no_reqd")
+      val startingPrn = propRow.getAs[String]("prn_start")
+      validateProps(cellNu,startingPrn)
+
+      val primaryQuery = selectBasicSampleSql(cellNu, seltype, sampleSize, startingPrn)
+      val basicSampleDF = spark.sql(primaryQuery)
+
+      val remainingSample = sampleSize.toLong - basicSampleDF.count()
+      if(remainingSample>0 || seltype!="C") {
+
+        val secondaryQuery = selectSampleSql(cellNu, seltype, sampleSize, startingPrn, remainingSample)
+        val secondaryResDF = spark.sql(secondaryQuery)
+        (secondaryResDF.union(basicSampleDF)).distinct.orderBy(desc("prn"))
+
+      } else basicSampleDF.distinct.orderBy(desc("prn"))
+
+    }}
   }
 }
 

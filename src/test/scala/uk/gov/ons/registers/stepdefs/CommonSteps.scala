@@ -11,7 +11,7 @@ class CommonSteps extends ScalaDsl with EN {
     stratificationPropsDF = createDataFrame(aPropertiesTable)
   }
 
-  And("""a Stratification Properties file with an invalid field type:$"""){ anInvalidPropertiesTable: RawDataTableList =>
+  And("""a.+ file with an invalid field type:$"""){ anInvalidPropertiesTable: RawDataTableList =>
     stratificationPropsDF = createDataFrame(anInvalidPropertiesTable)
   }
 
