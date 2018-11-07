@@ -25,8 +25,9 @@
 
     <distributionManagement>
         <repository>
-            <id>bintray-ONS</id>
-            <url>https://api.bintray.com/maven/${bintray.org}/${bintray.repo}/${bintray.package}/;publish=1</url>
+                <id>central</id>
+                <name>ONS Artifactory-releases</name>
+                <url>http://art-p-01/artifactory/LR_Registers-Maven-Releases</url>
         </repository>
     </distributionManagement>
 
