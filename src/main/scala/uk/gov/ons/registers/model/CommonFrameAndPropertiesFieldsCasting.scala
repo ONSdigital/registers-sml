@@ -2,7 +2,7 @@ package uk.gov.ons.registers.model
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.types.{DataTypes, IntegerType, LongType}
-import uk.gov.ons.registers.model.CommonFrameDataFields._
+import uk.gov.ons.registers.model.CommonFrameDataFields.{employment, _}
 import uk.gov.ons.registers.model.selectionstrata.PrnNumericalProperty.{precision, scale}
 import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields.cellNumber
 
@@ -72,5 +72,10 @@ object CommonFrameAndPropertiesFieldsCasting {
     val castedVatDF = VatDF
       .withColumn(colName = standard, VatDF.col(standard).cast(LongType))
     castedVatDF
+  }
+  def checkEmploymentforMandatoryFields(EmpDF: DataFrame): DataFrame = {
+    val castedEmpDF = EmpDF
+      .withColumn(colName = employment, EmpDF.col(employment).cast(LongType))
+    castedEmpDF
   }
 }
