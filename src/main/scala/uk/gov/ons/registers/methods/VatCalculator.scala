@@ -31,7 +31,7 @@ trait VatCalculator{
        CAST((
          CASE
            WHEN no_ents_in_group > 1
-           THEN Round(grp_turnover * ($employees / group_empl_total), 0)
+           THEN Round(grp_turnover * ($payeEmployees / group_empl_total), 0)
            ELSE NULL
          END
        )  AS long)as $apportioned,
@@ -77,16 +77,16 @@ trait VatCalculator{
     val withAggregatedApp = "WITHAPPAGGR"
     aggregated.createOrReplaceTempView(withAggregatedApp)
 
-    val sql2 = s"SELECT vat_group, ern,$employees, $jobs, $contained, $standard, $apportioned, $group_turnover FROM $withAggregatedApp GROUP BY vat_group, ern, $employees, $jobs, $contained, $standard, $group_turnover, $apportioned "
+    val sql2 = s"SELECT vat_group, ern,$payeEmployees, $jobs, $contained, $standard, $apportioned, $group_turnover FROM $withAggregatedApp GROUP BY vat_group, ern, $payeEmployees, $jobs, $contained, $standard, $group_turnover, $apportioned "
     val turnovers = spark.sql(sql2)
     val t3 = "TURNOVER"
     turnovers.createOrReplaceTempView(t3)
 
     val aggregateApportionedSql =
       s"""
-         SELECT ern,$employees, $jobs, $contained, SUM($apportioned) as $apportioned, $standard, CAST(SUM($group_turnover) as long) as $group_turnover
+         SELECT ern,$payeEmployees, $jobs, $contained, SUM($apportioned) as $apportioned, $standard, CAST(SUM($group_turnover) as long) as $group_turnover
          FROM $t3
-         GROUP BY ern,$employees, $jobs, $contained,$standard
+         GROUP BY ern,$payeEmployees, $jobs, $contained,$standard
 
        """.stripMargin
 
@@ -142,8 +142,8 @@ trait VatCalculator{
   }
 
   def groupReprTurnoversSQL(table:String) = s"SELECT vat_group, turnover as $group_turnover FROM $table WHERE record_type=1 AND no_ents_in_group>1"
-  def distinctErnsByPayeEmps(table:String) = s"(SELECT DISTINCT ern, $employees,vat_group FROM $table)"
-  def selectSumEmployees(table:String) = s"""(SELECT SUM(emp_total_table.$employees) as group_empl_total, COUNT(emp_total_table.ern) as no_ents_in_group, emp_total_table.vat_group
+  def distinctErnsByPayeEmps(table:String) = s"(SELECT DISTINCT ern, $payeEmployees,vat_group FROM $table)"
+  def selectSumEmployees(table:String) = s"""(SELECT SUM(emp_total_table.$payeEmployees) as group_empl_total, COUNT(emp_total_table.ern) as no_ents_in_group, emp_total_table.vat_group
                                                                                 FROM ${distinctErnsByPayeEmps(table)} as emp_total_table
                                                                                 GROUP BY emp_total_table.vat_group
                                                               )"""
@@ -166,7 +166,7 @@ trait VatCalculator{
 
 
   def generateWithVatSQL(luTable:String, payeTable:String, vatTable:String) = {
-    s"""SELECT $luTable.vat_group, $luTable.ern,  $luTable.vatref, $vatTable.turnover, $vatTable.record_type, $payeTable.$employees, $payeTable.$jobs
+    s"""SELECT $luTable.vat_group, $luTable.ern,  $luTable.vatref, $vatTable.turnover, $vatTable.record_type, $payeTable.$payeEmployees, $payeTable.$jobs
          FROM $luTable, $vatTable, $payeTable
          WHERE $luTable.vatref=$vatTable.vatref AND $payeTable.ern=$luTable.ern""".stripMargin
   }

@@ -30,7 +30,7 @@ class EmploymentSteps extends ScalaDsl with EN with EmploymentCalculator {
   }
 
   Then("""^this Employment table is is produced$"""){ theExpectedResult: RawDataTableList =>
-    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithEmploymentUnitMandatoryFields)
+    val output = assertDataFrameEquality(theExpectedResult)(castExpectedMandatoryFields = castWithEmploymentUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "Employment")
   }
 
