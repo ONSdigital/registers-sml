@@ -5,7 +5,6 @@ object CommonFrameDataFields {
   val payeEmployees = "paye_empees"
   val sic07 = "sic07"
 
-  val employees = "paye_empees"
   val jobs = "paye_jobs"
   val ern = "ern"
   val id = "ubrn"
@@ -26,4 +25,10 @@ object CommonFrameDataFields {
   val group_turnover = "grp_turnover"
   val ent = "ent_turnover"
   val employment = "employment"
+
+  val turnover = "turnover"
+  val imp_turnover = "imp_turnover"
+  val imp_empees = "imp_empees"
+  val tph = "TPH"
+
 }

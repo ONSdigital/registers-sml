@@ -30,17 +30,17 @@ object CommonFrameAndPropertiesFieldsCasting {
 
   def checkPayeforMandatoryFields(PayeDF: DataFrame): DataFrame = {
     val castedPayeDF = PayeDF
-      .withColumn(colName = employees, PayeDF.col(employees).cast(LongType))
+      .withColumn(colName = payeEmployees, PayeDF.col(payeEmployees).cast(LongType))
       .withColumn(colName = jobs, PayeDF.col(jobs).cast(IntegerType))
 
-    if (castedPayeDF.filter(castedPayeDF(employees).isNull || castedPayeDF(jobs).isNull).count() > NullableValuesAllowed)
-      throw new IllegalArgumentException(s"Check mandatory fields [$employees, $jobs] are of expected type")
+    if (castedPayeDF.filter(castedPayeDF(payeEmployees).isNull || castedPayeDF(jobs).isNull).count() > NullableValuesAllowed)
+      throw new IllegalArgumentException(s"Check mandatory fields [$payeEmployees, $jobs] are of expected type")
     else castedPayeDF
   }
 
   def checkVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
     val castedVatDF = VatDF
-      .withColumn(colName = employees, VatDF.col(employees))
+      .withColumn(colName = payeEmployees, VatDF.col(payeEmployees))
       .withColumn(colName = jobs, VatDF.col(jobs))
       .withColumn(colName = contained, VatDF.col(contained).cast(LongType))
       .withColumn(colName = apportioned, VatDF.col(apportioned).cast(LongType))
@@ -48,8 +48,8 @@ object CommonFrameAndPropertiesFieldsCasting {
       .withColumn(colName = group_turnover, VatDF.col(group_turnover).cast(LongType))
       .withColumn(colName = ent, VatDF.col(ent).cast(LongType))
 
-    if (castedVatDF.filter(castedVatDF(employees).isNull || castedVatDF(jobs).isNull || castedVatDF(ent).isNull).count() > NullableValuesAllowed)
-      throw new IllegalArgumentException(s"Check mandatory fields [$employees, $jobs, $contained, $apportioned, $standard, $group_turnover, $ent] are of expected type")
+    if (castedVatDF.filter(castedVatDF(payeEmployees).isNull || castedVatDF(jobs).isNull || castedVatDF(ent).isNull).count() > NullableValuesAllowed)
+      throw new IllegalArgumentException(s"Check mandatory fields [$payeEmployees, $jobs, $contained, $apportioned, $standard, $group_turnover, $ent] are of expected type")
     else castedVatDF
   }
 
@@ -77,5 +77,12 @@ object CommonFrameAndPropertiesFieldsCasting {
     val castedEmpDF = EmpDF
       .withColumn(colName = employment, EmpDF.col(employment).cast(LongType))
     castedEmpDF
+  }
+  def checkImputedforMandatoryFields(ImputedDF: DataFrame): DataFrame = {
+    val castedImputedDF = ImputedDF
+      .withColumn(colName = ern, ImputedDF.col(ern))
+      .withColumn(colName = imp_turnover, ImputedDF.col(imp_turnover))
+      .withColumn(colName = imp_empees, ImputedDF.col(imp_empees))
+    castedImputedDF
   }
 }
