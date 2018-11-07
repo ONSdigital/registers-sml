@@ -67,13 +67,15 @@ class Sample(implicit spark: SparkSession) {
       val basicSampleDF = spark.sql(primaryQuery)
 
       val remainingSample = sampleSize.toLong - basicSampleDF.count()
-      if(remainingSample>0 || seltype!="C") {
+      val sampleDF = if(remainingSample>0 || seltype!="C") {
 
         val secondaryQuery = selectSampleSql(cellNu, seltype, sampleSize, startingPrn, remainingSample)
         val secondaryResDF = spark.sql(secondaryQuery)
         (secondaryResDF.union(basicSampleDF)).distinct.orderBy(desc("prn"))
 
       } else basicSampleDF.distinct.orderBy(desc("prn"))
+
+      emptyRecordDF.union(sampleDF)
 
     }}
   }
