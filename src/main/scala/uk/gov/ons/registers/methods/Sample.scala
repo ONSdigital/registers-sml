@@ -72,7 +72,7 @@ class Sample(implicit spark: SparkSession) {
             val secondaryResDF = spark.sql(secondaryQuery)
             (secondaryResDF.union(basicSampleDF)).distinct.orderBy(desc("prn"))
         }else basicSampleDF
-      } else basicSampleDF.distinct//.orderBy(desc("prn"))
+      } else basicSampleDF.distinct
 
       agg.union(sampleDF)
 
