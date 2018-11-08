@@ -9,6 +9,13 @@
     <description>Library of statistics methods for Registers</description>
     <url>https://github.com/ONSdigital/registers-sml</url>
 
+    <scm>
+        <url>https://github.com/ONSdigital/registers-sml</url>
+        <connection>scm:git:git://github.com/ONSdigital/registers-sml.git</connection>
+        <developerConnection>scm:git:git@github.com:ONSdigital/registers-sml.git</developerConnection>
+  </scm>
+
+
     <properties>
         <bintray.org>ons</bintray.org>
         <bintray.repo>ONS-Registers</bintray.repo>
@@ -25,13 +32,22 @@
 
     <distributionManagement>
         <repository>
-            <id>bintray-ONS</id>
-            <url>https://api.bintray.com/maven/${bintray.org}/${bintray.repo}/${bintray.package}/;publish=1</url>
+	     <id>central</id>
+	     <name>ONS Artifactory-releases</name>
+	     <url>http://art-p-01/artifactory/LR_Registers-Maven-Releases</url>
         </repository>
     </distributionManagement>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
