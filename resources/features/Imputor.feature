@@ -9,6 +9,7 @@ Feature: Imputed turnover is the employees multiplied by the TPH (as INT)
         | 1000002 |  2005 |     null |          12 |
         | 1000003 |  2005 |       10 |        null |
         | 1000004 |  2005 |     null |        null |
+        | 1000005 |  2005 |        5 |          11 |
         And a TPH input:
         | sic07 |  TPH |
         |  2005 |    2 |
@@ -19,6 +20,7 @@ Feature: Imputed turnover is the employees multiplied by the TPH (as INT)
         | 1000002 |           24 |       null |
         | 1000003 |         null |          5 |
         | 1000004 |         null |       null |
+        | 1000005 |           22 |          2 |
 
         @JVM
         Examples:
