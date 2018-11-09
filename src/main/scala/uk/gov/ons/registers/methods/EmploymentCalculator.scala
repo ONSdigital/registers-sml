@@ -14,7 +14,7 @@ trait EmploymentCalculator {
   }
 
   def getGroupedByEmployment(empDF: DataFrame, empTableName: String = "EMPLOYMENT")(implicit spark: SparkSession): DataFrame = {
-    val filEmpDF = empDF.select(ern, employees, imputed, work_prop)
+    val filEmpDF = empDF.select(ern, payeEmployees, imputed, work_prop)
     filEmpDF.createOrReplaceTempView(empTableName)
     val flatEmpDataSql = generateCalculateEmpSql(empTableName)
     spark.sql(flatEmpDataSql).select(ern, employment)
@@ -24,9 +24,9 @@ trait EmploymentCalculator {
     s"""
        SELECT $empTableName.*,
            CAST(
-          ((CASE WHEN $empTableName.$employees IS NULL AND $empTableName.$imputed IS NULL THEN 1
-                 WHEN $empTableName.$employees IS NULL THEN $empTableName.$imputed + $empTableName.$work_prop
-                 ELSE $empTableName.$employees + $empTableName.$work_prop END))
+          ((CASE WHEN $empTableName.$payeEmployees IS NULL AND $empTableName.$imputed IS NULL THEN 1
+                 WHEN $empTableName.$payeEmployees IS NULL THEN $empTableName.$imputed + $empTableName.$work_prop
+                 ELSE $empTableName.$payeEmployees + $empTableName.$work_prop END))
            AS INT) AS employment
            FROM $empTableName
      """.stripMargin

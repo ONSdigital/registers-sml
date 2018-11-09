@@ -14,7 +14,6 @@ class PAYE_Steps extends ScalaDsl with EN with PayeCalculator {
   private def applyMethod(): Unit = {
     implicit val sparkSession = Helpers.sparkSession
     outputDataDF = calculatePAYE(BIDF, payeDF)
-    //outputDataDF.show()
   }
 
   Given("""^the Legal unit input:"""){ inputTable: RawDataTableList =>
@@ -42,8 +41,7 @@ class PAYE_Steps extends ScalaDsl with EN with PayeCalculator {
   }
 
   Then("""^a PAYE results table is produced:"""){ theExpectedResult: RawDataTableList =>
-    //createDataFrame(theExpectedResult).show
-    val output = assertDataFrameEquality(theExpectedResult)(castExepctedMandatoryFields = castWithPayeUnitMandatoryFields)
+    val output = assertDataFrameEquality(theExpectedResult)(castExpectedMandatoryFields = castWithPayeUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "PAYE")
   }
 
