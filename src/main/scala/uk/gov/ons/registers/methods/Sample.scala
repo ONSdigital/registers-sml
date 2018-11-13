@@ -45,9 +45,7 @@ class Sample(implicit spark: SparkSession) {
 
     def selectSampleSql(cellNum:String,seltype:String, resultsNum:String, prnStart:String, remainingSampleCount:Long) = {
 
-      //val subQuery = selectBasicSampleSql(cellNum,seltype, resultsNum, prnStart)
-      //val primaryRes = spark.sql(subQuery)
-      s"""
+     s"""
          SELECT * FROM $records
          where WHERE cell_no='$cellNum'
          ORDER BY prn ASC
@@ -74,7 +72,7 @@ class Sample(implicit spark: SparkSession) {
             val secondaryResDF = spark.sql(secondaryQuery)
             (secondaryResDF.union(basicSampleDF)).distinct.orderBy(desc("prn"))
         }else basicSampleDF
-      } else basicSampleDF.distinct//.orderBy(desc("prn"))
+      } else basicSampleDF.distinct
 
       agg.union(sampleDF)
 

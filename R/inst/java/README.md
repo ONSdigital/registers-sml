@@ -1,1 +1,0 @@
-Place the Java Jar with included dependencies in this folder.
