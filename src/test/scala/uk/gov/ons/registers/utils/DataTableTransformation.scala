@@ -53,6 +53,9 @@ object DataTableTransformation {
   def castWithEmploymentUnitMandatoryFields: DataFrame => DataFrame =
     CommonFrameAndPropertiesFieldsCasting.checkEmploymentforMandatoryFields
 
+  def castWithImputedUnitMandatoryFields: DataFrame => DataFrame =
+    CommonFrameAndPropertiesFieldsCasting.checkImputedforMandatoryFields
+
   def emptyDataFrame: DataFrame = {
     val nonsensicalSchema =
       StructType(
@@ -78,4 +81,16 @@ object DataTableTransformation {
     sqlCtx.createDataFrame(rdd, schema)
   }
 
+  def nullToNull(df: DataFrame): DataFrame = {
+    val sqlCtx = df.sqlContext
+    val schema = df.schema
+    val rdd = df.rdd.map(
+      row =>
+        row.toSeq.map {
+          case "null" => null
+          case otherwise => otherwise
+        })
+      .map(Row.fromSeq)
+    sqlCtx.createDataFrame(rdd, schema)
+  }
 }

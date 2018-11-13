@@ -62,8 +62,8 @@ class Sample(implicit spark: SparkSession) {
       validateProps(cellNu,startingPrn)
 
       val primaryQuery = selectBasicSampleSql(cellNu, seltype, sampleSize, startingPrn)
-      val basicSampleDF = spark.sql(primaryQuery)
-
+      val basicSampleDFPQ = spark.sql(primaryQuery)
+      val basicSampleDF = basicSampleDFPQ.coalesce(10)
 
       val sampleDF = if(seltype=="P") {
         val remainingSample = sampleSize.toLong - basicSampleDF.count()

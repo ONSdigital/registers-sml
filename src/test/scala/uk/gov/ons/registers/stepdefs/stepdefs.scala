@@ -4,6 +4,7 @@ import org.apache.spark.sql.DataFrame
 
 package object stepdefs {
   var frameDF: DataFrame = _
+  var frameAndDF: DataFrame = _
   var stratifiedFrameDF: DataFrame = _
   var stratificationPropsDF: DataFrame = _
 
