@@ -86,12 +86,14 @@ class Sample(implicit spark: SparkSession) {
             val secondaryQuery = selectSampleSql(cellNu, seltype, sampleSize, startingPrn, remainingSample)
             val secondaryResDF = spark.sql(secondaryQuery)
             logPartitionInfo(secondaryResDF,88)
-            (secondaryResDF.union(basicSampleDF)).distinct.orderBy(desc("prn"))
+            val resDF = (secondaryResDF.union(basicSampleDF)).distinct.orderBy(desc("prn"))
+          logPartitionInfo(resDF,90)
+          resDF
         }else basicSampleDF
       } else basicSampleDF.distinct
-      logPartitionInfo(basicSampleDF,92)
+      logPartitionInfo(basicSampleDF,94)
       val df = agg.union(sampleDF)
-      logPartitionInfo(basicSampleDF,94,"Aggregated sample DF")
+      logPartitionInfo(basicSampleDF,96,"Aggregated sample DF")
       df
     }}
   }
