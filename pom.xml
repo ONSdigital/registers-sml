@@ -3,7 +3,7 @@
 
     <groupId>uk.gov.ons</groupId>
     <artifactId>registers-sml</artifactId>
-    <version>1.10</version>
+    <version>1.11-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Registers Statistical Method Library</name>
     <description>Library of statistics methods for Registers</description>
@@ -13,7 +13,7 @@
         <url>https://github.com/ONSdigital/registers-sml</url>
         <connection>scm:git:git://github.com/ONSdigital/registers-sml.git</connection>
         <developerConnection>scm:git:git@github.com:ONSdigital/registers-sml.git</developerConnection>
-    <tag>v1.10</tag>
+    <tag>HEAD</tag>
   </scm>
 
 
