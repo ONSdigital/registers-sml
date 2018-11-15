@@ -33,14 +33,13 @@ class Sample(implicit spark: SparkSession) {
 
     logPartitionInfo(stratifiedFrameDf,34)
     val selectedStratifiedFrameDf = stratifiedFrameDf.join(stratificationPropsDf.select("cell_no").distinct(), Seq("cell_no"), "inner")
-    selectedStratifiedFrameDf.createOrReplaceTempView(records)
-
+    val columns = selectedStratifiedFrameDf.columns.tail:+selectedStratifiedFrameDf.columns.head
+    val reorderedColumnsDF = selectedStratifiedFrameDf.select(columns.head, columns.tail: _*)
+    reorderedColumnsDF.createOrReplaceTempView(records)
     val propsList: Array[Row] = stratificationPropsDf.filter(stratificationPropsDf("seltype") === "P" || stratificationPropsDf("seltype") === "C").collect()//createOrReplaceTempView(props)
-    val emptyRecordDF = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], selectedStratifiedFrameDf.schema)
+    val emptyRecordDF = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], reorderedColumnsDF.schema)
 
-    logPartitionInfo(selectedStratifiedFrameDf,40)
-
-    logPartitionInfo(stratifiedFrameDf,40)
+    logPartitionInfo(reorderedColumnsDF,40)
 
     def selectBasicSampleSql(cellNum:String,seltype:String, resultsNum:String, prnStart:String) = {
 
