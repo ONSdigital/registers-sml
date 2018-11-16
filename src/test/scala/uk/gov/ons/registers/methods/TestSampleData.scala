@@ -4,7 +4,7 @@ import org.apache.spark
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Row, SparkSession}
 
-trait TestData {
+trait TestSampleData {
  
   val dataColNames = List("ern","entref","name","tradingstyle" ,"address1","address2","address3","address4","address5" ,"postcode" ,"legalstatus" ,"sic07" ,"paye_empees" ,"paye_jobs" ,"ent_turnover" ,"std_turnover" ,"grp_turnover" ,"cntd_turnover" ,"app_turnover" ,"prn","cell_no")
   
