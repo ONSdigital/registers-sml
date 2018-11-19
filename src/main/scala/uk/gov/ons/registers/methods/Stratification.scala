@@ -2,11 +2,12 @@ package uk.gov.ons.registers.methods
 
 import javax.inject.Singleton
 import org.apache.spark.sql.functions.{lit, _}
+import org.apache.spark.sql.types.IntegerType
 import org.apache.spark.sql.{DataFrame, SparkSession}
-import uk.gov.ons.registers.TransformDataFrames.validateAndParseInputsStrata
 import uk.gov.ons.registers.helpers.SmlLogger
-import uk.gov.ons.registers.model.CommonFrameAndPropertiesFieldsCasting.checkUnitForMandatoryFields
-import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields
+import uk.gov.ons.registers.model.selectionstrata.{StratificationPropertiesFields, StratificatonPropertyFieldsCasting}
+import uk.gov.ons.registers.model.CommonFrameAndPropertiesFieldsCasting._
+
 
 @Singleton
 trait Stratification extends SmlLogger{
@@ -15,18 +16,39 @@ trait Stratification extends SmlLogger{
 
     val defaultPartitions = inputDf.rdd.getNumPartitions
     val cellNo = StratificationPropertiesFields.cellNumber
-
-    val dataDf = inputDf.withColumn(cellNo, lit(-2))
+    val unitDF = checkUnitForMandatoryFields(inputDf,bounds)
+    val propsDF = StratificatonPropertyFieldsCasting.mapStartificationProperties(stratificationPropsDf)
+    val dataDf = unitDF.withColumn(cellNo, lit(-2).cast(IntegerType))
     dataDf.createOrReplaceTempView("datadf")
-    stratificationPropsDf.createOrReplaceTempView("propsdf")
-    val joinSql =
-      """
-        SELECT datadf.*, propsdf.cell_no AS allocated_cell_no
+    propsDF.createOrReplaceTempView("propsdf")
+    val joinSql = """
+        SELECT datadf.ern,
+        datadf.entref,
+        datadf.name,
+        datadf.tradingstyle,
+        datadf.address1,
+        datadf.address2,
+        datadf.address3,
+        datadf.address4,
+        datadf.address5,
+        datadf.postcode,
+        datadf.legalstatus,
+        datadf.sic07,
+        datadf.paye_empees,
+        datadf.paye_jobs,
+        datadf.ent_turnover,
+        datadf.std_turnover,
+        datadf.grp_turnover,
+        datadf.cntd_turnover,
+        datadf.app_turnover,
+        datadf.prn,
+        CAST(datadf.cell_no AS INT),
+        CAST(propsdf.cell_no AS INT) AS allocated_cell_no
         FROM datadf
-        LEFT JOIN propsdf ON CAST(datadf.sic07 AS INT) >= CAST(propsdf.lower_class AS INT) AND
-                            CAST(datadf.sic07 AS INT) <= CAST(propsdf.upper_class AS INT) AND
-                            CAST(datadf.paye_empees AS INT) >= CAST(propsdf.lower_size AS INT) AND
-                            CAST(datadf.paye_empees AS INT) <= CAST(propsdf.upper_size AS INT)
+        LEFT JOIN propsdf ON datadf.sic07 >= propsdf.lower_class AND
+                            sic07 <= CAST(propsdf.upper_class AS INT) AND
+                            datadf.paye_empees >= propsdf.lower_size AND
+                            datadf.paye_empees <= propsdf.upper_size
       """.stripMargin
 
     val joinedDF = spark.sql(joinSql)
