@@ -22,8 +22,8 @@ trait PayeCalculator {
   def getGroupedByPayeEmployees(BIDF: DataFrame, payeDF: DataFrame, luTableName: String = "LEGAL_UNITS", payeDataTableName: String = "PAYE_DATA")(implicit spark: SparkSession): DataFrame ={
     val flatUnitDf = BIDF.withColumn(payeRefs, explode_outer(BIDF.apply(PayeRefs)))
     val idDF1 = flatUnitDf.join(payeDF, payeRefs)
-    val idDF = idDF1.selectExpr(ern, id, s"cast($mar_jobs as int) $mar_jobs", s"cast($june_jobs as int) $june_jobs", s"cast($sept_jobs as int) $sept_jobs", s"cast($dec_jobs as int) $dec_jobs")
-      .groupBy(id).agg(sum(mar_jobs) as mar_jobs, sum(june_jobs) as june_jobs, sum(sept_jobs) as sept_jobs, sum(dec_jobs) as dec_jobs)
+    val idDF = idDF1.selectExpr(ern, ubrn, s"cast($mar_jobs as int) $mar_jobs", s"cast($june_jobs as int) $june_jobs", s"cast($sept_jobs as int) $sept_jobs", s"cast($dec_jobs as int) $dec_jobs")
+      .groupBy(ubrn).agg(sum(mar_jobs) as mar_jobs, sum(june_jobs) as june_jobs, sum(sept_jobs) as sept_jobs, sum(dec_jobs) as dec_jobs)
 
     try{missingPayeRefsThrow(flatUnitDf,idDF1)}
     catch {
@@ -38,18 +38,18 @@ trait PayeCalculator {
     val flatPayeDataCountSql = generateCalculateCountSQL(luTableName, payeDataTableName)
 
     val sqlSum =  s"""
-              SELECT (SUM(AVG_CALCULATED.quarter_sum)) AS sums, AVG_CALCULATED.$id, AVG_CALCULATED.ern
+              SELECT (SUM(AVG_CALCULATED.quarter_sum)) AS sums, AVG_CALCULATED.$ubrn, AVG_CALCULATED.ern
               FROM ($flatPayeDataSumSql) as AVG_CALCULATED
-              GROUP BY AVG_CALCULATED.ern, AVG_CALCULATED.$id
+              GROUP BY AVG_CALCULATED.ern, AVG_CALCULATED.$ubrn
             """.stripMargin
     val sqlCount = s"""
-              SELECT (SUM(AVG_CALCULATED.quarter_count)) AS counts, AVG_CALCULATED.$id
+              SELECT (SUM(AVG_CALCULATED.quarter_count)) AS counts, AVG_CALCULATED.$ubrn
               FROM ($flatPayeDataCountSql) as AVG_CALCULATED
-              GROUP BY AVG_CALCULATED.$id
+              GROUP BY AVG_CALCULATED.$ubrn
             """.stripMargin
     val Sum = spark.sql(sqlSum)
     val Count = spark.sql(sqlCount)
-    val aggDF = Sum.join(Count, id)
+    val aggDF = Sum.join(Count, ubrn)
 
     val ungroupedDF = aggDF.withColumn(employees, aggDF.col("sums") / aggDF.col("counts"))//.selectExpr("ern", s"cast($employees as int) $employees")
     val groupedDF = ungroupedDF.groupBy(ern).agg(sum(employees) as employees).selectExpr(s"cast($employees as int) $employees", ern)
@@ -74,7 +74,7 @@ trait PayeCalculator {
                 ) AS int) as quarter_sum
 
                 FROM $luTablename
-                LEFT JOIN $payeDataTableName ON $luTablename.$id=$payeDataTableName.$id
+                LEFT JOIN $payeDataTableName ON $luTablename.$ubrn=$payeDataTableName.$ubrn
         """.stripMargin
 
   def generateCalculateCountSQL(luTablename: String = "LEGAL_UNITS", payeDataTableName: String = "PAYE_DATA") =
@@ -88,7 +88,7 @@ trait PayeCalculator {
                 ) AS int) as quarter_count
 
                 FROM $luTablename
-                LEFT JOIN $payeDataTableName ON $luTablename.$id=$payeDataTableName.$id
+                LEFT JOIN $payeDataTableName ON $luTablename.$ubrn=$payeDataTableName.$ubrn
         """.stripMargin
 
   def sumSqlText(tableName: String, date: String) =

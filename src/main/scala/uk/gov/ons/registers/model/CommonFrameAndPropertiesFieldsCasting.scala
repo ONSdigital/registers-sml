@@ -85,4 +85,11 @@ object CommonFrameAndPropertiesFieldsCasting {
       .withColumn(colName = imp_empees, ImputedDF.col(imp_empees))
     castedImputedDF
   }
+  def checkSicforMandatoryFields(SicDF: DataFrame): DataFrame = {
+    val castedSicDF = SicDF
+      .withColumn(colName = id, SicDF.col(id))
+      .withColumn(colName = sic07, SicDF.col(sic07))
+      .withColumn(colName = employees, SicDF.col(employees).cast(IntegerType))
+    castedSicDF
+  }
 }

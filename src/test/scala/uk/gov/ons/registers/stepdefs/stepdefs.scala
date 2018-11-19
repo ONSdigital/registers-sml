@@ -20,5 +20,7 @@ package object stepdefs {
   var VatDF: DataFrame = _
   var empDF: DataFrame = _
 
+  var inputDF: DataFrame = _
+
   var methodResult: Option[Exception] = _
 }
