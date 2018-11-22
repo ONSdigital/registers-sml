@@ -9,7 +9,7 @@ import uk.gov.ons.registers.helpers.SmlLogger
 
 
 @Singleton
-class Sample(implicit spark: SparkSession) extends SmlLogger{
+class Sample(implicit spark: SparkSession)/* extends SmlLogger*/{
 
   def validateProps(cellNum:String,prnStart:String) = {
     val validateCellNumberError = if(!cellNum.matches("^\\d+$")) s"cell number in not a number: $cellNum" else ""
@@ -26,7 +26,7 @@ class Sample(implicit spark: SparkSession) extends SmlLogger{
 
     val defaultPartitions = stratifiedFrameDf.rdd.getNumPartitions
 
-    logPartitionInfo(stratifiedFrameDf,34)
+    //logPartitionInfo(stratifiedFrameDf,34,"Sample")
     val selectedStratifiedFrameDf = stratifiedFrameDf.join(stratificationPropsDf.select("cell_no").distinct(), Seq("cell_no"), "inner")
     val columns = selectedStratifiedFrameDf.columns.tail:+selectedStratifiedFrameDf.columns.head
     val reorderedColumnsDF = selectedStratifiedFrameDf.select(columns.head, columns.tail: _*)
@@ -34,7 +34,7 @@ class Sample(implicit spark: SparkSession) extends SmlLogger{
     val propsList: Array[Row] = stratificationPropsDf.filter(stratificationPropsDf("seltype") === "P" || stratificationPropsDf("seltype") === "C").collect()//createOrReplaceTempView(props)
     val emptyRecordDF = spark.createDataFrame(spark.sparkContext.emptyRDD[Row], reorderedColumnsDF.schema)
 
-    logPartitionInfo(reorderedColumnsDF,42)
+    //logPartitionInfo(reorderedColumnsDF,42,"Sample")
 
     def selectBasicSampleSql(cellNum:String,seltype:String, resultsNum:String, prnStart:String) = {
 
@@ -73,26 +73,26 @@ class Sample(implicit spark: SparkSession) extends SmlLogger{
       val primaryQuery = selectBasicSampleSql(cellNu, seltype, sampleSize, startingPrn)
       val basicSampleDFPQ = spark.sql(primaryQuery)
 
-      logPartitionInfo(basicSampleDFPQ,81)
+      //logPartitionInfo(basicSampleDFPQ,76,"Sample")
 
-      val basicSampleDF = basicSampleDFPQ//.coalesce(defaultPartitions)
+      //val basicSampleDF = basicSampleDFPQ//.coalesce(defaultPartitions)
 
       val sampleDF = if(seltype=="P") {
-        val remainingSample = sampleSize.toLong - basicSampleDF.count()
+        val remainingSample = sampleSize.toLong - basicSampleDFPQ.count()
         if(remainingSample>0) {
           val secondaryQuery = selectSampleSql(cellNu, seltype, sampleSize, startingPrn, remainingSample)
           val secondaryResDF = spark.sql(secondaryQuery)
-          logPartitionInfo(secondaryResDF,90)
-          val resDF = (secondaryResDF.union(basicSampleDF)).distinct.orderBy(desc("prn"))
-          logPartitionInfo(resDF,90)
+          //logPartitionInfo(secondaryResDF,85,"Sample")
+          val resDF = (secondaryResDF.union(basicSampleDFPQ)).distinct.orderBy(desc("prn"))
+          //logPartitionInfo(resDF,87,"Sample")
           resDF
-        }else basicSampleDF
-      } else basicSampleDF.distinct
-      logPartitionInfo(basicSampleDF,96)
+        }else basicSampleDFPQ
+      } else basicSampleDFPQ.distinct
+      //logPartitionInfo(basicSampleDF,91,"Sample")
       val df = agg.union(sampleDF)
-      logPartitionInfo(df,98,"Aggregated sample DF")
+      //logPartitionInfo(df,93,,"Sample","Aggregated sample DF")
       val optimisedDF = df.coalesce(defaultPartitions)
-      logPartitionInfo(optimisedDF,100,"repartitioned df")
+      //logPartitionInfo(optimisedDF,95,"repartitioned df")
       optimisedDF
     }}
   }
