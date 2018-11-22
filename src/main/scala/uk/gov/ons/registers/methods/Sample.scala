@@ -75,19 +75,19 @@ class Sample(implicit spark: SparkSession)/* extends SmlLogger*/{
 
       //logPartitionInfo(basicSampleDFPQ,76,"Sample")
 
-      val basicSampleDF = basicSampleDFPQ//.coalesce(defaultPartitions)
+      //val basicSampleDF = basicSampleDFPQ//.coalesce(defaultPartitions)
 
       val sampleDF = if(seltype=="P") {
-        val remainingSample = sampleSize.toLong - basicSampleDF.count()
+        val remainingSample = sampleSize.toLong - basicSampleDFPQ.count()
         if(remainingSample>0) {
           val secondaryQuery = selectSampleSql(cellNu, seltype, sampleSize, startingPrn, remainingSample)
           val secondaryResDF = spark.sql(secondaryQuery)
           //logPartitionInfo(secondaryResDF,85,"Sample")
-          val resDF = (secondaryResDF.union(basicSampleDF)).distinct.orderBy(desc("prn"))
+          val resDF = (secondaryResDF.union(basicSampleDFPQ)).distinct.orderBy(desc("prn"))
           //logPartitionInfo(resDF,87,"Sample")
           resDF
-        }else basicSampleDF
-      } else basicSampleDF.distinct
+        }else basicSampleDFPQ
+      } else basicSampleDFPQ.distinct
       //logPartitionInfo(basicSampleDF,91,"Sample")
       val df = agg.union(sampleDF)
       //logPartitionInfo(df,93,,"Sample","Aggregated sample DF")
