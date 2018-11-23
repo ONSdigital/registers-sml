@@ -36,6 +36,5 @@ object CommonFrameDataFields {
   val classs = "class"
   val group = "group"
   val division = "division"
-  val subdivision = "subdivision"
-
+  val lurn = "lurn"
 }

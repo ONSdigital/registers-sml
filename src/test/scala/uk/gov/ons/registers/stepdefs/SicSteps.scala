@@ -6,16 +6,14 @@ import uk.gov.ons.registers.support.AssertionHelpers._
 import uk.gov.ons.registers.utils.DataTableTransformation.{RawDataTableList, _}
 import uk.gov.ons.stepdefs.Helpers
 
-class SicSteps extends ScalaDsl with EN with Sic {
+class SicSteps extends ScalaDsl with EN {
 
   val sic = new Sic(){}
 
-
-
   private def applyMethod(): Unit = {
     implicit val sparkSession = Helpers.sparkSession
-    outputDataDF = getClassification(inputDF)
-//    outputDataDF.show()
+    outputDataDF = sic.getClassification(inputDF)
+    outputDataDF.show()
 //    outputDataDF.printSchema()
   }
 
@@ -34,8 +32,7 @@ class SicSteps extends ScalaDsl with EN with Sic {
   }
 
   Then("""^the Sic results table is produced:$""") { theExpectedResult: RawDataTableList =>
-//    createDataFrame(theExpectedResult).show()
-//    createDataFrame(theExpectedResult).printSchema()
+    createDataFrame(theExpectedResult).show()
     val output = assertDataFrameEquality(theExpectedResult)(castExpectedMandatoryFields = castWithSicUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "SIC")
   }

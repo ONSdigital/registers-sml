@@ -87,8 +87,9 @@ object CommonFrameAndPropertiesFieldsCasting {
   }
   def checkSicforMandatoryFields(SicDF: DataFrame): DataFrame = {
     val castedSicDF = SicDF
-      .withColumn(colName = id, SicDF.col(id))
+      .withColumn(colName = ern, SicDF.col(ern))
       .withColumn(colName = sic07, SicDF.col(sic07))
+      .withColumn(colName = lurn, SicDF.col(lurn))
       .withColumn(colName = employees, SicDF.col(employees).cast(IntegerType))
     castedSicDF
   }

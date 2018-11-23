@@ -1,81 +1,41 @@
 package uk.gov.ons.registers.methods
 
-import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
+import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types.{IntegerType, StringType}
 import uk.gov.ons.registers.model.CommonFrameDataFields._
 
-
-
 trait Sic extends Serializable {
 
-  object Spark {
-    val ctx = new SparkContext(new SparkConf().setAppName("test").setMaster("local[*]"))
-  }
 
-  def getClassification(df: DataFrame)(implicit activeSession: SparkSession): DataFrame = {
+  def getClassification (df: DataFrame)(implicit spark: SparkSession): DataFrame = {
     val subDF = df.withColumn(division, substring(df.col(sic07), 1, 2))
                   .withColumn(employees, df.col(employees).cast(IntegerType))
-    @transient
-    val rddList = Spark.ctx.parallelize(df))
-    def sic(input: String): String = duplicateCheck(endCalc(check(subDF.filter(col(id) isin input)))).first.getString(1)
 
-//    println(sic("123"))
-//    println(sic("345"))
-//    println(sic("456"))
-//    println(sic("654"))
+    val ernDF = df.groupBy(ern).agg(count(ern)).select(ern)
+
+    def calc(inputDF: DataFrame, row : String): DataFrame = duplicateCheck(endCalc(check(getGroupedByElement(inputDF, row))))
 
 
-    val idDF = df.groupBy(id).agg(count(id)).select(id)
-    val coder :(String => String) = (arg: String) => sic(arg)
-    val sqlFunc = udf(sic _)
+    val ernList = ernDF.select(ern).rdd.map(r => r(0)).collect().map(_.asInstanceOf[String]).toList
+    val sicList = ernList.map(r => calc(subDF, r).first.getString(1))
+    import spark.sqlContext.implicits._
 
-    idDF.withColumn(sic07, sqlFunc(col(id))).show()
-    println("scheema")
-    idDF.withColumn(sic07, sqlFunc(col(id))).printSchema()
+    val dfList = sicList.zip(ernList).toDF(lurn, ern)
 
+    val output = dfList.join(subDF.drop(ern), lurn)
+      .withColumn(classs, substring(df.col(sic07), 1, 4))
+      .withColumn(group, substring(df.col(sic07), 1, 3))
+      .select(ern, lurn, sic07, classs, group, division, employees)
 
-
-
-    //    println(endCalc(check(subDF)).first.getString(1))
-    //
-    //
-    //    println(duplicateCheck(endCalc(check(subDF.filter(col(id) isin "123")))).first.getString(1))
-    //    println(duplicateCheck(endCalc(check(subDF.filter(col(id) isin "345")))).first.getString(1))
-    //    println(duplicateCheck(endCalc(check(subDF.filter(col(id) isin "456")))).first.getString(1))
-    //    println(duplicateCheck(endCalc(check(subDF.filter(col(id) isin "654")))).first.getString(1))
-
-
-    //    idDF.withColumn(sic07, duplicateCheck(endCalc(check(subDF.filter(col(id) isin idDF.col(id))))).col(sic07)).show
-
-//    val schema = idDF.schema
-//    val sqlContext = idDF.sqlContext
-//    val rdd = idDF.rdd.map(
-//      row =>row.toSeq.map {
-//        r => duplicateCheck(subDF.filter(col(id) isin r)).first.getString(1)
-//      })
-//      .map(Row.fromSeq)
-
-
-//    sqlContext.createDataFrame(rdd, schema).show()
-
-
-
-//    val List1 = idDF.select(id).rdd.map(r => r(0)).collect()
-//    List1.map(r => subDF.filter(col(id) isin r).first.getString(1))
-//
-//    val list2 = List1.map(r => duplicateCheck(endCalc(check(subDF.filter(col(id) isin r)))).first.getString(1))
-//
-//    val rows = list2.map{x => Row(x:_*)}
-//    val rdd = sparkContext.makeRDD[RDD](rows)
-//    val df2 = sqlContext.createDataFrame(rdd, schema)
-
-
-    val output = duplicateCheck(endCalc(check(subDF)))
 
     output
+  }
+
+  private def getGroupedByElement(dataFrame: DataFrame, rowID: String, tableName: String = "Sic")(implicit activeSession: SparkSession): DataFrame = {
+    val filDF = dataFrame.select(ern, lurn, sic07, employees, division)
+
+    filDF.filter(col(ern) isin rowID)
   }
 
   private def duplicateCheck(dataFrame: DataFrame): DataFrame = {
@@ -83,20 +43,25 @@ trait Sic extends Serializable {
       val castCalc = dataFrame.withColumn(sic07, dataFrame.col(sic07).cast(IntegerType))
       val joinCalc = castCalc.agg(min(sic07) as sic07).join(dataFrame, sic07)
 
-      joinCalc.withColumn(sic07, joinCalc.col(sic07).cast(StringType)).select(id, sic07, employees)
+      joinCalc.withColumn(sic07, joinCalc.col(sic07).cast(StringType)).select(ern, lurn, sic07, employees)
     }else dataFrame
   }
 
   private def endCalc(df: DataFrame): DataFrame = {
     val castedDF = df
-    val aggDF = castedDF.groupBy(id).agg(max(employees)).withColumnRenamed(id, "id1")
-    aggDF.join(castedDF, aggDF(s"max($employees)") === castedDF(employees) && aggDF("id1") === castedDF(id), "inner")
-      .select(id, sic07, s"max($employees)").withColumnRenamed(s"max($employees)", employees)
+    val aggDF = castedDF.groupBy(ern).agg(max(employees)).withColumnRenamed(ern, "ern1")
+    aggDF.join(castedDF, aggDF(s"max($employees)") === castedDF(employees) && aggDF("ern1") === castedDF(ern), "inner")
+      .select(ern, lurn, sic07, s"max($employees)").withColumnRenamed(s"max($employees)", employees)
   }
 
-  private def check(dataFrame: DataFrame): DataFrame = {
+  private def check(dataFrame1: DataFrame): DataFrame = {
+//    dataFrame1.show
+//    dataFrame1.groupBy(sic07).agg(sum(employees) as employees, min(lurn) as lurn).join(dataFrame1.drop(employees, lurn), sic07).show()
+    val dataFrame = dataFrame1.groupBy(sic07).agg(sum(employees) as employees, min(lurn) as lurn).join(dataFrame1.drop(employees, lurn), sic07)
+
     val list = dataFrame.select(division).rdd.map(r => r(0)).collect.toList
     var x = 0
+    var subDivision = "C"
     //check to see if 46 or 47 is in the DF
     if (list contains ("46")) x = 1
     else if (list contains ("47")) x = 1
@@ -194,6 +159,9 @@ trait Sic extends Serializable {
       else dataFrame2
     }
   }
+
+
+
 }
 
 
