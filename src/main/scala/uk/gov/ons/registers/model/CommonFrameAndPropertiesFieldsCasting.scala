@@ -2,7 +2,7 @@ package uk.gov.ons.registers.model
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.types.{DataTypes, IntegerType, LongType}
-import uk.gov.ons.registers.model.CommonFrameDataFields.{employment, _}
+import uk.gov.ons.registers.model.CommonFrameDataFields.{employees, employment, lurn, _}
 import uk.gov.ons.registers.model.selectionstrata.PrnNumericalProperty.{precision, scale}
 import uk.gov.ons.registers.model.selectionstrata.StratificationPropertiesFields.cellNumber
 
@@ -84,5 +84,13 @@ object CommonFrameAndPropertiesFieldsCasting {
       .withColumn(colName = imp_turnover, ImputedDF.col(imp_turnover))
       .withColumn(colName = imp_empees, ImputedDF.col(imp_empees))
     castedImputedDF
+  }
+  def checkSicforMandatoryFields(SicDF: DataFrame): DataFrame = {
+    val castedSicDF = SicDF
+      .withColumn(colName = ern, SicDF.col(ern))
+      .withColumn(colName = sic07, SicDF.col(sic07))
+      .withColumn(colName = lurn, SicDF.col(lurn))
+      .withColumn(colName = employees, SicDF.col(employees).cast(IntegerType))
+    castedSicDF
   }
 }
