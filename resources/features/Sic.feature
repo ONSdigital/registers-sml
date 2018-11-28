@@ -8,7 +8,7 @@ Feature: A sic calculation groups the input data by substrings of SIC and ID to 
          and the whole whole SIC.
 
     @Happy Path
-    Scenario Outline: Happy Path - Origional Happy Path
+    Scenario Outline: Happy Path - Original Happy Path
         Given input:
         | ern | lurn | sic07 | employees |
         | 123 |    1 | 63111 |       504 |
