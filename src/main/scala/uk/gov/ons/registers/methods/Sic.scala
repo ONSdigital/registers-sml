@@ -7,7 +7,6 @@ import uk.gov.ons.registers.model.CommonFrameDataFields._
 
 trait Sic extends Serializable {
 
-
   def getClassification (df: DataFrame)(implicit spark: SparkSession): DataFrame = {
     val subDF = df.withColumn(division, substring(df.col(sic07), 1, 2))
                   .withColumn(employees, df.col(employees).cast(IntegerType))
@@ -18,9 +17,9 @@ trait Sic extends Serializable {
 
     val lurnList = ernList.map(r => calc(subDF, r).first.getString(1))
     import spark.sqlContext.implicits._
-    val dfList = lurnList.zip(ernList).toDF(lurn, ern)
+    val listDF = lurnList.zip(ernList).toDF(lurn, ern)
 
-    val output = dfList.join(subDF.drop(ern), lurn)
+    val output = listDF.join(subDF.drop(ern), lurn)
       .withColumn(classs, substring(df.col(sic07), 1, 4))
       .withColumn(group, substring(df.col(sic07), 1, 3))
       .select(ern, lurn, sic07, classs, group, division, employees)
@@ -31,7 +30,6 @@ trait Sic extends Serializable {
   private def calc(inputDF: DataFrame, row : String)(implicit sparkSession: SparkSession): DataFrame = duplicateCheck(endCalc(check(getGroupedByElement(inputDF, row))))
 
   private def getGroupedByElement(dataFrame: DataFrame, rowID: String, tableName: String = "Sic"): DataFrame = dataFrame.filter(col(ern) isin rowID)
-
 
   private def duplicateCheck(dataFrame: DataFrame): DataFrame = {
     if(dataFrame.count() > 1) {
@@ -67,8 +65,7 @@ trait Sic extends Serializable {
         case "47" => groupCheck47(removeDuplicateSicFrame, divSplit)
         case _ => removeDuplicateSicFrame.filter(not(col(division) isin (46, 47)))
       }
-    }else{
-      removeDuplicateSicFrame}
+    }else removeDuplicateSicFrame
   }
 
    private def subCheck(dataFrame: DataFrame, sub: String, param1: Int, param2: Int): String = {
@@ -82,12 +79,14 @@ trait Sic extends Serializable {
      val aggMergeDF = empFilDF.agg(max(employees) as employees)
      aggMergeDF.join(empFilDF, employees).select(sub).first.getString(0)
   }
+
    private def groupCheck46(dataFrame: DataFrame, split: String): DataFrame = {
      //checking groups inside division 46
      val groupDF = dataFrame.filter(col(division) isin split).withColumn(group, substring(dataFrame.col(sic07), 1, 3))
      val splitDFIN = groupDF.filter(col(group) isin "461")
      val splitDFNot = groupDF.filter(not(col(group) isin "461"))
      if(compareDF(splitDFIN, splitDFNot) == splitDFNot){
+       //println("46 B")
        val splitDFNot1 = splitDFNot.filter(not(col(group) isin "469"))
        val splitDFIn1 = splitDFNot.filter(col(group) isin "469")
        if(compareDF(splitDFNot1, splitDFIn1) == splitDFNot1) {
@@ -96,7 +95,6 @@ trait Sic extends Serializable {
          splitDFNot1.filter(col(group) isin groupVal)
        }else splitDFIn1
      }else splitDFIN
-
    }
 
    private def groupCheck47(dataFrame: DataFrame, split: String): DataFrame = {
@@ -124,8 +122,7 @@ trait Sic extends Serializable {
       if(groupSplit == "4711" || groupSplit == "4719") {
         classDF.filter(col(classs) isin groupSplit)
       }else classDF.filter(not(col(classs) isin (4711, 4719)))
-    }
-    else{
+    }else{
       val sumDF = splitDFNot.groupBy(group).agg(sum(employees) as employees)
       val filter = sumDF.agg(max(employees) as employees).join(sumDF, employees).first.getString(1)
       splitDFNot.filter(col(group) isin filter)

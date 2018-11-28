@@ -13,8 +13,6 @@ class SicSteps extends ScalaDsl with EN {
   private def applyMethod(): Unit = {
     implicit val sparkSession = Helpers.sparkSession
     outputDataDF = sic.getClassification(inputDF)
-    outputDataDF.show()
-//    outputDataDF.printSchema()
   }
 
   Given("""^input:"""){ inputTable: RawDataTableList =>
@@ -32,7 +30,6 @@ class SicSteps extends ScalaDsl with EN {
   }
 
   Then("""^the Sic results table is produced:$""") { theExpectedResult: RawDataTableList =>
-    createDataFrame(theExpectedResult).show()
     val output = assertDataFrameEquality(theExpectedResult)(castExpectedMandatoryFields = castWithSicUnitMandatoryFields)
     displayData(expectedDF = output, printLabel = "SIC")
   }

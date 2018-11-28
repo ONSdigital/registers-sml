@@ -7,11 +7,6 @@ Feature: A sic calculation groups the input data by substrings of SIC and ID to 
          first 4 characters as class,
          and the whole whole SIC.
 
-         Special cases decide subdivision:
-         First if group equals 461, 478 or 479 then the subdivision is A
-         Then if division equals 46 or 47 the subdivision is B
-         Subdivision is C otherwise
-
     @Happy Path
     Scenario Outline: Happy Path - Origional Happy Path
         Given input:
@@ -39,10 +34,10 @@ Feature: A sic calculation groups the input data by substrings of SIC and ID to 
         | 654 |   12 | 47144 |  4714 |   471 |       47 |      1000 |
         | 123 |   15 | 47944 |  4794 |   479 |       47 |       950 |
 
-    @JVM
-    Examples:
-    | language |
-    | Scala    |
+        @JVM
+        Examples:
+        | language |
+        | Scala    |
 
     @Happy Path
     Scenario Outline: Happy Path - A Results table is which hits all endpoints of the decision tree
@@ -143,6 +138,11 @@ Feature: A sic calculation groups the input data by substrings of SIC and ID to 
         Then the Sic results table is produced:
         | ern |      lurn | sic07 | class | group | division | employees |
         |   1 | 220000001 | 18201 |  1820 |   182 |       18 |        50 |
+
+        @JVM
+        Examples:
+        | language |
+        | Scala    |
 
     @Happy Path
     Scenario Outline: Happy Path - B - Simple Split (SIC aggregation)
@@ -261,10 +261,10 @@ Feature: A sic calculation groups the input data by substrings of SIC and ID to 
         When the Sic method is attempted
         Then an exception in <language> is thrown for Frame due to a mismatch field type upon trying to calculate Sic
 
-    @JVM
-    Examples:
-    | language |
-    | Scala    |
+        @JVM
+        Examples:
+        | language |
+        | Scala    |
 
 
 
