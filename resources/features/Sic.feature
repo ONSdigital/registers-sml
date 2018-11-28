@@ -31,8 +31,8 @@ Feature: A sic calculation groups the input data by substrings of SIC and ID to 
         | ern | lurn | sic07 | class | group | division | employees |
         | 123 |   15 | 47944 |  4794 |   479 |       47 |       950 |
         | 345 |   11 | 47544 |  4754 |   475 |       47 |       500 |
-        | 654 |   12 | 47144 |  4714 |   471 |       47 |      1000 |
         | 456 |    3 | 63120 |  6312 |   631 |       63 |       540 |
+        | 654 |   12 | 47144 |  4714 |   471 |       47 |      1000 |
 
         @JVM
         Examples:
