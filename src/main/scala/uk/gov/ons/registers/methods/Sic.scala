@@ -52,19 +52,14 @@ trait Sic extends Serializable {
     val removeDuplicateSicFrame = dataFrame.groupBy(sic07).agg(sum(employees) as employees, min(lurn) as lurn).join(dataFrame.drop(employees, lurn), sic07)
 
     //check to see if 46 or 47 is in the DF
-    var x = 0
     val list = removeDuplicateSicFrame.select(division).rdd.map(r => r(0)).collect.toList
-    if (list contains ("46")) x = 1
-    else if (list contains ("47")) x = 1
-
-    if (x > 0) {
+    if ((list contains "46") || (list contains "47")) {
       //div 46 and/or 47 is in the frame, check which is biggest
       val divSplit = subCheck(removeDuplicateSicFrame, division, 46, 47)
       divSplit match {
         case "46" => groupCheck46(removeDuplicateSicFrame, divSplit)
         case "47" => groupCheck47(removeDuplicateSicFrame, divSplit)
-        case _ => removeDuplicateSicFrame.filter(not(col(division) isin (46, 47)))
-      }
+        case _ => removeDuplicateSicFrame.filter(not(col(division) isin (46, 47)))}
     }else removeDuplicateSicFrame
   }
 
@@ -86,7 +81,6 @@ trait Sic extends Serializable {
      val splitDFIN = groupDF.filter(col(group) isin "461")
      val splitDFNot = groupDF.filter(not(col(group) isin "461"))
      if(compareDF(splitDFIN, splitDFNot) == splitDFNot){
-       //println("46 B")
        val splitDFNot1 = splitDFNot.filter(not(col(group) isin "469"))
        val splitDFIn1 = splitDFNot.filter(col(group) isin "469")
        if(compareDF(splitDFNot1, splitDFIn1) == splitDFNot1) {
@@ -98,21 +92,21 @@ trait Sic extends Serializable {
    }
 
    private def groupCheck47(dataFrame: DataFrame, split: String): DataFrame = {
-     //checking groups inside division 47
+     //checking all the groups inside division 47
      val groupDF = dataFrame.filter(col(division).isin(split)).withColumn(group, substring(dataFrame.col(sic07), 1, 3))
      val splitDFNot = groupDF.filter(not(col(group).isin("478", "479")))
      val splitDF2IN = groupDF.filter(col(group).isin("478", "479"))
 
      if(compareDF(splitDFNot, splitDF2IN) == splitDFNot) {
-       val sumAggDF = groupCheck47_17(splitDFNot).groupBy(group).agg(sum(employees) as employees)
+       val sumAggDF = groupCheck471to477(splitDFNot).groupBy(group).agg(sum(employees) as employees)
        val theGroup = sumAggDF.agg(max(employees) as employees).join(sumAggDF, employees).first.getString(1)
        splitDFNot.filter(col(group).isin(theGroup))
-     }else groupCheck47_89(splitDF2IN)
+     }else groupCheck478and479(splitDF2IN)
 
    }
 
-  private def groupCheck47_17(dataFrame: DataFrame): DataFrame = {
-    //47.1-47.7
+  private def groupCheck471to477(dataFrame: DataFrame): DataFrame = {
+    //a check of the groups 471-477 in division 47
     val splitDFIN = dataFrame.filter(col(group).isin("471"))
     val splitDFNot = dataFrame.filter(not(col(group).isin("471")))
 
@@ -130,8 +124,8 @@ trait Sic extends Serializable {
     compareDF(splitDFIN, splitDFNot)
   }
 
-  private def groupCheck47_89(dataFrame: DataFrame): DataFrame = {
-    //47.8-47.9
+  private def groupCheck478and479(dataFrame: DataFrame): DataFrame = {
+    //a check of the groups 478-479 in division 47
     val splitDF1 = dataFrame.filter(col(group).isin("478"))
     val splitDF2 = dataFrame.filter(col(group).isin("479"))
     compareDF(splitDF1, splitDF2)
