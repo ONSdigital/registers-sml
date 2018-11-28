@@ -27,17 +27,17 @@ trait Sic extends Serializable {
     output
   }
 
-  private def calc(inputDF: DataFrame, row : String)(implicit sparkSession: SparkSession): DataFrame = duplicateCheck(endCalc(check(getGroupedByElement(inputDF, row))))
+  private def calc(inputDF: DataFrame, row : String)(implicit sparkSession: SparkSession): DataFrame = duplicateCheck(endCalc, check, inputDF, row)
 
-  private def getGroupedByElement(dataFrame: DataFrame, rowID: String, tableName: String = "Sic"): DataFrame = dataFrame.filter(col(ern) isin rowID)
+  private def duplicateCheck(f: DataFrame => DataFrame, g: DataFrame => DataFrame, dataFrame: DataFrame, rowID: String): DataFrame = {
+    val df: DataFrame = f(g(dataFrame.filter(col(ern) isin rowID)))
 
-  private def duplicateCheck(dataFrame: DataFrame): DataFrame = {
-    if(dataFrame.count() > 1) {
-      val castCalc = dataFrame.withColumn(sic07, dataFrame.col(sic07).cast(IntegerType))
-      val joinCalc = castCalc.agg(min(sic07) as sic07).join(dataFrame, sic07)
+    if (dataFrame.count() > 1) {
+      val castCalc = df.withColumn(sic07, df.col(sic07).cast(IntegerType))
+      val joinCalc = castCalc.agg(min(sic07) as sic07).join(df, sic07)
 
       joinCalc.withColumn(sic07, joinCalc.col(sic07).cast(StringType)).select(ern, lurn, sic07, employees)
-    }else dataFrame
+    } else df
   }
 
   private def endCalc(df: DataFrame): DataFrame = {
