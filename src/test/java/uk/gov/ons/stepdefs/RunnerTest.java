@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(plugin = "json:target/cucumber-report.json",
         features = "./resources/features",
         glue = "" /* only to be specified if in separate package */,
-        tags = {"@JVM"})
+        tags = {"@George"})
 public class RunnerTest {
     // Begin tests.
 

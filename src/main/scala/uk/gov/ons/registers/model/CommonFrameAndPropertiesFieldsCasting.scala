@@ -78,6 +78,11 @@ object CommonFrameAndPropertiesFieldsCasting {
       .withColumn(colName = employment, EmpDF.col(employment).cast(LongType))
     castedEmpDF
   }
+  def checkEmployeesforMandatoryFields(EmpDF: DataFrame): DataFrame = {
+    val castedEmpDF = EmpDF
+      .withColumn(colName = employees, EmpDF.col(employees).cast(LongType))
+    castedEmpDF
+  }
   def checkImputedforMandatoryFields(ImputedDF: DataFrame): DataFrame = {
     val castedImputedDF = ImputedDF
       .withColumn(colName = ern, ImputedDF.col(ern))
