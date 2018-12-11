@@ -56,6 +56,10 @@ object DataTableTransformation {
   def castWithImputedUnitMandatoryFields: DataFrame => DataFrame =
     CommonFrameAndPropertiesFieldsCasting.checkImputedforMandatoryFields
 
+  def castWithSicUnitMandatoryFields: DataFrame => DataFrame =
+    CommonFrameAndPropertiesFieldsCasting.checkSicforMandatoryFields
+
+
   def emptyDataFrame: DataFrame = {
     val nonsensicalSchema =
       StructType(
