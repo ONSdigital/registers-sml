@@ -43,18 +43,21 @@ trait Sic extends Serializable {
           divisionDF.first.getString(0) match {
             case "46" => {
               val groupdf = groupCheck46(divisionDF)
+
               if (groupdf.count > 1) {
                 classCheck(groupdf)
               } else groupdf
             }
             case "47" => {
               val groupdf = groupCheck47(divisionDF)
+
               if (groupdf.count > 1) {
                 classCheck(groupdf)
               } else groupdf
             }
             case _ => {
               val groupdf = groupCheck(divisionDF)
+
               if (groupdf.count > 1) {
                 classCheck(groupdf)
               } else groupdf
@@ -68,32 +71,33 @@ trait Sic extends Serializable {
   private def subdivisionCheck(dataFrame: DataFrame): DataFrame = {
     //changed the subdivision classing to numbers for the duplicate check
     val myUDF = udf((code: Int) => {
+      //https://collaborate2.ons.gov.uk/confluence/pages/viewpage.action?pageId=5386186
+      //link to the subdivision letter groupings on confluence
       code match {
-        //these encase the values, so 0 until 4 is 01-03
-        case a if 0 until 4 contains a => 1
-        case b if 4 until 10 contains b => 2
-        case c if 9 until 34 contains c => 3
-        case 35 => 4
-        case e if 35 until 40 contains e => 5
-        case f if 40 until 44 contains f => 6
-        case g if 44 until 48 contains g => 7
-        case h if 48 until 54 contains h => 8
-        case i if 54 until 57 contains i => 9
-        case j if 57 until 64 contains j => 10
-        case k if 63 until 67 contains k => 11
-        case 68 => 12
-        case m if 68 until 76 contains m => 13
-        case n if 76 until 83 contains n => 14
-        case 84 => 15
-        case 85 => 16
-        case q if 85 until 89 contains q => 17
-        case r if 88 until 94 contains r => 18
-        case s if 93 until 97 contains s => 19
-        case t if 96 until 99 contains t => 20
-        case 99 => 21
-        case _ => 400
+        case _ if 1 to 3 contains code => 'A'
+        case _ if 5 to 9 contains code => 'B'
+        case _ if 10 to 33 contains code => 'C'
+        case 35 => 'D'
+        case _ if 36 to 39 contains code => 'E'
+        case _ if 41 to 43 contains code => 'F'
+        case _ if 45 to 47 contains code => 'G'
+        case _ if 49 to 53 contains code => 'H'
+        case _ if 55 to 56 contains code => 'I'
+        case _ if 58 to 63 contains code => 'J'
+        case _ if 64 to 66 contains code => 'K'
+        case 68 => 'L'
+        case _ if 69 to 75 contains code => 'M'
+        case _ if 77 to 84 contains code => 'N'
+        case 84 => 'O'
+        case 85 => 'P'
+        case _ if 86 to 88 contains code => 'Q'
+        case _ if 90 to 93 contains code => 'R'
+        case _ if 94 to 96 contains code => 'S'
+        case _ if 97 to 98 contains code => 'T'
+        case 99 => 'U'
       }
-    })
+    }.toInt)
+
     val dfWithSubdivision = dataFrame.withColumn(subdivision, (myUDF(dataFrame(division))))
     val dfWithAggSubdivision = dfWithSubdivision.groupBy(subdivision).agg(sum(employees) as employees)
     val dupCheckedDF = duplicateCheck(dfWithAggSubdivision.agg(max(employees) as employees).join(dfWithAggSubdivision, employees), subdivision).drop(employees)
