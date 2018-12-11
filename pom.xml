@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.gov.ons</groupId>
@@ -13,8 +14,8 @@
         <url>https://github.com/ONSdigital/registers-sml</url>
         <connection>scm:git:git://github.com/ONSdigital/registers-sml.git</connection>
         <developerConnection>scm:git:git@github.com:ONSdigital/registers-sml.git</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
 
     <properties>
@@ -33,9 +34,9 @@
 
     <distributionManagement>
         <repository>
-	     <id>central</id>
-	     <name>ONS Artifactory-releases</name>
-	     <url>http://art-p-01/artifactory/LR_Registers-Maven-Releases</url>
+            <id>central</id>
+            <name>ONS Artifactory-releases</name>
+            <url>http://art-p-01/artifactory/LR_Registers-Maven-Releases</url>
         </repository>
     </distributionManagement>
 

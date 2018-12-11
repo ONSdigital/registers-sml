@@ -21,7 +21,7 @@ trait Sic extends Serializable {
     listDF
   }
 
-  private def calc(dataFrame: DataFrame, row: String)(implicit sparkSession: SparkSession): DataFrame ={
+  private def calc(dataFrame: DataFrame, row: String)(implicit sparkSession: SparkSession): DataFrame = {
     val checkedDF = check(dataFrame, row)
     duplicateCheck(checkedDF.agg(max(employees) as employees).join(checkedDF, employees), sic07).select(sic07)
   }
@@ -32,37 +32,37 @@ trait Sic extends Serializable {
     val removeDuplicateSicFrame = filterDF.groupBy(sic07).agg(sum(employees) as employees, min(lurn) as lurn).join(filterDF.drop(employees, sic07), lurn)
 
     //only apply calculation if there is more than one local unit
-    if(removeDuplicateSicFrame.count() > 1){
+    if (removeDuplicateSicFrame.count() > 1) {
       val subdivisionDF = subdivisionCheck(removeDuplicateSicFrame)
 
-      if(subdivisionDF.count() > 1){
+      if (subdivisionDF.count() > 1) {
         val divisionDF = divisionCheck(subdivisionDF)
 
-        if(divisionDF.count > 1){
+        if (divisionDF.count > 1) {
           //if division is 46/47 it is a special case
           divisionDF.first.getString(0) match {
             case "46" => {
               val groupdf = groupCheck46(divisionDF)
-              if(groupdf.count > 1) {
+              if (groupdf.count > 1) {
                 classCheck(groupdf)
-              }else groupdf
+              } else groupdf
             }
             case "47" => {
               val groupdf = groupCheck47(divisionDF)
-              if(groupdf.count > 1) {
+              if (groupdf.count > 1) {
                 classCheck(groupdf)
-              }else groupdf
+              } else groupdf
             }
             case _ => {
               val groupdf = groupCheck(divisionDF)
-              if(groupdf.count > 1){
+              if (groupdf.count > 1) {
                 classCheck(groupdf)
-              }else groupdf
+              } else groupdf
             }
           }
-        }else divisionDF
-      }else subdivisionDF
-    }else filterDF
+        } else divisionDF
+      } else subdivisionDF
+    } else filterDF
   }
 
   private def subdivisionCheck(dataFrame: DataFrame): DataFrame = {
@@ -155,7 +155,7 @@ trait Sic extends Serializable {
       val sumDF = splitDFNot.groupBy(group).agg(sum(employees) as employees)
       val filter = duplicateCheck(sumDF.agg(max(employees) as employees).join(sumDF, employees), group).first.getString(1)
       splitDFNot.filter(col(group) isin filter)
-    }else {
+    } else {
       splitDFIN.withColumn(classs, substring(splitDFIN.col(sic07), 1, 4))
     }
   }
@@ -175,7 +175,7 @@ trait Sic extends Serializable {
   }
 
   private def classCheck(dataFrame: DataFrame): DataFrame = {
-    val dfWithClass = dataFrame.withColumn(classs, col(sic07).substr(0,4))
+    val dfWithClass = dataFrame.withColumn(classs, col(sic07).substr(0, 4))
     val dfWithAggClass = dfWithClass.groupBy(classs).agg(sum(employees) as employees)
     val dupCheckedDF = duplicateCheck(dfWithAggClass.agg(max(employees) as employees).join(dfWithAggClass, employees), classs)
     dupCheckedDF.drop(employees).join(dfWithClass, classs).drop(classs)

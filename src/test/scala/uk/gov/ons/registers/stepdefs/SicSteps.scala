@@ -8,22 +8,22 @@ import uk.gov.ons.stepdefs.Helpers
 
 class SicSteps extends ScalaDsl with EN {
 
-  val sic = new Sic(){}
+  val sic = new Sic() {}
 
   private def applyMethod(): Unit = {
     implicit val sparkSession = Helpers.sparkSession
     outputDataDF = sic.getClassification(inputDF)
   }
 
-  Given("""^input:"""){ inputTable: RawDataTableList =>
+  Given("""^input:""") { inputTable: RawDataTableList =>
     inputDF = createDataFrame(inputTable)
   }
 
-  When("""^the Sic method is calculated"""){ () =>
+  When("""^the Sic method is calculated""") { () =>
     applyMethod()
   }
 
-  When("""^the Sic method is attempted$"""){ () =>
+  When("""^the Sic method is attempted$""") { () =>
     methodResult = aFailureIsGeneratedBy {
       applyMethod()
     }
@@ -34,7 +34,7 @@ class SicSteps extends ScalaDsl with EN {
     displayData(expectedDF = output, printLabel = "SIC")
   }
 
-  Then("""an exception in Scala is thrown for .+ upon trying to calculate Sic$"""){ () =>
+  Then("""an exception in Scala is thrown for .+ upon trying to calculate Sic$""") { () =>
     assertThrown()
   }
 }
