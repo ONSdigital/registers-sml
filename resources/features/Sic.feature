@@ -1,15 +1,18 @@
-Feature: A sic calculation groups the input data by substrings of SIC and ID to determine which SIC contains the highest amount of employees
-  and assigns a subdivision determined by the division.
+Feature: The top down classification method considers units based on their SIC section letter (subdivision) then works down 2, 3, 4 and 5 digit
+  level until a clear classification is determined.
 
-  The method uses the following substrings:
+  The method uses the following substrings of sic07:
   first 2 characters as division,
   first 3 characters as group,
   first 4 characters as class,
   and the whole whole SIC.
 
-  The subdivision is determined by the division and the table can be viewed in confluence.
+  It also uses subdivision which is determined by the division and the table can be viewed in confluence.
+  https://collaborate2.ons.gov.uk/confluence/pages/viewpage.action?pageId=5386186
 
-  The method works by assigning a subdivision for each
+  The method works by drilling down these levels until it has a single sic07 for each enterprise which is output.
+
+  There are special cases for divisions 46 and 47 which can also be viewed at the above confluence page.
 
 
   @Happy Path
