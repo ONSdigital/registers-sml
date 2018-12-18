@@ -3,7 +3,7 @@
 
     <groupId>uk.gov.ons</groupId>
     <artifactId>registers-sml</artifactId>
-    <version>1.13-SNAPSHOT</version>
+    <version>1.14-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Registers Statistical Method Library</name>
     <description>Library of statistics methods for Registers</description>
