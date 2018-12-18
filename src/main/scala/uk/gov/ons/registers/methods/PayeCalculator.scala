@@ -8,7 +8,7 @@ import org.apache.spark.sql.functions.col
 trait PayeCalculator {
 
   val jobs = "paye_jobs"
-  val employees = "paye_empees"
+  //val employees = "paye_empees"
 
   def calculatePAYE(BIDF: DataFrame, payeDF: DataFrame)(implicit activeSession: SparkSession): DataFrame = {
     val calculatedPayeEmployeesDF = getGroupedByPayeEmployees(BIDF, payeDF)
@@ -51,8 +51,8 @@ trait PayeCalculator {
     val Count = spark.sql(sqlCount)
     val aggDF = Sum.join(Count, id)
 
-    val ungroupedDF = aggDF.withColumn(employees, aggDF.col("sums") / aggDF.col("counts"))//.selectExpr("ern", s"cast($employees as int) $employees")
-    val groupedDF = ungroupedDF.groupBy(ern).agg(sum(employees) as employees).selectExpr(s"cast($employees as int) $employees", ern)
+    val ungroupedDF = aggDF.withColumn(payeEmployees, aggDF.col("sums") / aggDF.col("counts"))//.selectExpr("ern", s"cast($employees as int) $employees")
+    val groupedDF = ungroupedDF.groupBy(ern).agg(sum(payeEmployees) as payeEmployees).selectExpr(s"cast($payeEmployees as int) $payeEmployees", ern)
 
     groupedDF
   }
