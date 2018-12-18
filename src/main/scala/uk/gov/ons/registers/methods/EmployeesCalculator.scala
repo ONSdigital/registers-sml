@@ -7,6 +7,7 @@ trait EmployeesCalculator {
  // val imputed = "imp_empees"
  // val employees = "empees"
 
+
   def calculateEmployees(empDF: DataFrame)(implicit activeSession: SparkSession): DataFrame = {
     val calculatedEmployeesDF = getGroupedByEmployment(empDF)
     calculatedEmployeesDF
