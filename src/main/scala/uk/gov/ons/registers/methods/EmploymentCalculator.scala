@@ -5,7 +5,6 @@ import uk.gov.ons.registers.model.CommonFrameDataFields._
 
 trait EmploymentCalculator {
 
-  val imputed = "imp_empees"
   val work_prop = "working_prop"
 
   def calculateEmployment(empDF: DataFrame)(implicit activeSession: SparkSession): DataFrame = {
@@ -14,7 +13,7 @@ trait EmploymentCalculator {
   }
 
   def getGroupedByEmployment(empDF: DataFrame, empTableName: String = "EMPLOYMENT")(implicit spark: SparkSession): DataFrame = {
-    val filEmpDF = empDF.select(ern, payeEmployees, imputed, work_prop)
+    val filEmpDF = empDF.select(ern, employees, work_prop)
     filEmpDF.createOrReplaceTempView(empTableName)
     val flatEmpDataSql = generateCalculateEmpSql(empTableName)
     spark.sql(flatEmpDataSql).select(ern, employment)
@@ -24,9 +23,7 @@ trait EmploymentCalculator {
     s"""
        SELECT $empTableName.*,
            CAST(
-          ((CASE WHEN $empTableName.$payeEmployees IS NULL AND $empTableName.$imputed IS NULL THEN 1
-                 WHEN $empTableName.$payeEmployees IS NULL THEN $empTableName.$imputed + $empTableName.$work_prop
-                 ELSE $empTableName.$payeEmployees + $empTableName.$work_prop END))
+                 ($empTableName.$employees + $empTableName.$work_prop)
            AS INT) AS employment
            FROM $empTableName
      """.stripMargin

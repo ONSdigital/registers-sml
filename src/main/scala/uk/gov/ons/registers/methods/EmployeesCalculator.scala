@@ -27,7 +27,7 @@ trait EmployeesCalculator {
           ((CASE WHEN $empTableName.$payeEmployees IS NULL AND $empTableName.$imp_empees IS NULL THEN 1
                  WHEN $empTableName.$payeEmployees IS NULL THEN $empTableName.$imp_empees
                  ELSE $empTableName.$payeEmployees END))
-           AS INT) AS empees
+           AS INT) AS ent_empees
            FROM $empTableName
      """.stripMargin
 }
