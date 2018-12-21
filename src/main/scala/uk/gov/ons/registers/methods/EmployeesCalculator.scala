@@ -17,7 +17,7 @@ trait EmployeesCalculator {
     val filEmpDF = empDF.select(ern, payeEmployees, imp_empees)
     filEmpDF.createOrReplaceTempView(empTableName)
     val flatEmpDataSql = generateCalculateEmpSql(empTableName)
-    spark.sql(flatEmpDataSql).select(ern, employees)
+    spark.sql(flatEmpDataSql).select(ern, ent_empees)
   }
 
   def generateCalculateEmpSql(empTableName: String = "EMPLOYEES") =
@@ -27,7 +27,7 @@ trait EmployeesCalculator {
           ((CASE WHEN $empTableName.$payeEmployees IS NULL AND $empTableName.$imp_empees IS NULL THEN 1
                  WHEN $empTableName.$payeEmployees IS NULL THEN $empTableName.$imp_empees
                  ELSE $empTableName.$payeEmployees END))
-           AS INT) AS ent_empees
+           AS INT) AS $ent_empees
            FROM $empTableName
      """.stripMargin
 }
