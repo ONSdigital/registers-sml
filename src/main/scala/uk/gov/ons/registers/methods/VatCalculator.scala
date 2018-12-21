@@ -77,16 +77,16 @@ trait VatCalculator{
     val withAggregatedApp = "WITHAPPAGGR"
     aggregated.createOrReplaceTempView(withAggregatedApp)
 
-    val sql2 = s"SELECT vat_group, ern,$payeEmployees, $jobs, $contained, $standard, $apportioned, $group_turnover FROM $withAggregatedApp GROUP BY vat_group, ern, $payeEmployees, $jobs, $contained, $standard, $group_turnover, $apportioned "
+    val sql2 = s"SELECT vat_group, ern,$payeEmployees, $paye_jobs, $contained, $standard, $apportioned, $group_turnover FROM $withAggregatedApp GROUP BY vat_group, ern, $payeEmployees, $paye_jobs, $contained, $standard, $group_turnover, $apportioned "
     val turnovers = spark.sql(sql2)
     val t3 = "TURNOVER"
     turnovers.createOrReplaceTempView(t3)
 
     val aggregateApportionedSql =
       s"""
-         SELECT ern,$payeEmployees, $jobs, $contained, SUM($apportioned) as $apportioned, $standard, CAST(SUM($group_turnover) as long) as $group_turnover
+         SELECT ern,$payeEmployees, $paye_jobs, $contained, SUM($apportioned) as $apportioned, $standard, CAST(SUM($group_turnover) as long) as $group_turnover
          FROM $t3
-         GROUP BY ern,$payeEmployees, $jobs, $contained,$standard
+         GROUP BY ern,$payeEmployees, $paye_jobs, $contained,$standard
 
        """.stripMargin
 
@@ -166,7 +166,7 @@ trait VatCalculator{
 
 
   def generateWithVatSQL(luTable:String, payeTable:String, vatTable:String) = {
-    s"""SELECT $luTable.vat_group, $luTable.ern,  $luTable.vatref, $vatTable.turnover, $vatTable.record_type, $payeTable.$payeEmployees, $payeTable.$jobs
+    s"""SELECT $luTable.vat_group, $luTable.ern,  $luTable.vatref, $vatTable.turnover, $vatTable.record_type, $payeTable.$payeEmployees, $payeTable.$paye_jobs
          FROM $luTable, $vatTable, $payeTable
          WHERE $luTable.vatref=$vatTable.vatref AND $payeTable.ern=$luTable.ern""".stripMargin
   }
