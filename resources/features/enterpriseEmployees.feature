@@ -14,7 +14,7 @@ Feature: Enterprise employees to be calculated by using either PAYE employees or
       |1100000004|       null|      null|
     When employees is calculated
     Then this Employees table is is produced
-      |       ern|    ent_empees|
+      |       ern|ent_empees|
       |1100000001|         5|
       |1100000002|         5|
       |1100000003|         7|
