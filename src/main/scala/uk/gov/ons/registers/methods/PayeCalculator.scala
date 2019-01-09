@@ -7,8 +7,9 @@ import org.apache.spark.sql.functions.col
 
 trait PayeCalculator {
 
-  val jobs = "paye_jobs"
-  val employees = "paye_empees"
+
+ // val jobs = "paye_jobs"
+  //val employees = "paye_empees"
 
   def calculatePAYE(BIDF: DataFrame, payeDF: DataFrame)(implicit activeSession: SparkSession): DataFrame = {
     val calculatedPayeEmployeesDF = getGroupedByPayeEmployees(BIDF, payeDF)
@@ -51,15 +52,15 @@ trait PayeCalculator {
     val Count = spark.sql(sqlCount)
     val aggDF = Sum.join(Count, id)
 
-    val ungroupedDF = aggDF.withColumn(employees, aggDF.col("sums") / aggDF.col("counts"))//.selectExpr("ern", s"cast($employees as int) $employees")
-    val groupedDF = ungroupedDF.groupBy(ern).agg(sum(employees) as employees).selectExpr(s"cast($employees as int) $employees", ern)
+    val ungroupedDF = aggDF.withColumn(payeEmployees, aggDF.col("sums") / aggDF.col("counts"))//.selectExpr("ern", s"cast($employees as int) $employees")
+    val groupedDF = ungroupedDF.groupBy(ern).agg(sum(payeEmployees) as payeEmployees).selectExpr(s"cast($payeEmployees as int) $payeEmployees", ern)
 
     groupedDF
   }
 
   def getGroupedByPayeJobs(BIDF: DataFrame, payeDF: DataFrame, quarter: String,luTableName: String = "LEGAL_UNITS", payeDataTableName: String = "PAYE_DATA")(implicit spark: SparkSession): DataFrame ={
     val flatUnitDf = BIDF.withColumn(payeRefs, explode_outer(BIDF.apply(PayeRefs)))
-    val idDF = (payeDF.join(flatUnitDf, payeRefs)).selectExpr(ern, s"cast($quarter as int) $quarter").groupBy(ern).agg(sum(quarter) as jobs)
+    val idDF = (payeDF.join(flatUnitDf, payeRefs)).selectExpr(ern, s"cast($quarter as int) $quarter").groupBy(ern).agg(sum(quarter) as paye_jobs)
     idDF
   }
 

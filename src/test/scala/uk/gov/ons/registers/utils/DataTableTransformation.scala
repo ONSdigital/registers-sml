@@ -53,6 +53,9 @@ object DataTableTransformation {
   def castWithEmploymentUnitMandatoryFields: DataFrame => DataFrame =
     CommonFrameAndPropertiesFieldsCasting.checkEmploymentforMandatoryFields
 
+  def castWithEmployeesUnitMandatoryFields: DataFrame => DataFrame =
+    CommonFrameAndPropertiesFieldsCasting.checkEmployeesforMandatoryFields
+
   def castWithImputedUnitMandatoryFields: DataFrame => DataFrame =
     CommonFrameAndPropertiesFieldsCasting.checkImputedforMandatoryFields
 
