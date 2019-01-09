@@ -12,41 +12,9 @@ Feature: The top down classification method considers units based on their SIC s
 
   The method works by drilling down these levels until it has a single sic07 for each enterprise which is output.
 
-  There are special cases for divisions 46 and 47 which can also be viewed at the above confluence page.
+  There are special cases for divisions 46 and 47 which can also be viewed on the above confluence page.
 
 
-  @Happy Path
-
-  Scenario Outline: Happy Path - Original Happy Path
-    Given input:
-      | ern | lurn | sic07 | employees |
-      | 123 | 1    | 63111 | 504       |
-      | 123 | 4    | 41202 | 844       |
-      | 123 | 6    | 69201 | 188       |
-      | 123 | 10   | 46444 | 301       |
-      | 123 | 13   | 47344 | 300       |
-      | 123 | 14   | 47844 | 900       |
-      | 123 | 15   | 47944 | 950       |
-      | 345 | 2    | 63110 | 46        |
-      | 345 | 7    | 12312 | 100       |
-      | 345 | 11   | 47544 | 500       |
-      | 345 | 9    | 46212 | 300       |
-      | 456 | 8    | 46123 | 500       |
-      | 456 | 3    | 63120 | 540       |
-      | 654 | 5    | 78109 | 517       |
-      | 654 | 12   | 47144 | 1000      |
-    When the Sic method is calculated
-    Then the Sic results table is produced:
-      | ern | sic07 |
-      | 345 | 47544 |
-      | 456 | 63120 |
-      | 654 | 47144 |
-      | 123 | 47944 |
-
-  @JVM
-    Examples:
-      | language |
-      | Scala    |
 
   @Happy Path
 
@@ -213,22 +181,22 @@ Feature: The top down classification method considers units based on their SIC s
 
   Scenario Outline: Sad Path - We have an invalid input field
     Given input:
-      | id  | sic07 | Invalid |
-      | 123 | 63111 | 504     |
-      | 123 | 69201 | 188     |
-      | 123 | 46444 | 301     |
-      | 123 | 41202 | 844     |
-      | 123 | 47344 | 300     |
-      | 123 | 47944 | 950     |
-      | 123 | 47844 | 900     |
-      | 345 | 63110 | 46      |
-      | 345 | 12312 | 100     |
-      | 456 | 46123 | 500     |
-      | 345 | 46212 | 300     |
-      | 345 | 47544 | 500     |
-      | 456 | 63120 | 540     |
-      | 654 | 47144 | 1000    |
-      | 654 | 78109 | 517     |
+      | ern | lurn     | sic07 | Invalid |
+      | 123 | 22000001 | 63111 | 504     |
+      | 123 | 22000001 | 69201 | 188     |
+      | 123 | 22000001 | 46444 | 301     |
+      | 123 | 22000001 | 41202 | 844     |
+      | 123 | 22000001 | 47344 | 300     |
+      | 123 | 22000001 | 47944 | 950     |
+      | 123 | 22000001 | 47844 | 900     |
+      | 345 | 22000001 | 63110 | 46      |
+      | 345 | 22000001 | 12312 | 100     |
+      | 456 | 22000001 | 46123 | 500     |
+      | 345 | 22000001 | 46212 | 300     |
+      | 345 | 22000001 | 47544 | 500     |
+      | 456 | 22000001 | 63120 | 540     |
+      | 654 | 22000001 | 47144 | 1000    |
+      | 654 | 22000001 | 78109 | 517     |
     When the Sic method is attempted
     Then an exception in <language> is thrown for Frame due to a mismatch field type upon trying to calculate Sic
 
