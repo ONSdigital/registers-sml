@@ -58,36 +58,49 @@ object CommonFrameAndPropertiesFieldsCasting {
       .withColumn(colName = group_turnover, VatDF.col(group_turnover).cast(LongType))
     castedVatDF
   }
+
   def checkAppVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
     val castedVatDF = VatDF
       .withColumn(colName = apportioned, VatDF.col(apportioned).cast(LongType))
     castedVatDF
   }
+
   def checkCntVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
     val castedVatDF = VatDF
       .withColumn(colName = contained, VatDF.col(contained).cast(LongType))
     castedVatDF
   }
+
   def checkStdVatforMandatoryFields(VatDF: DataFrame): DataFrame = {
     val castedVatDF = VatDF
       .withColumn(colName = standard, VatDF.col(standard).cast(LongType))
     castedVatDF
   }
+
   def checkEmploymentforMandatoryFields(EmpDF: DataFrame): DataFrame = {
     val castedEmpDF = EmpDF
       .withColumn(colName = employment, EmpDF.col(employment).cast(LongType))
     castedEmpDF
   }
+
   def checkEmployeesforMandatoryFields(EmpDF: DataFrame): DataFrame = {
     val castedEmpDF = EmpDF
       .withColumn(colName = ent_empees, EmpDF.col(ent_empees).cast(LongType))
     castedEmpDF
   }
+  
   def checkImputedforMandatoryFields(ImputedDF: DataFrame): DataFrame = {
     val castedImputedDF = ImputedDF
       .withColumn(colName = ern, ImputedDF.col(ern))
       .withColumn(colName = imp_turnover, ImputedDF.col(imp_turnover))
       .withColumn(colName = imp_empees, ImputedDF.col(imp_empees))
     castedImputedDF
+  }
+
+  def checkSicforMandatoryFields(SicDF: DataFrame): DataFrame = {
+    val castedSicDF = SicDF
+      .withColumn(colName = ern, SicDF.col(ern))
+      .withColumn(colName = sic07, SicDF.col(sic07))
+    castedSicDF
   }
 }

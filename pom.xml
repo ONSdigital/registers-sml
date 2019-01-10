@@ -1,9 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.gov.ons</groupId>
     <artifactId>registers-sml</artifactId>
-    <version>1.15-SNAPSHOT</version>
+    <version>1.13-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Registers Statistical Method Library</name>
     <description>Library of statistics methods for Registers</description>
@@ -13,8 +14,8 @@
         <url>https://github.com/ONSdigital/registers-sml</url>
         <connection>scm:git:git://github.com/ONSdigital/registers-sml.git</connection>
         <developerConnection>scm:git:git@github.com:ONSdigital/registers-sml.git</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
 
     <properties>
@@ -33,9 +34,9 @@
 
     <distributionManagement>
         <repository>
-	     <id>central</id>
-	     <name>ONS Artifactory-releases</name>
-	     <url>http://art-p-01/artifactory/LR_Registers-Maven-Releases</url>
+            <id>central</id>
+            <name>ONS Artifactory-releases</name>
+            <url>http://art-p-01/artifactory/LR_Registers-Maven-Releases</url>
         </repository>
     </distributionManagement>
 
@@ -128,7 +129,7 @@
                 <configuration>
                     <forkCount>3</forkCount>
                     <reuseForks>true</reuseForks>
-                    <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
+                    <argLine>-Xmx2048m -XX:MaxPermSize=256m</argLine>
                     <testSourceDirectory>/src/test/java/</testSourceDirectory>
                 </configuration>
             </plugin>
