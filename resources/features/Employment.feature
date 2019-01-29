@@ -5,18 +5,18 @@ Feature: Employment is calculated and is the sum of working propietors and emplo
   @HappyPath
     Scenario Outline: Happy Path - Employment is calculated
     Given an employees and working proprietors input:
-          |       ern|paye_empees|imp_empees|working_prop|
-          |1100000001|          5|         6|           9|
-          |1100000002|          5|         7|           8|
-          |1100000003|       null|         7|           8|
-          |1100000004|       null|      null|           8|
+          |       ern| ent_empees|working_prop|
+          |1100000001|          5|           9|
+          |1100000002|          5|           8|
+          |1100000003|          3|           8|
+          |1100000004|          2|           8|
     When employment is calculated
     Then this Employment table is is produced
           |       ern|employment|
           |1100000001|        14|
           |1100000002|        13|
-          |1100000003|        15|
-          |1100000004|         1|
+          |1100000003|        11|
+          |1100000004|        10|
       @JVM
      Examples:
      | language |
@@ -24,11 +24,11 @@ Feature: Employment is calculated and is the sum of working propietors and emplo
   @SadPath
     Scenario Outline: Sad Path - Input has invalid field
     Given an employees and working proprietors input:
-          |       ern|paye_empees|imp_empees|  INVALID|
-          |1100000001|          5|         6|        9|
-          |1100000002|          5|         7|        8|
-          |1100000003|       null|         7|        8|
-          |1100000004|       null|      null|        8|
+          |       ern| ent_empees|  INVALID|
+          |1100000001|          5|        9|
+          |1100000002|          5|        8|
+          |1100000003|          3|        8|
+          |1100000004|          1|        8|
     When the employment calculation is attempted
     Then an exception in <language> is thrown for Frame due to a mismatch field type upon trying to Calculate employment
       @JVM

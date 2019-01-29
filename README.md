@@ -63,3 +63,8 @@ The registers cucumber files are annotated with tags. To run a specific grouped 
 ```shell
 mvn -Dcucumber.options="--tags @HappyPath" clean test
 ```
+
+## Cucumber Feature File
+In each cucumber feature file there's a description of the corresponding method written in simple English. 
+
+```https://github.com/ONSdigital/registers-sml/tree/master/resources/features```

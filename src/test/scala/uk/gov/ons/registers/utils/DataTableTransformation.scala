@@ -53,8 +53,15 @@ object DataTableTransformation {
   def castWithEmploymentUnitMandatoryFields: DataFrame => DataFrame =
     CommonFrameAndPropertiesFieldsCasting.checkEmploymentforMandatoryFields
 
+  def castWithEmployeesUnitMandatoryFields: DataFrame => DataFrame =
+    CommonFrameAndPropertiesFieldsCasting.checkEmployeesforMandatoryFields
+
   def castWithImputedUnitMandatoryFields: DataFrame => DataFrame =
     CommonFrameAndPropertiesFieldsCasting.checkImputedforMandatoryFields
+
+  def castWithSicUnitMandatoryFields: DataFrame => DataFrame =
+    CommonFrameAndPropertiesFieldsCasting.checkSicforMandatoryFields
+
 
   def emptyDataFrame: DataFrame = {
     val nonsensicalSchema =
